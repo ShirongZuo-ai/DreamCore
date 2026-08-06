@@ -79,3 +79,21 @@ must be read from YAML config, never hardcoded.
 - State-space methods are promising but need validation against simpler baselines.
 
 **Date**: 2026-08-06
+
+---
+
+## DD-007: Sleep-EDF SC as the first real-data reader validation
+
+**Decision**: Validate the EDF reader on one Sleep-EDF Expanded sleep-cassette
+recording pair (subject 0, recording 1), fetched through MNE's supported
+PhysioNet dataset interface. Keep the original hypnogram descriptions unchanged
+in the validation summary.
+
+**Rationale**:
+- One PSG/Hypnogram pair is the smallest useful real-data integration check.
+- MNE's fetcher selects the matching files and verifies their published hashes.
+- Raw R&K stage descriptions make this validation independent of the later
+  label-normalization policy.
+- Dataset files and generated summaries remain outside Git tracking.
+
+**Date**: 2026-08-06

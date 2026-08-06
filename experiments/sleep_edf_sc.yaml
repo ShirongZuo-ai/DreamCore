@@ -1,0 +1,24 @@
+# Sleep-EDF Expanded sleep-cassette validation configuration.
+# Dataset metadata and validation settings only; not a hardware specification.
+
+dataset:
+  name: "Sleep-EDF Expanded sleep-cassette"
+
+eeg:
+  sampling_rate_hz: 100.0
+
+data:
+  preload_edf: false
+  sampling_rate_tolerance_hz: 0.01
+  quality:
+    flatline_threshold_s: 5.0
+    max_nan_ratio: 0.0
+    std_ddof: 0
+
+inspection:
+  output_path: "results/sleep_edf_summary.json"
+  json_indent: 2
+  required_stage_descriptions:
+    - "Sleep stage 2"
+    - "Sleep stage 3"
+    - "Sleep stage 4"
