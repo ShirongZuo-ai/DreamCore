@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data — never commit raw or processed data
+data/*.edf
+data/*.csv
+data/*.npy
+data/*.npz
+data/*.fif
+data/*.hdf5
+data/*.h5
+data/*.mat
+data/datasets/
+
+# Results (keep .gitkeep only)
+results/*
+!results/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Mypy
+.mypy_cache/
+
+# Logs
+*.log
+
+# Secrets
+.env
+*.pem
+*.key

@@ -1,0 +1,81 @@
+# DreamCore default configuration
+# ⚠ RESEARCH DEFAULTS ONLY — not final hardware specs.
+# All values are placeholders. Update when real hardware parameters are known.
+
+# ── General ──────────────────────────────────────────────────────────
+general:
+  project_name: "dreamcore"
+  random_seed: 42
+  log_level: "INFO"
+
+# ── EEG Data ─────────────────────────────────────────────────────────
+# Sampling rate is unknown until hardware is selected. 100 Hz is a
+# common research default; replace with actual hardware spec later.
+eeg:
+  sampling_rate_hz: 100          # TODO: replace with real hardware spec
+  channel_names: []              # TODO: populate after electrode layout known
+  reference: "unknown"           # "mastoid", "cz", "average", etc.
+  unit: "uV"
+  montage: "unknown"             # 10-20, 10-10, custom
+
+# ── Preprocessing ────────────────────────────────────────────────────
+preprocessing:
+  bandpass_low_hz: 0.5
+  bandpass_high_hz: 30.0
+  notch_freq_hz: null            # null = no notch filter; set to 50.0 or 60.0
+  resample_to_hz: null           # null = keep native sampling rate
+
+# ── Sleep Staging ────────────────────────────────────────────────────
+sleep_staging:
+  # Public datasets use different stage label conventions.
+  # Define the mapping once dataset is chosen.
+  stage_labels:
+    wake: ["W", "Wake", "0"]
+    n1:   ["N1", "S1", "1"]
+    n2:   ["N2", "S2", "2"]
+    n3:   ["N3", "S3", "3", "SWS"]
+    rem:  ["R", "REM", "4", "5"]
+  focus_stages: ["N2", "N3"]
+
+# ── Slow Oscillation Detection ───────────────────────────────────────
+slow_oscillation:
+  filter_low_hz: 0.5
+  filter_high_hz: 4.0
+  min_duration_ms: 250           # minimum half-wave duration
+  max_duration_ms: 1000
+  amplitude_threshold_uV: null   # null = auto from 75th percentile
+
+# ── Phase Prediction ─────────────────────────────────────────────────
+phase_prediction:
+  method: "hilbert"              # "hilbert", "fixed_threshold", "state_space"
+  lookahead_ms: 200              # how far ahead to predict
+  prediction_horizon_ms: 500     # total prediction window
+  phase_target_deg: [0, 180]     # target up-state onset or down-state onset
+
+# ── Precision Gating ─────────────────────────────────────────────────
+precision_gating:
+  confidence_threshold: 0.8      # 0-1; skip trigger below this
+  phase_error_tolerance_deg: 30  # ± degrees considered "on target"
+  min_consecutive_good_cycles: 3
+
+# ── Simulation (offline replay) ──────────────────────────────────────
+simulation:
+  buffer_duration_s: 30          # sliding window size
+  step_size_ms: 100              # replay step
+  trigger_mode: "log_only"       # "log_only" | "mock_output" — no real device
+
+# ── Evaluation ────────────────────────────────────────────────────────
+evaluation:
+  metrics:
+    - "phase_error_mae_deg"
+    - "trigger_precision"
+    - "trigger_recall"
+    - "skip_rate"
+  cross_validation_folds: 5
+
+# ── Output ───────────────────────────────────────────────────────────
+output:
+  results_dir: "./results"
+  save_figures: true
+  figure_format: "png"
+  dpi: 150
