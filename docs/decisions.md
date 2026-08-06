@@ -122,3 +122,36 @@ CLI-selected EEG channels and produces metadata only by default.
 - Metadata-only output is reproducible without creating large derived datasets.
 
 **Date**: 2026-08-06
+
+---
+
+## DD-009: Preserve native sampling and compare preprocessing profiles explicitly
+
+**Decision**: Preprocess extracted N3 EEG through named YAML profiles. Keep
+separate profiles for unmodified visualization, broadband sleep EEG, and
+slow-oscillation observation. The Sleep-EDF slow-oscillation observation
+profile applies per-channel demeaning and a 0.5–4 Hz FIR bandpass, keeps the
+native sample rate, does not add a notch filter or re-reference the already
+bipolar channels, and discards 5 seconds from each filtered segment boundary.
+
+Resampling occurs only when `target_sampling_rate_hz` is non-null. Every run
+records original/output rates, processing order, selected channels, parameters,
+sample counts, and retained time range. Visual review uses a configured
+representative segment and configured long/short windows rather than selecting
+the longest interval automatically.
+
+**Rationale**:
+- Named profiles keep raw comparison, general sleep preprocessing, and the
+  narrow slow-oscillation view scientifically distinct.
+- Preserving 100 Hz avoids an unnecessary transformation in the first visual
+  baseline; future resampling remains explicit and testable.
+- Sleep-EDF EEG channels are bipolar derivations, so an additional reference is
+  not assumed without a separate experimental rationale.
+- Filtering before boundary removal, then dropping configured edges, reduces
+  the chance that filter transients enter the review windows.
+- Fixed windows and complete metadata make visual inspection reproducible.
+
+These settings are research defaults for this dataset, not final product or
+hardware parameters.
+
+**Date**: 2026-08-06

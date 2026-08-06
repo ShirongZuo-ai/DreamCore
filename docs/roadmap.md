@@ -14,8 +14,10 @@
 - [x] Choose public validation dataset (Sleep-EDF Expanded SC)
 - [x] Implement `src/dreamcore/data/reader.py` — EDF loader with MNE
 - [x] Implement configurable channel stats, NaN checks, and flatline detection
-- [ ] Implement `src/dreamcore/preprocessing/filter.py` — bandpass, notch
+- [x] Implement `src/dreamcore/preprocessing/eeg.py` — configurable reference,
+  detrend, bandpass, notch, explicit resampling, and boundary trimming
 - [x] Validate reader, annotations, quality, and alignment on one real subject
+- [x] Visually compare raw and preprocessed N3 EEG at long and short scales
 - [ ] Expand validation and visual review to a second subject
 
 ## Milestone 2 — Sleep staging
@@ -35,6 +37,10 @@
 - [ ] Zero-crossing + amplitude/duration thresholding
 - [ ] Visual validation: overlay detection on raw/filtered signal
 - [ ] Report SO density, amplitude, duration per subject
+
+**Entry condition**: one real N3 segment now has a reproducible preprocessing
+configuration, raw/processed comparison figures, and reviewed signal statistics.
+Event and artifact definitions remain to be specified before implementation.
 
 ## Milestone 4 — Phase estimation
 

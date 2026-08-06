@@ -82,3 +82,34 @@ This writes ignored metadata files only:
 No signal array is saved by default. If a later local analysis saves cropped
 signals, keep them under an ignored data or results directory and retain the
 source filename plus half-open time range in accompanying metadata.
+
+## N3 EEG preprocessing and visual review
+
+`configs/default.yaml` defines three research-only preprocessing profiles:
+
+- `raw_eeg` leaves signal values unchanged for comparison.
+- `broadband_sleep_eeg` applies the configured general sleep EEG band.
+- `slow_oscillation_observation` provides a narrow visual view for the next
+  research step.
+
+The Sleep-EDF dataset config selects two explicit bipolar EEG channels, keeps
+the native sample rate, and fixes a representative 600 s N3 segment plus two
+display windows. Run:
+
+```bash
+python scripts/visualize_n3_eeg.py \
+  --config experiments/sleep_edf_sc.yaml \
+  --psg data/datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf \
+  --hypnogram data/datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf
+```
+
+The command writes these ignored artifacts:
+
+- `results/n3_eeg_long.png`
+- `results/n3_eeg_short.png`
+- `results/n3_eeg_preprocessing_summary.json`
+
+The JSON records source files, subject/recording identifiers, segment and window
+ranges, selected channels, original/output sampling rates, every preprocessing
+parameter, raw/processed statistics, and figure paths. No EDF or derived signal
+array is written.

@@ -59,8 +59,42 @@
 - [x] Added network-free tests for mapping, unknown labels, clipping, merging,
   duration filtering, channel selection, sample counts, and metadata output.
 
+## 2026-08-06 — Milestone 2 Step 1 N3 EEG preprocessing and visualization
+
+- [x] Added `preprocessing/eeg.py` with configuration-driven channel selection,
+  optional average/named-channel re-reference, optional notch filtering,
+  bandpass filtering, demean/linear detrending, explicit optional resampling,
+  and boundary trimming.
+- [x] Added raw, broadband sleep EEG, and slow-oscillation observation profiles.
+  They are research defaults rather than product specifications.
+- [x] Resampling is disabled for the Sleep-EDF smoke run. When configured, both
+  rates and changed sample counts are recorded and covered by tests.
+- [x] Reused the reader, label normalization, interval merge, and N3 extraction
+  pipeline in `scripts/visualize_n3_eeg.py`; no existing logic was duplicated.
+- [x] Selected representative segment `SC4001E0-PSG_n3_0002`, a 600 s merged
+  stage 3/stage 4 interval at `[31200, 31800)` s, rather than the 2,070 s longest
+  interval. Both configured EEG channels were retained at native 100 Hz.
+- [x] Applied demean plus 0.5–4 Hz FIR bandpass with no notch, no additional
+  re-reference, and no resampling. A 5 s discard at each boundary retained
+  `[31205, 31795)` s (590 s, 59,000 samples per channel).
+- [x] Generated ignored long-window `[31260, 31380)` s and short-window
+  `[31290, 31310)` s PNG comparisons plus
+  `results/n3_eeg_preprocessing_summary.json`.
+- [x] Retained-segment statistics in µV (raw → processed): `EEG Fpz-Cz` mean
+  0.172 → 0.004, SD 29.952 → 28.716, peak-to-peak 255.250 → 252.905;
+  `EEG Pz-Oz` mean -0.346 → 0.007, SD 18.575 → 17.399, peak-to-peak
+  159.407 → 155.383.
+- [x] Manual export review found stable baselines without obvious clipping or
+  boundary artifacts. The 20 s view shows coherent low-frequency morphology in
+  both channels, including a prominent synchronous deflection near 10–11 s;
+  event-versus-artifact classification remains deliberately unresolved.
+- [x] Added network-free unit/integration tests for configuration, channel
+  errors, parameter validation, demeaning, resampling, sample/time accounting,
+  boundary trimming, source immutability, and two-figure/JSON generation.
+
 ## Next
 
-- Implement configurable EEG preprocessing without changing the native reader
-  sampling-rate validation.
-- Visually inspect filtered N3 EEG before implementing slow-oscillation detection.
+- Define a slow-oscillation event-detection baseline and artifact policy before
+  adding zero-crossing, duration, or amplitude annotations.
+- Keep detection outputs separate from this visually validated preprocessing
+  baseline and validate any events against both raw and filtered signals.

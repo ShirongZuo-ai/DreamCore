@@ -28,11 +28,81 @@ data:
     std_ddof: 0                  # population standard deviation
 
 # ── Preprocessing ────────────────────────────────────────────────────
+# Research comparison profiles only — these are not final product parameters.
 preprocessing:
-  bandpass_low_hz: 0.5
-  bandpass_high_hz: 30.0
-  notch_freq_hz: null            # null = no notch filter; set to 50.0 or 60.0
-  resample_to_hz: null           # null = keep native sampling rate
+  active_profile: "slow_oscillation_observation"
+  eeg_channels: []               # supplied by a dataset config or CLI
+  profiles:
+    raw_eeg:
+      reference:
+        mode: "none"             # "none" | "average" | "channels"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: null
+        high_hz: null
+        method: "fir"
+      detrend: "none"            # "none" | "demean" | "linear"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 0.0
+    broadband_sleep_eeg:
+      reference:
+        mode: "none"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: 0.5
+        high_hz: 30.0
+        method: "fir"
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+    slow_oscillation_observation:
+      reference:
+        mode: "none"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: 0.5
+        high_hz: 4.0
+        method: "fir"
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+
+# ── N3 EEG Visualization ─────────────────────────────────────────────
+n3_visualization:
+  segment_id: null               # set to a representative segment per dataset
+  preprocessing_profile: "slow_oscillation_observation"
+  amplitude_scale: 1000000.0     # EDF volts -> displayed microvolts
+  amplitude_unit: "µV"
+  figure_width_inches: 14.0
+  figure_height_per_channel_inches: 3.2
+  dpi: 160
+  raw_color: "#6B7280"
+  processed_color: "#2563EB"
+  raw_line_width: 0.7
+  processed_line_width: 1.0
+  raw_line_style: ":"
+  processed_line_style: "-"
+  grid_alpha: 0.18
+  windows:
+    long:
+      offset_s: 60.0
+      duration_s: 120.0
+      output_path: "results/n3_eeg_long.png"
+    short:
+      offset_s: 90.0
+      duration_s: 20.0
+      output_path: "results/n3_eeg_short.png"
+  summary_json: "results/n3_eeg_preprocessing_summary.json"
+  json_indent: 2
 
 # ── Sleep Staging ────────────────────────────────────────────────────
 sleep_staging:

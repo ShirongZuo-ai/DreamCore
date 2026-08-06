@@ -3,6 +3,8 @@
 
 dataset:
   name: "Sleep-EDF Expanded sleep-cassette"
+  subject_id: "SC400"
+  recording_id: "SC4001E0"
 
 eeg:
   sampling_rate_hz: 100.0
@@ -45,4 +47,66 @@ n3_extraction:
     - "EEG Pz-Oz"
   output_csv: "results/n3_segments.csv"
   output_json: "results/n3_segments.json"
+  json_indent: 2
+
+# Sleep-EDF research defaults for visual inspection, not product parameters.
+preprocessing:
+  active_profile: "slow_oscillation_observation"
+  eeg_channels:
+    - "EEG Fpz-Cz"
+    - "EEG Pz-Oz"
+  profiles:
+    raw_eeg:
+      reference: {mode: "none", channels: []}
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass: {low_hz: null, high_hz: null, method: "fir"}
+      detrend: "none"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 0.0
+    broadband_sleep_eeg:
+      reference: {mode: "none", channels: []}
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass: {low_hz: 0.5, high_hz: 30.0, method: "fir"}
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+    slow_oscillation_observation:
+      reference: {mode: "none", channels: []}
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass: {low_hz: 0.5, high_hz: 4.0, method: "fir"}
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+
+n3_visualization:
+  segment_id: "SC4001E0-PSG_n3_0002"
+  preprocessing_profile: "slow_oscillation_observation"
+  amplitude_scale: 1000000.0
+  amplitude_unit: "µV"
+  figure_width_inches: 14.0
+  figure_height_per_channel_inches: 3.2
+  dpi: 160
+  raw_color: "#6B7280"
+  processed_color: "#2563EB"
+  raw_line_width: 0.7
+  processed_line_width: 1.0
+  raw_line_style: ":"
+  processed_line_style: "-"
+  grid_alpha: 0.18
+  windows:
+    long:
+      offset_s: 60.0
+      duration_s: 120.0
+      output_path: "results/n3_eeg_long.png"
+    short:
+      offset_s: 90.0
+      duration_s: 20.0
+      output_path: "results/n3_eeg_short.png"
+  summary_json: "results/n3_eeg_preprocessing_summary.json"
   json_indent: 2

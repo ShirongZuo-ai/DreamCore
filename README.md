@@ -73,7 +73,10 @@ dreamcore-ai/
 ## Current status
 
 - [x] Project initialization
-- [ ] Module implementations (all pending)
+- [x] Sleep-EDF reading, annotation alignment, and signal quality checks
+- [x] Sleep-stage normalization and continuous N3 EEG extraction
+- [x] Configuration-driven N3 preprocessing and raw/processed visual review
+- [ ] Slow-oscillation event detection and phase research
 
 See `docs/progress.md` for detailed status.
 
@@ -85,10 +88,9 @@ pytest -v
 
 ## Next steps
 
-1. Choose a public sleep dataset (e.g., Sleep-EDF, MASS, DREAMS)
-2. Implement `src/dreamcore/data/` reader
-3. Implement sleep stage label mapping
-4. Implement slow oscillation detection
-5. Iterate on phase estimation methods
+1. Specify and implement a slow-oscillation event-detection baseline
+2. Overlay candidate events on raw and filtered N3 EEG for validation
+3. Expand real-data review beyond the first Sleep-EDF subject
+4. Iterate on phase estimation methods only after detector validation
 
 See `docs/roadmap.md` for full plan.
