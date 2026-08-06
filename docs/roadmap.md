@@ -11,18 +11,20 @@
 
 **Goal**: Read public sleep EEG and validate quality.
 
-- [ ] Choose public dataset (Sleep-EDF candidate)
-- [ ] Implement `src/dreamcore/data/reader.py` — EDF loader with MNE
-- [ ] Implement `src/dreamcore/data/quality.py` — channel stats, NaN check, flatline detection
+- [x] Choose public validation dataset (Sleep-EDF Expanded SC)
+- [x] Implement `src/dreamcore/data/reader.py` — EDF loader with MNE
+- [x] Implement configurable channel stats, NaN checks, and flatline detection
 - [ ] Implement `src/dreamcore/preprocessing/filter.py` — bandpass, notch
-- [ ] Test on 1-2 subjects, verify outputs visually
+- [x] Validate reader, annotations, quality, and alignment on one real subject
+- [ ] Expand validation and visual review to a second subject
 
 ## Milestone 2 — Sleep staging
 
 **Goal**: Load and use sleep stage labels, focus on N2/N3.
 
-- [ ] Implement `src/dreamcore/sleep_staging/labels.py` — label mapping from config
-- [ ] Implement N2/N3 epoch extraction
+- [x] Implement `src/dreamcore/sleep_staging/labels.py` — label mapping from config
+- [x] Implement continuous N3 EEG interval extraction
+- [ ] Implement N2 interval extraction
 - [ ] Stage distribution summary per subject
 
 ## Milestone 3 — Slow oscillation detection

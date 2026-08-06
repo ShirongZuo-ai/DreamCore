@@ -97,3 +97,28 @@ in the validation summary.
 - Dataset files and generated summaries remain outside Git tracking.
 
 **Date**: 2026-08-06
+
+---
+
+## DD-008: Normalize R&K stages before interval extraction
+
+**Decision**: Normalize Sleep-EDF R&K labels through dataset configuration,
+mapping both stage 3 and stage 4 to the project label N3. Clip annotations to
+the half-open PSG range before normalization and merge adjacent equal labels
+only when their gap is within a configured tolerance. Preserve every raw label
+that contributed to a merged interval.
+
+Unknown raw labels follow a configured policy: map to `UNKNOWN` by default or
+raise an explicit error. N3 extraction requires explicitly configured or
+CLI-selected EEG channels and produces metadata only by default.
+
+**Rationale**:
+- R&K stage 3 and stage 4 together correspond to the project's N3 analysis set.
+- Clipping prevents trailing or otherwise out-of-range hypnogram annotations
+  from producing samples beyond the PSG.
+- Preserved raw-label provenance keeps the normalization auditable.
+- Explicit EEG channel selection prevents auxiliary signals from entering
+  slow-oscillation analysis accidentally.
+- Metadata-only output is reproducible without creating large derived datasets.
+
+**Date**: 2026-08-06

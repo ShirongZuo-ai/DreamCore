@@ -46,6 +46,7 @@ def test_config_loads():
         "data",
         "preprocessing",
         "sleep_staging",
+        "n3_extraction",
         "slow_oscillation",
         "phase_prediction",
         "precision_gating",

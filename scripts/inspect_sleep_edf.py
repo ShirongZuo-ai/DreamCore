@@ -10,18 +10,9 @@ from typing import Any
 
 import mne
 import numpy as np
-import yaml
 
+from dreamcore.config import load_config
 from dreamcore.data.reader import check_quality, load_edf
-
-
-def load_config(config_path: Path) -> dict[str, Any]:
-    """Load a YAML inspection configuration."""
-    with config_path.open(encoding="utf-8") as config_file:
-        config = yaml.safe_load(config_file)
-    if not isinstance(config, dict):
-        raise TypeError("Inspection config must contain a top-level mapping")
-    return config
 
 
 def _required_mapping(config: Mapping[str, Any], key: str) -> Mapping[str, Any]:

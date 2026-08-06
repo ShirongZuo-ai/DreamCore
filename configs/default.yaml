@@ -36,15 +36,28 @@ preprocessing:
 
 # ── Sleep Staging ────────────────────────────────────────────────────
 sleep_staging:
-  # Public datasets use different stage label conventions.
-  # Define the mapping once dataset is chosen.
+  # Unified label -> accepted raw dataset labels.
   stage_labels:
-    wake: ["W", "Wake", "0"]
-    n1:   ["N1", "S1", "1"]
-    n2:   ["N2", "S2", "2"]
-    n3:   ["N3", "S3", "3", "SWS"]
-    rem:  ["R", "REM", "4", "5"]
+    W: ["Sleep stage W", "W", "Wake", "0"]
+    N1: ["Sleep stage 1", "N1", "S1", "1"]
+    N2: ["Sleep stage 2", "N2", "S2", "2"]
+    N3: ["Sleep stage 3", "Sleep stage 4", "N3", "S3", "S4", "3", "4", "SWS"]
+    REM: ["Sleep stage R", "R", "REM", "5"]
+    UNKNOWN: ["Sleep stage ?", "UNKNOWN"]
+    MOVEMENT: ["Movement time", "MOVEMENT"]
+  unknown_label_policy: "map_to_unknown"  # "map_to_unknown" | "raise"
+  unknown_label: "UNKNOWN"
+  merge_tolerance_s: 0.0
   focus_stages: ["N2", "N3"]
+
+# ── N3 Segment Extraction ────────────────────────────────────────────
+n3_extraction:
+  target_label: "N3"
+  min_segment_duration_s: 30.0
+  eeg_channels: []               # must be supplied by dataset config or CLI
+  output_csv: "results/n3_segments.csv"
+  output_json: "results/n3_segments.json"
+  json_indent: 2
 
 # ── Slow Oscillation Detection ───────────────────────────────────────
 slow_oscillation:

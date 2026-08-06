@@ -61,3 +61,24 @@ python scripts/inspect_sleep_edf.py \
 
 The generated `results/sleep_edf_summary.json` is ignored by Git. Unit tests
 use mocks and synthetic `RawArray` objects; they never download this dataset.
+
+## N3 metadata extraction
+
+The same dataset config contains the raw-label mapping, merge tolerance,
+minimum N3 duration, and explicit EEG channel selection. Run:
+
+```bash
+python scripts/extract_n3_segments.py \
+  --config experiments/sleep_edf_sc.yaml \
+  --psg data/datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf \
+  --hypnogram data/datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf
+```
+
+This writes ignored metadata files only:
+
+- `results/n3_segments.csv`
+- `results/n3_segments.json`
+
+No signal array is saved by default. If a later local analysis saves cropped
+signals, keep them under an ignored data or results directory and retain the
+source filename plus half-open time range in accompanying metadata.

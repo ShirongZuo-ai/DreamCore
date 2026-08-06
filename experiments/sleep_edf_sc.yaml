@@ -22,3 +22,27 @@ inspection:
     - "Sleep stage 2"
     - "Sleep stage 3"
     - "Sleep stage 4"
+
+sleep_staging:
+  stage_labels:
+    W: ["Sleep stage W"]
+    N1: ["Sleep stage 1"]
+    N2: ["Sleep stage 2"]
+    N3: ["Sleep stage 3", "Sleep stage 4"]
+    REM: ["Sleep stage R"]
+    UNKNOWN: ["Sleep stage ?"]
+    MOVEMENT: ["Movement time"]
+  unknown_label_policy: "map_to_unknown"
+  unknown_label: "UNKNOWN"
+  merge_tolerance_s: 0.0
+  focus_stages: ["N2", "N3"]
+
+n3_extraction:
+  target_label: "N3"
+  min_segment_duration_s: 30.0
+  eeg_channels:
+    - "EEG Fpz-Cz"
+    - "EEG Pz-Oz"
+  output_csv: "results/n3_segments.csv"
+  output_json: "results/n3_segments.json"
+  json_indent: 2
