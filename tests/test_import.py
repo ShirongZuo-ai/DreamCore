@@ -43,6 +43,7 @@ def test_config_loads():
     expected_sections = [
         "general",
         "eeg",
+        "data",
         "preprocessing",
         "sleep_staging",
         "slow_oscillation",

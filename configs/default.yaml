@@ -18,6 +18,15 @@ eeg:
   unit: "uV"
   montage: "unknown"             # 10-20, 10-10, custom
 
+# ── Data Loading & Quality ───────────────────────────────────────────
+data:
+  preload_edf: false             # false keeps large recordings memory efficient
+  sampling_rate_tolerance_hz: 0.01
+  quality:
+    flatline_threshold_s: 5.0    # flag identical runs longer than this duration
+    max_nan_ratio: 0.0           # per-channel ratio allowed for an overall pass
+    std_ddof: 0                  # population standard deviation
+
 # ── Preprocessing ────────────────────────────────────────────────────
 preprocessing:
   bandpass_low_hz: 0.5
