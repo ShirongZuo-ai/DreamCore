@@ -92,9 +92,52 @@
   errors, parameter validation, demeaning, resampling, sample/time accounting,
   boundary trimming, source immutability, and two-figure/JSON generation.
 
+## 2026-08-06 — Milestone 2 Step 2 slow-oscillation candidate baseline
+
+- [x] Added `slow_oscillation/detector.py` with linearly interpolated zero
+  crossings and complete downward-upward-downward candidate cycles.
+- [x] Extracted event boundaries, trough/positive-peak timing and amplitude,
+  peak-to-peak amplitude, half-wave/full-cycle duration, estimated frequency,
+  and signed down/up slopes for accepted and rejected candidates.
+- [x] Added research-only `broad_slow_wave` and `strict_slow_oscillation`
+  profiles. The strict profile is the primary real-data output; the broad
+  profile also completed a real smoke run using temporary outputs.
+- [x] Added no-threshold, fixed-threshold, and per-channel adaptive-quantile
+  amplitude strategies. The strict profile used the configured 75th percentile
+  rather than a fixed 75 µV assumption.
+- [x] Added auditable rejection reasons for duration, NaN/non-finite input,
+  retained-boundary proximity, configured peak-to-peak maximum, invalid time
+  masks, and amplitude threshold.
+- [x] Reused the reader, label normalization, N3 extraction, and preprocessing
+  pipeline for `SC4001E0-PSG_n3_0002`; analyzed `[31205, 31795)` s (590 s) at
+  100 Hz on `EEG Fpz-Cz` and `EEG Pz-Oz`.
+- [x] Strict-profile real result: Fpz-Cz accepted 78 of 708 candidates
+  (7.932/min; adaptive threshold 86.969 µV), while Pz-Oz accepted 79 of 676
+  (8.034/min; adaptive threshold 52.831 µV).
+- [x] Accepted-event median full-cycle duration / peak-to-peak amplitude /
+  frequency: Fpz-Cz 1.008 s / 102.756 µV / 0.992 Hz; Pz-Oz 1.012 s /
+  65.805 µV / 0.989 Hz.
+- [x] Cross-channel accepted-event overlap: 39 overlapping pairs; 34/78 Fpz-Cz
+  events (43.590%) and 37/79 Pz-Oz events (46.835%) overlap an event on the
+  other channel; total pairwise overlap was 22.206 s.
+- [x] Global rejection counts (non-exclusive): below adaptive threshold 1,154;
+  full cycle too short 687; negative half-wave too short 376; full cycle too
+  long 17; negative half-wave too long 8; near boundary 6. No real candidate
+  hit NaN, extreme-amplitude, or invalid-mask rejection in this segment.
+- [x] Wrote ignored `slow_oscillation_events.csv`,
+  `slow_oscillation_summary.json`, and `slow_oscillation_qa.png`. The 20 s QA
+  window contains 55 candidates (3 accepted, 52 rejected).
+- [x] Manual QA confirmed raw/detection-band alignment, zero crossings at the
+  filtered baseline, extrema inside their half-waves, and clear accepted versus
+  rejected encoding. This is algorithm QA, not manual physiological labeling.
+- [x] Added network-free synthetic and integration coverage for known-frequency
+  crossings, extrema, durations, amplitude strategies, artifacts, empty input,
+  channel independence, input immutability, summary/CSV output, overlap, and QA
+  export.
+
 ## Next
 
-- Define a slow-oscillation event-detection baseline and artifact policy before
-  adding zero-crossing, duration, or amplitude annotations.
-- Keep detection outputs separate from this visually validated preprocessing
-  baseline and validate any events against both raw and filtered signals.
+- Define the Hilbert phase baseline on accepted offline candidates while
+  preserving detector-profile provenance and avoiding causal/online claims.
+- Expand manual candidate review and sensitivity analysis across detector
+  profiles, segments, and subjects before treating density as a stable metric.

@@ -155,3 +155,53 @@ These settings are research defaults for this dataset, not final product or
 hardware parameters.
 
 **Date**: 2026-08-06
+
+---
+
+## DD-010: Treat zero-crossing detections as auditable candidates, not SO truth
+
+**Decision**: Define one candidate cycle as three consecutive detection-band
+crossings: downward, upward, then the next downward crossing. The first
+downward crossing is the event start, the upward crossing separates the
+negative and positive half-waves, and the next downward crossing is the event
+end. The minimum sample in the negative half-wave is the trough; the maximum
+sample in the following positive half-wave is the positive peak.
+
+Every structurally complete cycle is retained. Duration, amplitude, NaN,
+boundary, extreme-amplitude, and configured invalid-mask checks append explicit
+rejection reasons instead of deleting the event. A candidate may have multiple
+reasons. For filtering only, isolated non-finite samples are linearly
+interpolated; any candidate overlapping those original samples is still
+rejected as `nan_or_nonfinite`.
+
+Provide two named research profiles:
+
+- `broad_slow_wave`: 0.5–4 Hz, broad duration bounds, no amplitude threshold.
+- `strict_slow_oscillation`: 0.5–1.25 Hz, longer-cycle bounds, and a per-channel
+  adaptive peak-to-peak threshold at a configured quantile.
+
+Adaptive thresholds are calculated separately per subject recording and EEG
+channel from candidates that first pass non-amplitude checks. Fixed thresholds
+remain supported but are not the default and 75 µV is not encoded as a final
+standard. Accepted cross-channel overlap means positive temporal intersection
+above the configured minimum; report both overlapping pairs and unique events.
+
+`down_slope` is the signed zero-to-trough amplitude change divided by elapsed
+time. `up_slope` is the trough-to-positive-peak amplitude change divided by
+elapsed time. Both use µV/s.
+
+**Rationale**:
+- The three-crossing definition supplies a complete negative-positive cycle
+  with reproducible boundaries and interpretable features.
+- Retaining rejected candidates makes parameter effects and artifact decisions
+  inspectable after the run.
+- Per-channel adaptive amplitude handling accommodates the strong amplitude
+  difference between the two Sleep-EDF bipolar derivations without claiming a
+  universal physiological cutoff.
+- Separate broad and strict profiles expose sensitivity to the research
+  definition instead of presenting one setting as ground truth.
+
+These outputs are offline algorithm candidates only. They are not manually
+confirmed physiological slow oscillations and are not suitable for triggering.
+
+**Date**: 2026-08-06

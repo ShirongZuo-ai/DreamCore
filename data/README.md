@@ -113,3 +113,27 @@ The JSON records source files, subject/recording identifiers, segment and window
 ranges, selected channels, original/output sampling rates, every preprocessing
 parameter, raw/processed statistics, and figure paths. No EDF or derived signal
 array is written.
+
+## Slow-oscillation candidate audit
+
+Run the strict, configuration-selected offline candidate detector with:
+
+```bash
+python scripts/detect_slow_oscillations.py \
+  --config experiments/sleep_edf_sc.yaml \
+  --psg data/datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf \
+  --hypnogram data/datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf
+```
+
+Use `--detector-profile broad_slow_wave` for the broader sensitivity profile.
+Additional known invalid PSG ranges can be supplied in config or through
+`--invalid-mask-json`. The command writes ignored audit artifacts:
+
+- `results/slow_oscillation_events.csv` — every accepted and rejected candidate;
+- `results/slow_oscillation_summary.json` — parameters, distributions,
+  rejection reasons, and channel overlap;
+- `results/slow_oscillation_qa.png` — raw/detection signals and candidate
+  landmarks.
+
+These files contain algorithm candidates, not manually confirmed physiological
+events. No signal arrays or source EDF data are copied into the outputs.

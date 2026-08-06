@@ -130,12 +130,66 @@ n3_extraction:
   json_indent: 2
 
 # ── Slow Oscillation Detection ───────────────────────────────────────
+# Candidate-generation research defaults only — not physiological ground truth
+# and not product parameters.
 slow_oscillation:
-  filter_low_hz: 0.5
-  filter_high_hz: 4.0
-  min_duration_ms: 250           # minimum half-wave duration
-  max_duration_ms: 1000
-  amplitude_threshold_uV: null   # null = auto from 75th percentile
+  active_profile: "strict_slow_oscillation"
+  amplitude_scale_to_uv: 1000000.0
+  profiles:
+    broad_slow_wave:
+      detection_band: {low_hz: 0.5, high_hz: 4.0, method: "fir"}
+      duration:
+        negative_halfwave_min_s: 0.125
+        negative_halfwave_max_s: 1.0
+        full_cycle_min_s: 0.25
+        full_cycle_max_s: 2.0
+      amplitude:
+        strategy: "none"         # "none" | "fixed" | "adaptive_quantile"
+        metric: "peak_to_peak_amplitude_uv"
+        fixed_min_uv: null
+        quantile: 0.75
+      artifact_rejection:
+        boundary_exclusion_s: 2.0
+        max_peak_to_peak_uv: 500.0
+        invalid_time_masks: []   # absolute half-open PSG ranges
+    strict_slow_oscillation:
+      detection_band: {low_hz: 0.5, high_hz: 1.25, method: "fir"}
+      duration:
+        negative_halfwave_min_s: 0.3
+        negative_halfwave_max_s: 1.2
+        full_cycle_min_s: 0.8
+        full_cycle_max_s: 2.0
+      amplitude:
+        strategy: "adaptive_quantile"
+        metric: "peak_to_peak_amplitude_uv"
+        fixed_min_uv: null
+        quantile: 0.75
+      artifact_rejection:
+        boundary_exclusion_s: 2.0
+        max_peak_to_peak_uv: 500.0
+        invalid_time_masks: []
+  overlap:
+    accepted_only: true
+    min_overlap_s: 0.0
+  output_csv: "results/slow_oscillation_events.csv"
+  summary_json: "results/slow_oscillation_summary.json"
+  json_indent: 2
+  qa:
+    segment_id: null
+    preprocessing_profile: "broadband_sleep_eeg"
+    offset_s: 90.0
+    duration_s: 20.0
+    output_path: "results/slow_oscillation_qa.png"
+    figure_width_inches: 14.0
+    figure_height_per_channel_inches: 3.4
+    dpi: 160
+    amplitude_scale: 1000000.0
+    amplitude_unit: "µV"
+    raw_color: "#6B7280"
+    detection_color: "#1D4ED8"
+    accepted_color: "#2563EB"
+    rejected_color: "#D97706"
+    grid_alpha: 0.18
 
 # ── Phase Prediction ─────────────────────────────────────────────────
 phase_prediction:

@@ -76,7 +76,8 @@ dreamcore-ai/
 - [x] Sleep-EDF reading, annotation alignment, and signal quality checks
 - [x] Sleep-stage normalization and continuous N3 EEG extraction
 - [x] Configuration-driven N3 preprocessing and raw/processed visual review
-- [ ] Slow-oscillation event detection and phase research
+- [x] Auditable slow-oscillation candidate detection baseline
+- [ ] Multi-subject candidate review and phase research
 
 See `docs/progress.md` for detailed status.
 

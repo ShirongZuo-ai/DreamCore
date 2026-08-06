@@ -33,14 +33,16 @@
 
 **Goal**: Reliably detect individual slow oscillations.
 
-- [ ] Implement `src/dreamcore/slow_oscillation/detect.py`
-- [ ] Zero-crossing + amplitude/duration thresholding
-- [ ] Visual validation: overlay detection on raw/filtered signal
-- [ ] Report SO density, amplitude, duration per subject
+- [x] Implement `src/dreamcore/slow_oscillation/detector.py`
+- [x] Zero-crossing + configurable amplitude/duration candidate filtering
+- [x] Visual validation: overlay candidates on raw/detection-band signal
+- [x] Report candidate density, amplitude, duration, frequency, and rejection
+  reasons for the first subject/segment
+- [ ] Review candidates and profile sensitivity across more segments/subjects
 
-**Entry condition**: one real N3 segment now has a reproducible preprocessing
-configuration, raw/processed comparison figures, and reviewed signal statistics.
-Event and artifact definitions remain to be specified before implementation.
+**Status**: the first real N3 segment now has a reproducible candidate detector,
+complete accepted/rejected audit trail, channel-overlap summary, and reviewed QA
+figure. Candidate status is not physiological ground truth.
 
 ## Milestone 4 — Phase estimation
 
