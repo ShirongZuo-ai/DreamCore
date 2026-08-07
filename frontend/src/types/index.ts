@@ -94,6 +94,13 @@ export type ControllerDecision = {
 
 export const capabilityNames = [
   'eeg',
+  'alpha_power',
+  'relative_alpha_power',
+  'individual_alpha_frequency',
+  'alpha_trend',
+  'drowsiness_score',
+  'stimulation_demand',
+  'ready_to_remove',
   'sleep_stage_labels',
   'sleep_stage_predictions',
   'slow_oscillation_detection',
@@ -196,6 +203,7 @@ export type SessionSummary = {
   hasSleepStage: boolean;
   hasN3: boolean;
   provenance: ProvenanceClass;
+  catalogTransport: 'fixture' | 'http';
 };
 
 export type SessionFilter = {
@@ -209,12 +217,101 @@ export type SessionFilter = {
 };
 
 export type DataSourceType =
-  'demo-simulation' | 'offline-replay' | 'live-device';
+  'demo-simulation' | 'test-fixture' | 'real-public-dataset' | 'live-device';
 
 export type LoadedSession = {
   dataSource: DataSourceType;
   manifest: SessionManifest;
   fixture: boolean;
+  realPublicData: boolean;
+};
+
+export type SignalWindowResponse = {
+  session_id: string;
+  signal_id: string;
+  channel: string;
+  provenance: ProvenanceClass;
+  start_s: number;
+  end_s: number;
+  duration_s: number;
+  sampling_rate_hz: number;
+  unit: string;
+  n_samples: number;
+  timestamps: number[];
+  samples: number[];
+};
+
+export type SleepStageAnnotation = {
+  annotation_type: string;
+  start_seconds: number;
+  duration_seconds: number;
+  label: string;
+  raw_label?: string;
+  provenance: ProvenanceClass;
+};
+
+export type AnnotationWindowResponse = {
+  session_id: string;
+  start_s: number;
+  end_s: number;
+  descriptors: Record<string, ContentDescriptor>;
+  annotations: SleepStageAnnotation[];
+};
+
+export type AlphaFeatureRecord = {
+  channel: string;
+  window_start_s: number;
+  window_end_s: number;
+  stage: string;
+  absolute_alpha_power: number | null;
+  relative_alpha_power: number | null;
+  individual_alpha_frequency_hz: number | null;
+  iaf_confidence: number | null;
+  iaf_available: boolean;
+  iaf_reason: string | null;
+  window_iaf_hz: number | null;
+  window_iaf_confidence: number | null;
+  alpha_trend: 'rising' | 'stable' | 'falling' | 'unavailable';
+  alpha_trend_slope: number | null;
+  alpha_change_from_baseline: number | null;
+  drowsiness_score: number | null;
+  state_confidence: number | null;
+  stimulation_demand: number | null;
+  demand_available: boolean;
+  ready_to_remove: boolean;
+  feature_provenance: 'derived';
+  demand_provenance: string;
+};
+
+export type DerivedWindowResponse = {
+  session_id: string;
+  metric: string;
+  start_s: number;
+  end_s: number;
+  descriptor: ContentDescriptor;
+  records: AlphaFeatureRecord[];
+};
+
+export type SimulatedControlEvent = {
+  timestamp: number;
+  demand_before: number;
+  demand_after: number;
+  state: string;
+  alpha_power: number;
+  relative_alpha_power: number;
+  alpha_trend: string;
+  confidence: number;
+  event_type: string;
+  provenance: 'simulated';
+  provenance_notice: string;
+};
+
+export type EventWindowResponse = {
+  session_id: string;
+  start_s: number;
+  end_s: number;
+  descriptor: ContentDescriptor | null;
+  events: SimulatedControlEvent[];
 };
 
 export type SessionLoadState =

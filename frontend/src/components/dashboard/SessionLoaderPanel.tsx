@@ -12,8 +12,8 @@ import { PanelHeader } from '../common/PanelHeader';
 
 export function SessionLoaderPanel() {
   const workspace = useSessionWorkspace();
-  const datasets = sessionCatalogService.listDatasets();
-  const sessions = sessionCatalogService.listSessions();
+  const datasets = workspace.catalog.datasets;
+  const sessions = workspace.catalog.sessions;
   const [datasetId, setDatasetId] = useState(
     workspace.selectedSession?.dataset.id ?? datasets[0]?.id ?? '',
   );
@@ -32,11 +32,15 @@ export function SessionLoaderPanel() {
       (item) => item.dataset.id === datasetId && item.sessionId === sessionId,
     );
     if (!session) {
-      setMessage('Choose a TEST FIXTURE dataset and session.');
+      setMessage('Choose a Test Fixture or Real Public Dataset session.');
       return;
     }
     workspace.selectSession(session);
-    workspace.setDataSource('offline-replay');
+    workspace.setDataSource(
+      session.catalogTransport === 'http'
+        ? 'real-public-dataset'
+        : 'test-fixture',
+    );
     setMessage(`Selected ${session.sessionId}. Loading has not started.`);
   }
 
@@ -51,7 +55,11 @@ export function SessionLoaderPanel() {
         : sessionCatalogService.randomSession(datasetSessions, seed);
       setSessionId(selection.sessionId);
       workspace.selectSession(selection);
-      workspace.setDataSource('offline-replay');
+      workspace.setDataSource(
+        selection.catalogTransport === 'http'
+          ? 'real-public-dataset'
+          : 'test-fixture',
+      );
       setMessage(
         `${validOnly ? 'Random valid' : 'Random'} selection: ${selection.sessionId}`,
       );
@@ -69,9 +77,9 @@ export function SessionLoaderPanel() {
       setMessage('Demo Simulation loaded locally.');
       return;
     }
-    const loaded = await workspace.loadSelectedSession('offline-replay');
+    const loaded = await workspace.loadSelectedSession();
     if (loaded)
-      setMessage('TEST FIXTURE metadata loaded. Replay has not started.');
+      setMessage('Offline session loaded. No playback timer is running.');
   }
 
   const loadedManifest = workspace.loadState.session?.manifest;
@@ -102,9 +110,8 @@ export function SessionLoaderPanel() {
             className="mt-1.5 min-h-10 w-full rounded-control border border-line bg-canvas px-3 text-sm text-primary"
           >
             <option value="demo-simulation">Demo Simulation</option>
-            <option value="offline-replay">
-              Offline Replay · Test Fixture
-            </option>
+            <option value="test-fixture">Test Fixture</option>
+            <option value="real-public-dataset">Real Public Dataset</option>
             <option value="live-device" disabled>
               Live Device · Unavailable
             </option>
@@ -115,7 +122,11 @@ export function SessionLoaderPanel() {
           <select
             aria-label="Dataset"
             value={datasetId}
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onChange={(event) => {
               const nextDataset = event.target.value;
               const first = sessions.find(
@@ -138,7 +149,11 @@ export function SessionLoaderPanel() {
           <select
             aria-label="Session"
             value={sessionId}
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onChange={(event) => setSessionId(event.target.value)}
             className="mt-1.5 min-h-10 w-full rounded-control border border-line bg-canvas px-3 font-mono text-sm text-primary disabled:opacity-45"
           >
@@ -152,7 +167,11 @@ export function SessionLoaderPanel() {
         <div className="flex flex-wrap items-end gap-2">
           <button
             type="button"
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onClick={selectFromControls}
             className="min-h-10 rounded-control border border-line bg-elevated px-3 text-xs font-semibold text-primary disabled:opacity-40"
           >
@@ -160,7 +179,11 @@ export function SessionLoaderPanel() {
           </button>
           <button
             type="button"
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onClick={load}
             className="inline-flex min-h-10 items-center gap-1.5 rounded-control bg-accent px-3 text-xs font-semibold text-canvas disabled:opacity-40"
           >
@@ -178,7 +201,9 @@ export function SessionLoaderPanel() {
             </span>
             {workspace.loadState.session?.fixture
               ? ' · TEST FIXTURE'
-              : ' · Demo'}
+              : workspace.loadState.session?.realPublicData
+                ? ' · REAL PUBLIC EEG DATA'
+                : ' · Demo'}
           </p>
           {loadedManifest ? (
             <div
@@ -220,7 +245,11 @@ export function SessionLoaderPanel() {
         <div className="flex gap-2">
           <button
             type="button"
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onClick={() => chooseRandom(false)}
             className="inline-flex min-h-9 items-center gap-1.5 rounded-control border border-line px-2.5 text-xs text-primary disabled:opacity-40"
           >
@@ -228,7 +257,11 @@ export function SessionLoaderPanel() {
           </button>
           <button
             type="button"
-            disabled={workspace.dataSource !== 'offline-replay'}
+            disabled={
+              !['test-fixture', 'real-public-dataset'].includes(
+                workspace.dataSource,
+              )
+            }
             onClick={() => chooseRandom(true)}
             className="inline-flex min-h-9 items-center gap-1.5 rounded-control border border-accent/30 px-2.5 text-xs text-accent disabled:opacity-40"
           >

@@ -1,0 +1,396 @@
+{
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "storage": {
+          "kind": "sleep_edf_annotations",
+          "label_map": {
+            "Movement time": "MOVEMENT",
+            "Sleep stage 1": "N1",
+            "Sleep stage 2": "N2",
+            "Sleep stage 3": "N3",
+            "Sleep stage 4": "N3",
+            "Sleep stage ?": "UNKNOWN",
+            "Sleep stage R": "REM",
+            "Sleep stage W": "W"
+          },
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf"
+        }
+      },
+      "source": "imported"
+    }
+  },
+  "capabilities": {
+    "alpha_power": {
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "alpha_trend": {
+      "derived_by": "dreamcore-alpha-trend-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "arousals": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "artifacts": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "decision_simulation": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "drowsiness_score": {
+      "derived_by": "dreamcore-alpha-state-heuristic-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "eeg": {
+      "reason": "REAL PUBLIC EEG DATA referenced from Sleep-EDF",
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "hardware_telemetry": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "heart_rate": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "individual_alpha_frequency": {
+      "derived_by": "dreamcore-alpha-iaf-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "movement": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "navigation_alignment": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_estimation": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_precision": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ppg": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ready_to_remove": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "relative_alpha_power": {
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "sleep_stage_labels": {
+      "reason": "Imported R&K hypnogram annotations",
+      "source": "imported",
+      "status": "AVAILABLE"
+    },
+    "sleep_stage_predictions": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "slow_oscillation_detection": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "snoring": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "spo2": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_demand": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "stimulation_events": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "reason": "SIMULATED CONTROL DEMAND \u2014 NOT ULTRASOUND DOSE",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    }
+  },
+  "dataset": {
+    "display_name": "Sleep-EDF Expanded sleep-cassette",
+    "id": "sleep-edf-expanded-sc",
+    "version": "1.0.0"
+  },
+  "derived": {
+    "alpha_power": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "alpha_trend": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-trend-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "drowsiness_score": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-state-heuristic-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "individual_alpha_frequency": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-iaf-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "ready_to_remove": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    },
+    "relative_alpha_power": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "simulated_stimulation_events": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "notice": "SIMULATED CONTROL DEMAND \u2014 NOT ULTRASOUND DOSE",
+        "storage": {
+          "json_path": [
+            "simulated_stimulation_events"
+          ],
+          "kind": "json",
+          "path": "../../../../results/alpha_v1_summary.json"
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    },
+    "stimulation_demand": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    }
+  },
+  "provenance": {
+    "classification": "imported",
+    "imported_by": "scripts/analyze_alpha_v1.py",
+    "notes": "REAL PUBLIC EEG DATA; DERIVED ALPHA FEATURES; SIMULATED STIMULATION EVENTS \u2014 NOT ULTRASOUND DOSE OR RESPONSE",
+    "source_dataset_uri": "Sleep-EDF Expanded SC4001E0"
+  },
+  "recording": {
+    "duration_seconds": 79500.0
+  },
+  "schema_version": "dreamcore.session.v1",
+  "session": {
+    "night_id": "SC4001E0",
+    "session_id": "sc4001-alpha-v1",
+    "subject_id": "SC400",
+    "visit_id": "SC4001E0"
+  },
+  "signals": [
+    {
+      "available": true,
+      "channel_name": "EEG Fpz-Cz",
+      "id": "eeg-1",
+      "metadata": {
+        "notice": "REAL PUBLIC EEG DATA",
+        "storage": {
+          "channel_name": "EEG Fpz-Cz",
+          "kind": "edf",
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf",
+          "sampling_rate_tolerance_hz": 0.01,
+          "scale_to_unit": 1000000.0
+        }
+      },
+      "modality": "eeg",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "channel_name": "EEG Pz-Oz",
+      "id": "eeg-2",
+      "metadata": {
+        "notice": "REAL PUBLIC EEG DATA",
+        "storage": {
+          "channel_name": "EEG Pz-Oz",
+          "kind": "edf",
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf",
+          "sampling_rate_tolerance_hz": 0.01,
+          "scale_to_unit": 1000000.0
+        }
+      },
+      "modality": "eeg",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    }
+  ]
+}

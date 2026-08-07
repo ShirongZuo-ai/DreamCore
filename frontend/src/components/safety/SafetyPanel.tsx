@@ -11,7 +11,7 @@ export function SafetyPanel({
   status: SafetyStatus;
   session: LoadedSession;
 }) {
-  const isOfflineFixture = session.dataSource === 'offline-replay';
+  const isOfflineFixture = session.dataSource !== 'demo-simulation';
   const label = (value: string) =>
     value
       .split('-')

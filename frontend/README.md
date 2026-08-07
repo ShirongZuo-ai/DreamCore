@@ -1,13 +1,17 @@
 # DreamCore Research Console
 
 A standalone React + TypeScript frontend that coexists with the DreamCore Python
-research repository. Phase 2A adds a deterministic, dataset-neutral catalog and
-session-loading framework using shared TEST FIXTURES only. It does not connect
-to EEG equipment, stimulation hardware, a real dataset, or a Python service.
+research repository. It retains shared TEST FIXTURES and can load real public
+SC4001 Session Packages through the local read-only `/api/v1` service. It does
+not connect to EEG equipment or stimulation hardware.
 
 ## Start locally
 
+Start the API from the repository root, then Vite:
+
 ```bash
+python scripts/serve_session_api.py --config configs/default.yaml
+cd frontend
 npm install
 npm run dev
 ```
@@ -17,7 +21,7 @@ Vite serves the app at `http://127.0.0.1:4173`.
 ## Routes
 
 - `/live` — researcher live-console mockup
-- `/datasets` — canonical TEST FIXTURE dataset and session library
+- `/datasets` — canonical fixture and real public dataset/session library
 - `/datasets/:datasetId/sessions/:sessionId` — shareable session details
 - `/review` — post-session review mockup
 - `/subject` — blinded, simplified participant view

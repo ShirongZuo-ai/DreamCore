@@ -277,3 +277,70 @@ Phase 2A uses synthetic TEST FIXTURES only. It does not implement a real dataset
 reader, playback clock, WebSocket, device transport, or stimulation control.
 
 **Date**: 2026-08-07
+
+---
+
+## DD-013: Make pre-sleep Alpha the V1 priority and keep control demand simulated
+
+**Decision**: DreamCore V1 prioritizes a pre-sleep Alpha research pipeline over
+an overnight N3 stimulation workflow. Use fixed 8–13 Hz and individualized-band
+profiles from config, Welch PSD, conservative peak-based IAF availability,
+multi-window trend history, and a non-clinical Alpha-only Awake/Drowsy heuristic.
+Imported W/N1/N2 annotations are evaluation labels, not heuristic inputs.
+
+The controller output is a bounded abstract `stimulation_demand`. Quality and
+confidence gating, minimum observation time, exponential smoothing, rate limits,
+hysteresis, and sustained ready evidence are configured. Demand, ready state,
+and every stimulation event are `simulated` and carry `SIMULATED CONTROL DEMAND
+— NOT ULTRASOUND DOSE`. They never alter source EEG and never map to ultrasound
+pressure, intensity, duty cycle, PRF, dose, hardware commands, or efficacy.
+
+Extend `dreamcore.session.v1` with Alpha capability names without changing the
+schema version because its generic capability/derived/provenance descriptors
+already express raw, imported, derived, and simulated content. Real manifests
+contain references, not full EEG arrays; signal reads remain windowed.
+
+**Rationale**:
+
+- A traditional spectral baseline is inspectable before complex models.
+- Explicit IAF unavailability prevents nominal frequencies from masquerading as
+  subject-specific measurements.
+- History and controller dynamics prevent one noisy window from causing a large
+  simulated demand change.
+- Provenance separation prevents simulated control concepts from being confused
+  with public EEG observations or real stimulation responses.
+- Retaining the N3/SO/Hilbert modules preserves prior research without making it
+  the current V1 direction.
+
+**Date**: 2026-08-07
+
+---
+
+## DD-014: Keep real-session HTTP transport read-only and adapter-backed
+
+**Decision**: Expose canonical Session Packages through a versioned local
+`/api/v1` GET-only WSGI service. Catalog, manifest, signal-window, annotation,
+derived-metric, and simulated-event requests delegate through
+`DatasetRegistry` and the owning `DatasetAdapter`. Signal reads require a
+configured maximum duration, include explicit units and timestamps, and clip
+only at the recording boundary. There is no full-record or mutation endpoint.
+
+The frontend implements `HttpSessionCatalogService` and `HttpReplaySource`
+behind its existing service contracts. Fixture transport remains available.
+Manual navigation owns one synchronized range shared by observed EEG, imported
+stages, derived Alpha/state features, and simulated control output. uPlot may
+downsample only the visual copy; the HTTP response remains unchanged.
+
+**Rationale**:
+
+- Keeping storage access in adapters prevents an SC4001-specific API or UI.
+- Explicit `raw`/`imported`/`derived`/`simulated` provenance prevents simulated
+  demand from being interpreted as an observed ultrasound effect.
+- Bounded windows avoid returning the 22-hour PSG or storing it in React state.
+- Standard-library WSGI supplies the required local transport without adding a
+  network-installed web dependency to the research environment.
+
+This phase adds no WebSocket, replay clock, live EEG, stimulation command,
+ultrasound parameter, or hardware integration.
+
+**Date**: 2026-08-07

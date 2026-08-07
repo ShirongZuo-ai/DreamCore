@@ -53,8 +53,17 @@ export function parseFixtureManifest(value: unknown): SessionManifest {
     throw new Error('Invalid canonical fixture Session Package');
   }
 
+  const normalizedCapabilities = { ...value.capabilities };
   for (const name of capabilityNames) {
     const descriptor = value.capabilities[name];
+    if (descriptor === undefined) {
+      normalizedCapabilities[name] = {
+        status: 'UNKNOWN',
+        source: 'unknown',
+        reason: 'Capability not declared by this older fixture',
+      };
+      continue;
+    }
     if (
       !isRecord(descriptor) ||
       !capabilityStatuses.has(descriptor.status as CapabilityStatus) ||
@@ -64,7 +73,10 @@ export function parseFixtureManifest(value: unknown): SessionManifest {
     }
   }
 
-  return value as unknown as SessionManifest;
+  return {
+    ...value,
+    capabilities: normalizedCapabilities,
+  } as unknown as SessionManifest;
 }
 
 export const fixtureSessionManifests = [

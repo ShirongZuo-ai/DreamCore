@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import math
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+
+import mne
 
 from dreamcore.datasets.adapter import DatasetAdapter, SignalWindow
 from dreamcore.datasets.models import (
@@ -32,7 +35,10 @@ class SessionPackageRepository:
         self._root = Path(root)
 
     def discover(self) -> tuple[SessionManifest, ...]:
-        manifests: list[SessionManifest] = []
+        return tuple(manifest for manifest, _ in self._discover_records())
+
+    def _discover_records(self) -> tuple[tuple[SessionManifest, Path], ...]:
+        records: list[tuple[SessionManifest, Path]] = []
         identities: set[tuple[str, str]] = set()
         if not self._root.exists():
             return ()
@@ -48,24 +54,26 @@ class SessionPackageRepository:
                     f"duplicate session package {identity[0]!r}/{identity[1]!r}"
                 )
             identities.add(identity)
-            manifests.append(manifest)
-        return tuple(manifests)
+            records.append((manifest, path))
+        return tuple(records)
 
-    def adapters(self) -> tuple[FixtureDatasetAdapter, ...]:
-        grouped: dict[str, list[SessionManifest]] = {}
-        for manifest in self.discover():
-            grouped.setdefault(manifest.dataset.id, []).append(manifest)
+    def adapters(self) -> tuple[SessionPackageDatasetAdapter, ...]:
+        grouped: dict[str, list[tuple[SessionManifest, Path]]] = {}
+        for manifest, path in self._discover_records():
+            grouped.setdefault(manifest.dataset.id, []).append((manifest, path))
         return tuple(
-            FixtureDatasetAdapter(tuple(grouped[dataset_id])) for dataset_id in sorted(grouped)
+            SessionPackageDatasetAdapter(tuple(grouped[dataset_id]))
+            for dataset_id in sorted(grouped)
         )
 
 
-class FixtureDatasetAdapter(DatasetAdapter):
-    """Deterministic adapter for tiny contract fixtures, never real subject data."""
+class SessionPackageDatasetAdapter(DatasetAdapter):
+    """Read fixture or referenced-file content through one package contract."""
 
-    def __init__(self, manifests: tuple[SessionManifest, ...]) -> None:
-        if not manifests:
-            raise ValueError("FixtureDatasetAdapter requires at least one manifest")
+    def __init__(self, records: tuple[tuple[SessionManifest, Path], ...]) -> None:
+        if not records:
+            raise ValueError("SessionPackageDatasetAdapter requires at least one manifest")
+        manifests = tuple(record[0] for record in records)
         dataset_ids = {manifest.dataset.id for manifest in manifests}
         if len(dataset_ids) != 1:
             raise ValueError("all fixture manifests must belong to one dataset")
@@ -73,6 +81,7 @@ class FixtureDatasetAdapter(DatasetAdapter):
             manifest.session.session_id: manifest
             for manifest in sorted(manifests, key=lambda item: item.session.session_id)
         }
+        self._manifest_paths = {manifest.session.session_id: path for manifest, path in records}
         self._dataset = manifests[0].dataset
 
     def dataset_metadata(self) -> DatasetMetadata:
@@ -110,11 +119,8 @@ class FixtureDatasetAdapter(DatasetAdapter):
         if not signal.available:
             raise ValueError(f"signal {signal_id!r} is unavailable")
         generator = signal.metadata.get("fixture_generation")
-        if not isinstance(generator, Mapping):
-            raise ManifestValidationError(f"fixture signal {signal_id!r} has no generation config")
         sample_count = int(round(duration_seconds * signal.sampling_rate_hz))
-        kind = generator.get("kind")
-        if kind == "sine":
+        if isinstance(generator, Mapping) and generator.get("kind") == "sine":
             frequency_hz = float(generator["frequency_hz"])
             amplitude = float(generator["amplitude"])
             samples = tuple(
@@ -124,10 +130,28 @@ class FixtureDatasetAdapter(DatasetAdapter):
                 )
                 for index in range(sample_count)
             )
-        elif kind == "constant":
+        elif isinstance(generator, Mapping) and generator.get("kind") == "constant":
             samples = (float(generator["value"]),) * sample_count
         else:
-            raise ManifestValidationError(f"unsupported fixture generator {kind!r}")
+            storage = signal.metadata.get("storage")
+            if not isinstance(storage, Mapping) or storage.get("kind") != "edf":
+                raise ManifestValidationError(
+                    f"signal {signal_id!r} has no supported fixture or EDF storage"
+                )
+            path = self._resolve_storage_path(session_id, storage)
+            raw = mne.io.read_raw_edf(path, preload=False, verbose=False)
+            actual_rate = float(raw.info["sfreq"])
+            tolerance = float(storage["sampling_rate_tolerance_hz"])
+            if abs(actual_rate - signal.sampling_rate_hz) > tolerance:
+                raise ValueError("Referenced EDF sampling rate differs from manifest")
+            channel_name = str(storage["channel_name"])
+            if channel_name not in raw.ch_names:
+                raise LookupError(f"EDF channel {channel_name!r} not found")
+            start_sample = int(round(start_seconds * actual_rate))
+            stop_sample = start_sample + sample_count
+            scale = float(storage["scale_to_unit"])
+            values = raw.get_data(picks=[channel_name], start=start_sample, stop=stop_sample)[0]
+            samples = tuple((values * scale).astype(float).tolist())
         return SignalWindow(
             session_id=session_id,
             signal=signal,
@@ -142,6 +166,39 @@ class FixtureDatasetAdapter(DatasetAdapter):
             raise LookupError(f"annotation type {annotation_type!r} not declared")
         if not descriptor.available:
             return ()
+        storage = descriptor.metadata.get("storage")
+        if isinstance(storage, Mapping):
+            if storage.get("kind") != "sleep_edf_annotations":
+                raise ManifestValidationError(
+                    f"unsupported annotation storage {storage.get('kind')!r}"
+                )
+            path = self._resolve_storage_path(session_id, storage)
+            annotations = mne.read_annotations(path)
+            label_map = storage.get("label_map")
+            if not isinstance(label_map, Mapping):
+                raise ManifestValidationError("Sleep-EDF annotation storage requires label_map")
+            recording_end = self.get_session_metadata(session_id).recording.duration_seconds
+            output = []
+            for onset, duration, description in zip(
+                annotations.onset,
+                annotations.duration,
+                annotations.description,
+                strict=True,
+            ):
+                start_s = max(0.0, float(onset))
+                end_s = min(recording_end, float(onset + duration))
+                if end_s <= start_s:
+                    continue
+                output.append(
+                    {
+                        "start_seconds": start_s,
+                        "duration_seconds": end_s - start_s,
+                        "label": str(label_map.get(str(description), "UNKNOWN")),
+                        "raw_label": str(description),
+                        "provenance": "imported",
+                    }
+                )
+            return tuple(output)
         events = descriptor.metadata.get("events", [])
         if not isinstance(events, list):
             raise ManifestValidationError(f"annotation {annotation_type!r} events must be an array")
@@ -153,7 +210,36 @@ class FixtureDatasetAdapter(DatasetAdapter):
             raise LookupError(f"derived result {result_type!r} not declared")
         if not descriptor.available:
             return ()
+        storage = descriptor.metadata.get("storage")
+        if isinstance(storage, Mapping):
+            path = self._resolve_storage_path(session_id, storage)
+            if storage.get("kind") == "csv":
+                with path.open(encoding="utf-8", newline="") as input_file:
+                    return tuple(dict(row) for row in csv.DictReader(input_file))
+            if storage.get("kind") == "json":
+                with path.open(encoding="utf-8") as input_file:
+                    content = json.load(input_file)
+                for key in storage.get("json_path", []):
+                    if not isinstance(content, Mapping):
+                        return ()
+                    content = content.get(str(key))
+                return tuple(content) if isinstance(content, list) else ()
+            raise ManifestValidationError(f"unsupported derived storage {storage.get('kind')!r}")
         events = descriptor.metadata.get("events", [])
         if not isinstance(events, list):
             return ()
         return tuple(events)
+
+    def _resolve_storage_path(self, session_id: str, storage: Mapping[str, Any]) -> Path:
+        relative = storage.get("path")
+        if not isinstance(relative, str) or not relative:
+            raise ManifestValidationError("Referenced storage path must be a string")
+        return (self._manifest_paths[session_id].parent / relative).resolve()
+
+
+class FixtureDatasetAdapter(SessionPackageDatasetAdapter):
+    """Backward-compatible adapter name for deterministic fixture packages."""
+
+    def __init__(self, manifests: tuple[SessionManifest, ...]) -> None:
+        records = tuple((manifest, Path("manifest.json")) for manifest in manifests)
+        super().__init__(records)

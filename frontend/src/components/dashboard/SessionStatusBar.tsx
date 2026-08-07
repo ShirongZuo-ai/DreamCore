@@ -39,10 +39,18 @@ const statusItems = (loaded: LoadedSession): SessionStatusItem[] => {
     },
     {
       label: 'Data Source',
-      value: loaded.fixture ? 'Test Fixture' : 'Demo Simulation',
+      value: loaded.realPublicData
+        ? 'Real Public Dataset'
+        : loaded.fixture
+          ? 'Test Fixture'
+          : 'Demo Simulation',
       icon: ShieldAlert,
     },
-    { label: 'Replay State', value: 'Not started', icon: Timer },
+    {
+      label: 'Replay State',
+      value: loaded.realPublicData ? 'Manual window' : 'Not started',
+      icon: Timer,
+    },
     { label: 'Metadata', value: 'Ready', icon: Database, tone: 'success' },
     { label: 'Hardware', value: 'Offline', icon: Battery, tone: 'warning' },
   ];
@@ -55,7 +63,11 @@ export function SessionStatusBar({ session }: { session: LoadedSession }) {
         <div className="flex items-center gap-2">
           <span className="eyebrow">Session Status</span>
           <span className="demo-chip">
-            {session.fixture ? 'Test Fixture' : 'Simulated'}
+            {session.realPublicData
+              ? 'Observed + Derived'
+              : session.fixture
+                ? 'Test Fixture'
+                : 'Simulated'}
           </span>
         </div>
         <span className="font-mono text-[0.6875rem] text-secondary">

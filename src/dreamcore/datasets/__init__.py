@@ -7,6 +7,7 @@ from dreamcore.datasets.models import (
     CapabilityName,
     CapabilityState,
     DatasetMetadata,
+    ProvenanceClass,
     SessionManifest,
     SessionSummary,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "DatasetAdapter",
     "DatasetMetadata",
     "DatasetRegistry",
+    "ProvenanceClass",
     "ReplaySource",
     "SessionFilter",
     "SessionManifest",

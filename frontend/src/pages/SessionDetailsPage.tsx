@@ -15,6 +15,13 @@ import type { CapabilityName } from '../types';
 
 const capabilityLabels: Record<CapabilityName, string> = {
   eeg: 'EEG',
+  alpha_power: 'Alpha power',
+  relative_alpha_power: 'Relative Alpha power',
+  individual_alpha_frequency: 'Individual Alpha frequency',
+  alpha_trend: 'Alpha trend',
+  drowsiness_score: 'Drowsiness score',
+  stimulation_demand: 'Simulated stimulation demand',
+  ready_to_remove: 'Ready to remove',
   sleep_stage_labels: 'Sleep-stage labels',
   sleep_stage_predictions: 'Sleep-stage predictions',
   slow_oscillation_detection: 'Slow oscillation detection',

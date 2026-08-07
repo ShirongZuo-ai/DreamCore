@@ -27,6 +27,24 @@ Experimental conventions for DreamCore AI Phase 1.
 - Use `config.sleep_staging.stage_labels` for mapping, never hardcoded strings
 - Primary focus: N2 (spindle-bearing, SO present) and N3 (slow-wave dominant)
 
+## Pre-sleep Alpha V1
+
+- Use configuration-selected fixed and individualized Alpha profiles.
+- Use traditional, inspectable PSD estimation (Welch for the baseline).
+- Report session/channel IAF as unavailable when the configured peak evidence
+  is insufficient; never fill an IAF from a nominal center frequency.
+- Estimate Alpha trend from configured short, trend, and baseline histories;
+  never classify state from one window alone.
+- W/N1/N2 annotations may evaluate the heuristic offline but are not inputs to
+  the Alpha-only Awake/Drowsy score.
+- Preserve observed EEG samples. Filtering and derived features must not be
+  written back into the source or altered to simulate a response.
+- Mark Alpha features and state scores `derived`. Mark every demand, ready state,
+  and stimulation event `simulated` with the notice `SIMULATED CONTROL DEMAND —
+  NOT ULTRASOUND DOSE`.
+- No Alpha result may be described as evidence that ultrasound changed EEG or
+  improved sleep.
+
 ## Slow oscillation conventions
 
 - Bandpass filter: configurable `filter_low_hz` to `filter_high_hz`

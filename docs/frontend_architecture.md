@@ -3,18 +3,18 @@
 ## Purpose and boundary
 
 `frontend/` is an independent Vite application that coexists with the Python
-research package. It is currently a static monitoring prototype. It neither
-imports Python modules nor changes algorithm outputs, and it has no EEG device,
-stimulation device, medical decision, or network integration.
+research package. It now supports a local read-only HTTP view of canonical
+public-data sessions. It neither imports Python modules nor changes algorithm
+outputs, and it has no EEG device, stimulation device, or medical decision.
 
 The application has three audiences plus a dataset-neutral research library:
 
 | Route | Audience | Purpose |
 |---|---|---|
-| `/live` | Experiment operator | Observe a deterministic mock session and inspect safety state |
+| `/live` | Experiment operator | Inspect Demo/fixture content or a manually selected real offline window |
 | `/review` | Research analyst | Review a simulated, descriptive session summary |
 | `/subject` | Participant | See only fitting, recording, comfort, and assistance status |
-| `/datasets` | Research operator | Search, filter, select, and load canonical TEST FIXTURE sessions |
+| `/datasets` | Research operator | Search, filter, select, and load fixture or real public sessions |
 | `/datasets/:datasetId/sessions/:sessionId` | Research operator | Inspect a shareable canonical session description |
 
 The root redirects to `/live`; unknown routes render a small Not Found view.
@@ -36,7 +36,7 @@ types + design tokens
 - `src/components/` contains single-purpose presentational boundaries.
 - `src/types/` contains transport-friendly domain types.
 - `src/mocks/` is the single source for deterministic Demo values.
-- `src/services/` defines interfaces and network-free Demo adapters.
+- `src/services/` defines interfaces plus fixture and read-only HTTP adapters.
 - `src/styles/` defines tokens and shared low-level styles.
 - `tests/` contains Vitest/Testing Library behavior tests.
 - `e2e/` contains browser layout, accessibility-visible behavior, and screenshot checks.
@@ -58,19 +58,23 @@ navigation but not across a browser refresh. Pages consume only canonical
 `DatasetSummary`, `SessionSummary`, `SessionManifest`, `CapabilitySet`, and
 `LoadedSession` types. They do not parse dataset-specific metadata.
 
-The Phase 2A frontend transport imports the same deterministic JSON fixtures
-validated by Python. `SessionCatalogService` can later be replaced by an HTTP
-implementation and `ReplaySource` by a Python-backed window reader without
-changing core page logic. Adding a new dataset must require an adapter or
-normalized package, not conditionals in the Live Console.
+The fixture transport still imports deterministic JSON validated by Python.
+Phase A2 adds `HttpSessionCatalogService` and `HttpReplaySource`; Workspace
+chooses the transport from catalog metadata and binds the loaded source. Pages
+never fetch directly. Adding a dataset still requires an adapter or normalized
+package, not conditionals in the Live Console.
 
 ## EEG rendering boundary
 
-For Demo Simulation, the current waveform is a deterministic SVG renderer. For
-an offline package it is shown only when EEG is `AVAILABLE` and remains clearly
-labeled as a static placeholder; no fixture signal is replayed. `EEGWaveformPanel`
-accepts one `EEGSampleWindow`; it does not synthesize data, open a connection,
-or own acquisition state. This makes it replaceable with a uPlot renderer.
+For Demo Simulation, the waveform remains deterministic SVG. Real offline
+sessions request only the configured window through `ReplaySource` and render
+two signals on a shared uPlot axis. React owns only current bounded arrays. The
+configured point limit can downsample the plotted copy, while units, sample
+count, timestamps, and transported values remain intact.
+
+The real Alpha workspace uses one manual range for EEG, imported stages,
+derived Alpha/state records, and simulated demand/events. It has
+previous/next/duration/jump controls but no timer or play/pause behavior.
 
 A future streaming implementation should follow this flow:
 
@@ -84,9 +88,9 @@ WebSocket packet → decoder/validator → typed ring buffer
 
 Samples must not be copied into React state one at a time. Connection status,
 selected display window, alerts, and summary values can use React state;
-high-rate arrays belong in an external ring buffer. uPlot is installed for this
-future display adapter, while ECharts is installed for sleep architecture and
-post-session statistics. Neither library is wired to dynamic data in this phase.
+high-rate arrays belong in an external ring buffer. uPlot now renders bounded
+real-session EEG and Alpha/state windows. ECharts remains available for future
+sleep architecture and post-session statistics.
 
 ## State and safety
 

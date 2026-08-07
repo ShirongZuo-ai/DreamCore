@@ -1,6 +1,8 @@
 import { Activity, SlidersHorizontal } from 'lucide-react';
 
 import type { EEGChannel, EEGSampleWindow } from '../../types';
+import type { ReplaySignalWindow } from '../../services/replaySource';
+import { UPlotTimeSeries } from '../charts/UPlotTimeSeries';
 import { PanelHeader } from '../common/PanelHeader';
 
 const SVG_WIDTH = 1000;
@@ -15,6 +17,78 @@ function signalPath(channel: EEGChannel): string {
       return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(' ');
+}
+
+export function RealEEGWaveformPanel({
+  windows,
+  maxDisplayPoints,
+}: {
+  windows: readonly ReplaySignalWindow[];
+  maxDisplayPoints: number;
+}) {
+  const first = windows[0];
+  if (!first || !first.timestamps?.length) return null;
+  const endSeconds = first.startSeconds + first.durationSeconds;
+  return (
+    <section className="panel overflow-hidden" aria-labelledby="real-eeg-title">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5">
+        <PanelHeader
+          title="Real EEG signal window"
+          eyebrow="Observed · Public Sleep-EDF"
+          action={<span className="demo-chip">REAL PUBLIC EEG DATA</span>}
+        />
+        <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-secondary">
+          <span>
+            {first.startSeconds.toFixed(1)}–{endSeconds.toFixed(1)} s
+          </span>
+          <span>{first.signal.sampling_rate_hz.toLocaleString()} Hz</span>
+          <span>{first.signal.unit}</span>
+        </div>
+      </div>
+      <div
+        className="bg-[#111d2a] px-3 pb-2 pt-3"
+        data-testid="real-eeg-window"
+      >
+        <div className="mb-2 flex flex-wrap gap-4 text-xs text-secondary">
+          {windows.map((window, index) => (
+            <span
+              key={window.signal.id}
+              className="inline-flex items-center gap-2"
+            >
+              <span
+                aria-hidden="true"
+                className={`h-0.5 w-5 ${index === 0 ? 'bg-accent' : 'bg-[#9b8cf4]'}`}
+              />
+              <strong className="text-primary">
+                {window.signal.channel_name}
+              </strong>
+              ·{' '}
+              {window.signal.source === 'raw'
+                ? 'Observed'
+                : window.signal.source}
+            </span>
+          ))}
+        </div>
+        <UPlotTimeSeries
+          timestamps={first.timestamps}
+          lines={windows.map((window, index) => ({
+            label: window.signal.channel_name,
+            values: window.samples,
+            stroke: index === 0 ? '#3db5d8' : '#9b8cf4',
+            dash: index === 0 ? undefined : [8, 5],
+          }))}
+          unit={first.signal.unit}
+          height={250}
+          maxPoints={maxDisplayPoints}
+          testId="real-eeg-uplot"
+        />
+      </div>
+      <p className="border-t border-line px-4 py-2.5 text-[0.6875rem] text-secondary">
+        Windowed read only · display downsampling does not alter transport
+        samples or statistics
+      </p>
+    </section>
+  );
 }
 
 function WaveRow({ channel }: { channel: EEGChannel }) {

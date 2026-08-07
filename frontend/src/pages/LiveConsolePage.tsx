@@ -1,6 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 
 import { MissingDataState } from '../components/common/MissingDataState';
+import { AlphaSessionViewer } from '../components/alpha/AlphaSessionViewer';
 import { AIDecisionPanel } from '../components/dashboard/AIDecisionPanel';
 import { PhysiologyPanel } from '../components/dashboard/PhysiologyPanel';
 import { SessionLoaderPanel } from '../components/dashboard/SessionLoaderPanel';
@@ -38,6 +39,37 @@ export function LiveConsolePage() {
 
   const isDemo = loadedSession.dataSource === 'demo-simulation';
   const eegCapability = loadedSession.manifest.capabilities.eeg;
+
+  if (loadedSession.realPublicData) {
+    return (
+      <div className="min-w-0 space-y-4" data-testid="live-page">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="eyebrow">Offline public-data workspace</p>
+            <span className="demo-chip">REAL PUBLIC EEG DATA</span>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-primary">
+            Live Console
+          </h1>
+          <p className="mt-1 text-sm text-secondary">
+            Manual window viewer · no replay clock · no hardware connection
+          </p>
+        </div>
+        <SessionLoaderPanel />
+        <SessionStatusBar session={loadedSession} />
+        {workspace.replaySource ? (
+          <AlphaSessionViewer
+            manifest={loadedSession.manifest}
+            replaySource={workspace.replaySource}
+          />
+        ) : (
+          <p className="panel p-5 text-sm text-secondary">
+            ReplaySource unavailable.
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-w-0 space-y-4" data-testid="live-page">

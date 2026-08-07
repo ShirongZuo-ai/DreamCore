@@ -195,5 +195,64 @@
   loader, in-app selection persistence, and capability-aware Live Console.
 - [x] Kept all fixtures explicitly marked as not real subject data; no EDF
   reader, real replay, API, WebSocket, hardware telemetry, or control was added.
-- [ ] Phase 2B: implement the first approved real dataset adapter/normalizer and
-  Python-backed catalog/window transport without changing core UI logic.
+- [x] Phase A1/A2 superseded the planned Phase 2B item with the first approved
+  real package plus adapter-backed catalog/window transport, without changing
+  the core fixture contracts.
+
+## 2026-08-07 — DreamCore V1 Phase A1 pre-sleep Alpha pipeline
+
+- [x] Added configuration-driven Welch PSD, fixed/individualized Alpha bands,
+  conservative IAF peak detection, Alpha envelope, quality gating, sliding
+  baseline/short/trend histories, and rising/stable/falling/unavailable trends.
+- [x] Added an explicitly non-clinical Alpha-only Awake/Drowsy heuristic. Stage
+  annotations are retained only for offline comparison.
+- [x] Added bounded simulated demand with confidence/quality gating, minimum
+  valid observation, smoothing, rate limiting, hysteresis, sustained ready
+  evidence, and simulated frontend-neutral events. EEG is never modified.
+- [x] Evaluated SC4001 `[29730, 31140)` s using 30 s windows every 10 s:
+  88 W, 10 N1, and 37 N2 stage-pure windows per channel.
+- [x] Neither 900 s Wake baseline had a reliable session IAF under the configured
+  3 dB prominence rule. In Wake, Fpz-Cz had 59/88 reliable window peaks (SD
+  1.717 Hz) and Pz-Oz had 78/88 (SD 1.278 Hz); across W/N1/N2 the counts were
+  89/135 and 106/135. Session IAF remains unavailable.
+- [x] Median fixed-band relative Alpha W/N1/N2 was 0.0173/0.0498/0.0260 for
+  Fpz-Cz and 0.1255/0.1000/0.0370 for Pz-Oz. Posterior Alpha declined across
+  stages; the frontal bipolar derivation did not show the same monotonic pattern.
+- [x] Wake Fpz-Cz relative Alpha was 86.2% below Pz-Oz by the configured
+  descriptive ratio. This is not a validated future-wearable information-loss metric.
+- [x] All 270 channel-windows passed the current basic signal-quality thresholds.
+  IAF reliability, rather than basic amplitude/finite coverage, was the main
+  unavailable feature.
+- [x] The frontal-controlled simulated demand produced 135 events (all explicitly
+  simulated), with 94 demand-available points and no `ready_to_remove` point.
+  Its late N2 rise exposes the frontal heuristic limitation rather than a
+  stimulation effect.
+- [x] Generated ignored Alpha CSV/JSON/PNG outputs and a tracked metadata-only
+  real Session Package. Registry discovery, 2 s EDF window reads, annotation
+  reads, and derived-result references were verified.
+- [x] Added synthetic tests covering Alpha detection, IAF absence, band profiles,
+  power, trend states, quality gates, controller dynamics, provenance, source
+  immutability, and session serialization. Existing N3/SO/Hilbert tests remain.
+
+## 2026-08-07 — DreamCore V1 Phase A2 real Session transport and Alpha viewer
+
+- [x] Added a versioned, local, GET-only `/api/v1` WSGI transport over the
+  existing DatasetRegistry/DatasetAdapter boundary.
+- [x] Added catalog, session, signal metadata, bounded signal window,
+  annotation-window, derived-window, and simulated-event endpoints with
+  structured errors and preserved capabilities/provenance.
+- [x] Defined an explicit signal contract containing `uV`, sampling rate,
+  sample count, timestamps, start/end, and samples; recording-boundary clipping
+  is covered without a full-record endpoint.
+- [x] Added `HttpSessionCatalogService` and `HttpReplaySource` while retaining
+  deterministic fixture transports. Dataset Library now exposes Demo
+  Simulation, Test Fixture, and Real Public Dataset sources.
+- [x] Loaded SC4001 through the real Session Package without session-id
+  branches and displayed two windowed EEG channels on one uPlot time axis.
+- [x] Added synchronized manual navigation, imported W/N1/N2 stage overlays,
+  Alpha/IAF/trend/state panels, and simulated demand/event panels.
+- [x] Kept `Unavailable — No reliable alpha peak` for both SC4001 session IAFs
+  and displayed `SIMULATED CONTROL DEMAND — NOT ULTRASOUND DOSE` separately
+  from observed and derived content.
+- [x] Added Python transport tests, frontend HTTP/viewer tests, real-data
+  Playwright coverage, and ignored desktop/mobile QA screenshots.

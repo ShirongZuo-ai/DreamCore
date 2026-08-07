@@ -223,3 +223,123 @@ hilbert_phase:
     invalid_color: "#D97706"
     accepted_color: "#2563EB"
     grid_alpha: 0.18
+
+# Pre-sleep Alpha V1: observed public EEG, derived Alpha, simulated demand.
+alpha:
+  active_profile: "fixed_alpha"
+  comparison_profile: "individualized_alpha"
+  input_scale_to_uv: 1000000.0
+  channels: ["EEG Fpz-Cz", "EEG Pz-Oz"]
+  profiles:
+    fixed_alpha:
+      band_strategy: "fixed"
+      fixed_band: {low_hz: 8.0, high_hz: 13.0}
+      individualized_band: {half_width_hz: 2.0, fallback_to_fixed: false}
+      spectral:
+        total_power_band: {low_hz: 0.5, high_hz: 30.0}
+        welch_segment_s: 4.0
+        welch_overlap_fraction: 0.5
+        welch_window: "hann"
+        welch_detrend: "constant"
+        filter_method: "fir"
+        filter_phase: "zero"
+      iaf:
+        search_band_low_hz: 7.0
+        search_band_high_hz: 14.0
+        edge_margin_hz: 0.5
+        min_prominence_db: 3.0
+        high_confidence_prominence_db: 10.0
+    individualized_alpha:
+      band_strategy: "individualized"
+      fixed_band: {low_hz: 8.0, high_hz: 13.0}
+      individualized_band: {half_width_hz: 2.0, fallback_to_fixed: false}
+      spectral:
+        total_power_band: {low_hz: 0.5, high_hz: 30.0}
+        welch_segment_s: 4.0
+        welch_overlap_fraction: 0.5
+        welch_window: "hann"
+        welch_detrend: "constant"
+        filter_method: "fir"
+        filter_phase: "zero"
+      iaf:
+        search_band_low_hz: 7.0
+        search_band_high_hz: 14.0
+        edge_margin_hz: 0.5
+        min_prominence_db: 3.0
+        high_confidence_prominence_db: 10.0
+  quality:
+    min_finite_ratio: 0.99
+    min_standard_deviation_uv: 0.1
+    max_standard_deviation_uv: 200.0
+    max_peak_to_peak_uv: 1000.0
+    max_flatline_ratio: 0.05
+    invalid_score_ceiling: 0.25
+  windowing: {analysis_window_s: 30.0, step_s: 10.0}
+  history:
+    short_window_s: 60.0
+    trend_window_s: 300.0
+    baseline_window_s: 300.0
+    minimum_points: 3
+    minimum_time_coverage_ratio: 0.7
+    stable_slope_fraction_per_min: 0.01
+  state:
+    awake_alpha_ratio: 0.95
+    drowsy_alpha_ratio: 0.60
+    full_scale_alpha_drop_fraction: 0.40
+    trend_drowsiness_scores: {rising: 0.0, stable: 0.35, falling: 1.0}
+    weights: {low_alpha: 0.35, alpha_drop: 0.35, trend: 0.30}
+  simulated_demand:
+    initial_demand: 0.0
+    initial_observation_step_s: 10.0
+    minimum_valid_observation_s: 120.0
+    minimum_state_confidence: 0.65
+    minimum_active_demand: 0.15
+    maximum_demand: 1.0
+    drowsiness_reduction_weight: 0.85
+    falling_trend_multiplier: 0.65
+    smoothing_time_constant_s: 90.0
+    max_rise_per_minute: 0.20
+    max_fall_per_minute: 0.30
+    demand_hysteresis_deadband: 0.03
+    ready_drowsiness_entry: 0.75
+    ready_drowsiness_exit: 0.60
+    ready_alpha_change_max: -0.25
+    ready_allowed_trends: ["falling", "stable"]
+    ready_sustain_s: 120.0
+    ready_demand_max: 0.05
+    stopped_demand_threshold: 0.02
+    event_change_threshold: 0.01
+    event_drowsiness_label_threshold: 0.50
+  evaluation:
+    start_s: 29730.0
+    end_s: 31140.0
+    stages: ["W", "N1", "N2"]
+    iaf_baseline_start_s: 29730.0
+    iaf_baseline_end_s: 30630.0
+    control_channel: "EEG Fpz-Cz"
+  output:
+    features_csv: "results/alpha_v1_features.csv"
+    summary_json: "results/alpha_v1_summary.json"
+    qa_png: "results/alpha_v1_qa.png"
+    json_indent: 2
+  session_package:
+    manifest_path: "data/session_packages/sleep-edf/sc4001-alpha-v1/manifest.json"
+    session_id: "sc4001-alpha-v1"
+    viewer:
+      default_start_s: 30590.0
+      default_window_duration_s: 120.0
+      window_duration_options_s: [30.0, 60.0, 120.0]
+      display_max_points_per_signal: 2000
+  qa:
+    start_s: 30450.0
+    duration_s: 690.0
+    raw_display_window_s: 30.0
+    figure_width_inches: 16.0
+    figure_height_inches: 15.0
+    dpi: 160
+    observed_color: "#6B7280"
+    derived_color: "#2563EB"
+    comparison_color: "#1E40AF"
+    simulated_color: "#D97706"
+    stage_colors: {W: "#E5E7EB", N1: "#BFDBFE", N2: "#93C5FD"}
+    grid_alpha: 0.18

@@ -2,10 +2,34 @@
 
 ## Contract status
 
-This document describes what the frontend will eventually need; it is not a
-claim that the Python repository currently exposes an API. Today there is no
-HTTP endpoint, WebSocket server, live EEG stream, device telemetry, or hardware
-command channel. The frontend uses deterministic objects from `src/mocks/`.
+Phase A2 exposes a local read-only `/api/v1` HTTP service for canonical offline
+sessions. There is still no WebSocket, live EEG, replay clock, device telemetry,
+or hardware command channel. Deterministic fixture transport remains available.
+
+## Actual offline signal window
+
+```json
+{
+  "session_id": "sc4001-alpha-v1",
+  "signal_id": "eeg-1",
+  "channel": "EEG Fpz-Cz",
+  "provenance": "raw",
+  "start_s": 30590.0,
+  "end_s": 30710.0,
+  "duration_s": 120.0,
+  "sampling_rate_hz": 100.0,
+  "unit": "uV",
+  "n_samples": 12000,
+  "timestamps": [30590.0],
+  "samples": [0.0]
+}
+```
+
+The shortened arrays above illustrate fields only. In every actual response,
+`n_samples == len(timestamps) == len(samples)` and
+`end_s - start_s == n_samples / sampling_rate_hz`. `uV` is explicit and must
+not be inferred by the frontend. Requests are bounded by configured maximum
+duration and can be clipped only at the recording end.
 
 Status terminology:
 
@@ -71,9 +95,9 @@ Proposed replay/WebSocket packet, versioned before implementation:
 - Channel names, count, positions, reference scheme, ADC properties, and final
   sample rate remain unknown pending hardware specification.
 
-Python currently reads configurable EEG channels from EDF, records sampling
-rate, preserves channel order, and produces offline arrays. No packetizer or
-live transport currently exists.
+Python reads configurable EEG channels from EDF, records sampling rate,
+preserves channel order, and exposes bounded offline windows through the local
+read-only HTTP service. No live packetizer or streaming transport exists.
 
 ## Signal quality
 
@@ -183,7 +207,7 @@ timing that could be mapped later, after a stable export schema is agreed.
   metadata, binary or compact batched samples, monotonic sequence numbers,
   heartbeat, explicit reconnect/gap semantics, and independently throttled
   summary/status messages.
-- **Offline replay (planned):** the same decoded domain objects produced from a
+- **Offline replay clock (planned):** the same decoded domain objects produced from a
   versioned file or HTTP source, paced by a replay clock. Replay must preserve
   original timestamps and disclose that it is not live.
 
@@ -215,11 +239,12 @@ Current transport ownership is deliberately separated:
 
 - **Phase 2A:** deterministic frontend fixture transport plus Python canonical
   domain/repository/registry contracts.
-- **Phase 2B:** planned Python-backed catalog and normalized real-dataset
+- **Phase A2:** implemented Python-backed catalog and normalized real-dataset
   window transport.
-- **Future:** versioned HTTP metadata and offline replay or live WebSocket
-  packets mapped into the same canonical types.
+- **Future:** an explicit offline replay clock or live WebSocket packets mapped
+  into the same canonical types.
 
-Fields marked `simulated` are fixture/demo-only. Real signal locations,
-pagination, authentication, clock synchronization, binary packet encoding,
+Fields marked `simulated` may appear in fixtures or real-public-data packages,
+but always describe abstract simulated control—not observed stimulation or an
+EEG effect. Authentication, clock synchronization, binary packet encoding,
 device telemetry, and hardware identifiers remain unknown or planned.

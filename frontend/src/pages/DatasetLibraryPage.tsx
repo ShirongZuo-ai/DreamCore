@@ -23,7 +23,7 @@ const capabilityFilters: { name: CapabilityName; label: string }[] = [
 export function DatasetLibraryPage() {
   const navigate = useNavigate();
   const workspace = useSessionWorkspace();
-  const datasets = sessionCatalogService.listDatasets();
+  const datasets = workspace.catalog.datasets;
   const [query, setQuery] = useState('');
   const [datasetId, setDatasetId] = useState('');
   const [requiredCapabilities, setRequiredCapabilities] = useState<
@@ -33,10 +33,23 @@ export function DatasetLibraryPage() {
   const [seed, setSeed] = useState(42);
   const [message, setMessage] = useState<string | null>(null);
 
-  const candidates = useMemo(
-    () => sessionCatalogService.searchSessions(query, datasetId || undefined),
-    [datasetId, query],
-  );
+  const candidates = useMemo(() => {
+    const normalized = query.trim().toLocaleLowerCase();
+    return workspace.catalog.sessions.filter((session) => {
+      if (datasetId && session.dataset.id !== datasetId) return false;
+      if (!normalized) return true;
+      return [
+        session.dataset.id,
+        session.dataset.display_name,
+        session.sessionId,
+        session.subjectId,
+        session.visitId ?? '',
+      ]
+        .join(' ')
+        .toLocaleLowerCase()
+        .includes(normalized);
+    });
+  }, [datasetId, query, workspace.catalog.sessions]);
   const validFilter = useMemo(
     () => ({
       requiredCapabilities,
@@ -61,7 +74,11 @@ export function DatasetLibraryPage() {
           )
         : sessionCatalogService.randomSession(candidates, seed);
       workspace.selectSession(session);
-      workspace.setDataSource('offline-replay');
+      workspace.setDataSource(
+        session.catalogTransport === 'http'
+          ? 'real-public-dataset'
+          : 'test-fixture',
+      );
       setMessage(
         `${validOnly ? 'Random valid' : 'Random'} selection: ${session.sessionId}. Review before loading.`,
       );
@@ -74,8 +91,13 @@ export function DatasetLibraryPage() {
   }
 
   async function loadSession() {
-    workspace.setDataSource('offline-replay');
-    const loaded = await workspace.loadSelectedSession('offline-replay');
+    if (!workspace.selectedSession) return;
+    workspace.setDataSource(
+      workspace.selectedSession.catalogTransport === 'http'
+        ? 'real-public-dataset'
+        : 'test-fixture',
+    );
+    const loaded = await workspace.loadSelectedSession();
     if (loaded) navigate('/live');
   }
 
@@ -85,7 +107,7 @@ export function DatasetLibraryPage() {
         <div>
           <div className="flex items-center gap-2">
             <p className="eyebrow">Research data browser</p>
-            <span className="demo-chip">Test Fixtures</span>
+            <span className="demo-chip">Fixture + Real HTTP</span>
           </div>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-primary">
             Dataset Library
@@ -122,13 +144,13 @@ export function DatasetLibraryPage() {
             {datasets.length}
           </p>
           <p className="mt-1 text-[0.6875rem] text-secondary">
-            TEST datasets only
+            Fixture and real public sources
           </p>
         </div>
         <div className="panel p-4">
           <p className="metric-label">Catalog Sessions</p>
           <p className="mt-2 font-mono text-2xl font-semibold text-primary">
-            {sessionCatalogService.listSessions().length}
+            {workspace.catalog.sessions.length}
           </p>
           <p className="mt-1 text-[0.6875rem] text-secondary">
             Metadata, not signals
@@ -171,7 +193,7 @@ export function DatasetLibraryPage() {
               onChange={(event) => setDatasetId(event.target.value)}
               className="min-h-10 w-full rounded-control border border-line bg-canvas px-3 text-sm text-primary"
             >
-              <option value="">All test datasets</option>
+              <option value="">All datasets</option>
               {datasets.map((dataset) => (
                 <option key={dataset.id} value={dataset.id}>
                   {dataset.display_name}
@@ -240,7 +262,11 @@ export function DatasetLibraryPage() {
           selected={workspace.selectedSession}
           onSelect={(session) => {
             workspace.selectSession(session);
-            workspace.setDataSource('offline-replay');
+            workspace.setDataSource(
+              session.catalogTransport === 'http'
+                ? 'real-public-dataset'
+                : 'test-fixture',
+            );
             setMessage(`Selected ${session.sessionId}. No replay has started.`);
           }}
           isValid={(session) => sessionMatchesFilter(session, validFilter)}
@@ -289,9 +315,14 @@ export function DatasetLibraryPage() {
       </section>
 
       <p className="flex items-center gap-2 text-xs text-secondary">
-        <Database aria-hidden="true" size={14} /> Canonical metadata only · no
-        EDF files or signal arrays loaded
+        <Database aria-hidden="true" size={14} /> Catalog metadata only · EEG is
+        requested later as bounded windows
       </p>
+      {workspace.catalog.error ? (
+        <p role="alert" className="text-xs text-warning">
+          Real Public Dataset transport unavailable · {workspace.catalog.error}
+        </p>
+      ) : null}
     </div>
   );
 }

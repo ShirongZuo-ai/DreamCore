@@ -1,5 +1,26 @@
 # Roadmap
 
+## DreamCore V1 Phase A — Pre-sleep Alpha adaptive research
+
+**Goal**: derive auditable Alpha features from awake/pre-sleep EEG and simulate
+a hardware-neutral demand that decreases with sustained drowsiness evidence.
+
+- [x] Welch fixed-band Alpha power and relative power
+- [x] Conservative session/channel IAF plus individualized-band profile
+- [x] Sliding baseline/short/trend history
+- [x] Non-clinical Awake/Drowsy heuristic
+- [x] Smoothed, rate-limited, hysteretic simulated demand and event schema
+- [x] SC4001 W→N1→N2 two-channel evaluation and QA
+- [x] Real-metadata `dreamcore.session.v1` package with windowed EDF references
+- [x] Real signal transport for a read-only frontend viewer
+- [ ] Add an offline replay clock behind `ReplaySource` without changing the
+  observed/derived/simulated provenance contract
+- [ ] Validate Alpha/IAF behavior on a dataset with posterior coverage and a
+  controlled eyes-open/eyes-closed pre-sleep protocol
+
+All demand/events in Phase A are simulated. No ultrasound parameter or control
+is implemented. The milestones below are retained research tracks, not deleted.
+
 ## Milestone 0 — Project initialization ✅
 
 - [x] Repository structure

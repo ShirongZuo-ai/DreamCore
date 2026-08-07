@@ -24,6 +24,7 @@ function toSummary(manifest: SessionManifest): SessionSummary {
     hasSleepStage: Boolean(manifest.annotations.sleep_stages?.available),
     hasN3: containsN3(manifest),
     provenance: manifest.provenance.classification,
+    catalogTransport: 'fixture',
   };
 }
 
@@ -176,7 +177,89 @@ export class SessionCatalogService {
   }
 }
 
+type ApiEnvelope<T> = { api_version: 'v1'; data: T };
+type ApiFailure = {
+  api_version: 'v1';
+  error: { code: string; message: string; details: Record<string, unknown> };
+};
+
+export class HttpSessionCatalogService {
+  constructor(private readonly baseUrl = '/api/v1') {}
+
+  private async get<T>(path: string, signal?: AbortSignal): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, { signal });
+    const payload = (await response.json()) as ApiEnvelope<T> | ApiFailure;
+    if (!response.ok || 'error' in payload) {
+      const message =
+        'error' in payload ? payload.error.message : response.statusText;
+      throw new Error(`DreamCore API: ${message}`);
+    }
+    if (payload.api_version !== 'v1')
+      throw new Error('Unsupported DreamCore API version');
+    return payload.data;
+  }
+
+  async listDatasets(signal?: AbortSignal): Promise<DatasetSummary[]> {
+    const data = await this.get<
+      Array<{
+        id: string;
+        display_name: string;
+        version?: string;
+        session_count: number;
+        available_capabilities: string[];
+      }>
+    >('/datasets', signal);
+    return data.map((item) => ({
+      id: item.id,
+      display_name: item.display_name,
+      version: item.version,
+      sessionCount: item.session_count,
+      availableCapabilities: item.available_capabilities.length,
+    }));
+  }
+
+  async listSessions(
+    datasetId: string,
+    signal?: AbortSignal,
+  ): Promise<SessionSummary[]> {
+    type ApiSummary = {
+      dataset: SessionManifest['dataset'];
+      session: SessionManifest['session'];
+      recording: SessionManifest['recording'];
+      capabilities: SessionManifest['capabilities'];
+      has_sleep_stage: boolean;
+      has_n3: boolean;
+      provenance: SessionManifest['provenance']['classification'];
+    };
+    const data = await this.get<ApiSummary[]>(
+      `/datasets/${encodeURIComponent(datasetId)}/sessions`,
+      signal,
+    );
+    return data.map((item) => ({
+      dataset: item.dataset,
+      sessionId: item.session.session_id,
+      subjectId: item.session.subject_id,
+      visitId: item.session.visit_id,
+      nightId: item.session.night_id,
+      durationSeconds: item.recording.duration_seconds,
+      capabilities: item.capabilities,
+      hasSleepStage: item.has_sleep_stage,
+      hasN3: item.has_n3,
+      provenance: item.provenance,
+      catalogTransport: 'http',
+    }));
+  }
+
+  loadSession(_datasetId: string, sessionId: string, signal?: AbortSignal) {
+    return this.get<SessionManifest>(
+      `/sessions/${encodeURIComponent(sessionId)}`,
+      signal,
+    );
+  }
+}
+
 export const sessionCatalogService = new SessionCatalogService();
+export const httpSessionCatalogService = new HttpSessionCatalogService();
 
 export const liveReplayEligibility: SessionFilter = {
   requiredCapabilities: ['eeg', 'sleep_stage_labels'],

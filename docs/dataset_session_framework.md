@@ -18,9 +18,9 @@ Sleep-EDF, MASS, SHHS, a hardware vendor format, or any other source layout.
 Adding a second dataset must not require changes to the core UI. Integration
 belongs in a new adapter or in a conversion step that emits standard packages.
 
-Phase 2A contains deterministic, synthetic TEST FIXTURES only. It does not add
-real subject records, an EDF reader, a Python HTTP API, streaming, playback, or
-device control.
+Phase A2 retains deterministic TEST FIXTURES and adds the real public SC4001
+Alpha Session Package plus a local read-only HTTP boundary. It still adds no
+streaming, playback clock, live data, or device control.
 
 ## Schema ownership and versioning
 
@@ -66,9 +66,11 @@ Each canonical capability is a typed descriptor, not a loose boolean:
 | `UNKNOWN` | Presence or specification is not known | Show `Unknown`; do not assume healthy or absent |
 
 Descriptors can include `source`, `reason`, `derived_by`, and `version`. The
-canonical capability names cover EEG, stage labels/predictions, slow
+canonical capability names cover EEG, Alpha power/IAF/trend, research
+drowsiness scores, simulated demand/ready state, stage labels/predictions, slow
 oscillations, phase/precision, decisions, physiology, events, telemetry, and
-navigation. Their definitions are shared by Python and TypeScript.
+navigation. The generic descriptor shape supports these Alpha capabilities in
+`dreamcore.session.v1`; no schema-version change was necessary.
 
 Missing-data language preserves meaning:
 
@@ -96,6 +98,13 @@ not as healthy connected hardware.
 Adapters know their source format but know nothing about React. The Phase 2A
 `FixtureDatasetAdapter` validates the contract and returns deterministic tiny
 windows/events for tests. It reads no large files.
+
+The Alpha V1 package is the first real-metadata package. Its manifest references
+the ignored Sleep-EDF PSG/hypnogram and ignored result files; it embeds no EEG
+samples. `SessionPackageDatasetAdapter` resolves those references and reads only
+the requested EDF channel/time window. Provenance remains separate: source EEG
+is `raw`, imported hypnogram labels are `imported`, Alpha features are `derived`,
+and demand/events are `simulated`.
 
 ## Repository, registry, and filters
 
@@ -131,9 +140,9 @@ Transport evolution is intentionally staged:
 1. **Phase 2A:** the frontend reads the shared deterministic fixture contract;
    Python provides the canonical domain, repository, registry, and fixture
    adapter. There is no claim of a connected Python API.
-2. **Phase 2B:** add a real dataset adapter or normalizer and a small
-   Python-backed catalog/window transport while retaining the same domain
-   shapes.
+2. **Phase A2:** `/api/v1` exposes catalog metadata and bounded offline windows
+   through the registry/adapter boundary. `HttpSessionCatalogService` and
+   `HttpReplaySource` consume it without changing storage logic in pages.
 3. **Future offline replay:** add a replay clock and window scheduling behind
    `ReplaySource`.
 4. **Future live transport:** map versioned HTTP metadata and WebSocket packets
@@ -154,3 +163,20 @@ behavior and are labeled `TEST FIXTURE — NOT REAL SUBJECT DATA` throughout.
 Capabilities report data presence, not quality, diagnosis, benefit, or fitness
 for stimulation. No package field exposes Active/Sham assignments, and no
 Phase 2A component controls stimulation or medical hardware.
+
+## Phase A2 read-only HTTP boundary
+
+The local API supports only GET, plus HEAD/OPTIONS transport semantics:
+
+- `/api/v1/datasets`
+- `/api/v1/datasets/{dataset_id}/sessions`
+- `/api/v1/sessions/{session_id}`
+- `/api/v1/sessions/{session_id}/signals`
+- `/api/v1/sessions/{session_id}/signals/{signal_id}/window`
+- `/api/v1/sessions/{session_id}/annotations`
+- `/api/v1/sessions/{session_id}/derived`
+- `/api/v1/sessions/{session_id}/events`
+
+The configured signal-window maximum is enforced before adapter access. There
+is deliberately no endpoint that returns a complete recording and no
+POST/PUT/PATCH/DELETE or stimulation-command route.

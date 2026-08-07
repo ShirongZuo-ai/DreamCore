@@ -35,6 +35,13 @@ class ProvenanceClass(StrEnum):
 
 class CapabilityName(StrEnum):
     EEG = "eeg"
+    ALPHA_POWER = "alpha_power"
+    RELATIVE_ALPHA_POWER = "relative_alpha_power"
+    INDIVIDUAL_ALPHA_FREQUENCY = "individual_alpha_frequency"
+    ALPHA_TREND = "alpha_trend"
+    DROWSINESS_SCORE = "drowsiness_score"
+    STIMULATION_DEMAND = "stimulation_demand"
+    READY_TO_REMOVE = "ready_to_remove"
     SLEEP_STAGE_LABELS = "sleep_stage_labels"
     SLEEP_STAGE_PREDICTIONS = "sleep_stage_predictions"
     SLOW_OSCILLATION_DETECTION = "slow_oscillation_detection"

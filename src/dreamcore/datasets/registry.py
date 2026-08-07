@@ -140,6 +140,65 @@ class DatasetRegistry:
             raise LookupError(f"dataset {dataset_id!r} is not registered") from error
         return adapter.get_session_metadata(session_id)
 
+    def list_dataset_sessions(self, dataset_id: str) -> tuple[SessionSummary, ...]:
+        """List one dataset without exposing its adapter to transport callers."""
+
+        try:
+            adapter = self._adapters[dataset_id]
+        except KeyError as error:
+            raise LookupError(f"dataset {dataset_id!r} is not registered") from error
+        return adapter.list_sessions()
+
+    def get_session_by_id(self, session_id: str) -> SessionManifest:
+        """Resolve a globally unique session identifier."""
+
+        _, adapter = self._resolve_session(session_id)
+        return adapter.get_session_metadata(session_id)
+
+    def load_signal_window(
+        self,
+        session_id: str,
+        signal_id: str,
+        start_seconds: float,
+        duration_seconds: float,
+    ):
+        """Delegate one bounded signal read to the owning dataset adapter."""
+
+        _, adapter = self._resolve_session(session_id)
+        return adapter.load_signal_window(
+            session_id,
+            signal_id,
+            start_seconds,
+            duration_seconds,
+        )
+
+    def load_annotations(self, session_id: str, annotation_type: str):
+        """Delegate annotation loading to the owning dataset adapter."""
+
+        _, adapter = self._resolve_session(session_id)
+        return adapter.load_annotations(session_id, annotation_type)
+
+    def load_derived_results(self, session_id: str, result_type: str):
+        """Delegate derived-result loading to the owning dataset adapter."""
+
+        _, adapter = self._resolve_session(session_id)
+        return adapter.load_derived_results(session_id, result_type)
+
+    def _resolve_session(self, session_id: str) -> tuple[str, DatasetAdapter]:
+        matches = [
+            (dataset_id, adapter)
+            for dataset_id, adapter in self._adapters.items()
+            if any(summary.session.session_id == session_id for summary in adapter.list_sessions())
+        ]
+        if not matches:
+            raise LookupError(f"session {session_id!r} is not registered")
+        if len(matches) > 1:
+            dataset_ids = ", ".join(sorted(dataset_id for dataset_id, _ in matches))
+            raise LookupError(
+                f"session id {session_id!r} is ambiguous across datasets: {dataset_ids}"
+            )
+        return matches[0]
+
     def random_session(
         self, seed: int, candidates: tuple[SessionSummary, ...] | None = None
     ) -> SessionSummary:
