@@ -135,9 +135,51 @@
   channel independence, input immutability, summary/CSV output, overlap, and QA
   export.
 
+## 2026-08-07 — Milestone 2 Step 3 offline Hilbert phase baseline
+
+- [x] Added `phase_prediction/hilbert.py` with independent per-channel analytic
+  signals, wrapped/unwrapped phase, amplitude envelopes, optional instantaneous
+  frequency, and explicit validity/reason masks that preserve the time axis.
+- [x] Defined the project phase convention with one fixed `-pi` offset from raw
+  Hilbert phase: downward zero `-pi/2`, trough `0`, upward zero `pi/2`, and
+  positive peak `pi`. No event-specific fitting or phase adjustment is used.
+- [x] Added configurable invalidation for filter/Hilbert boundaries, original
+  NaNs, explicit invalid ranges, low envelope, and out-of-range instantaneous
+  frequency. Empty, constant, and too-short inputs fail explicitly.
+- [x] Retained subject, recording, segment, channel, sampling rate,
+  preprocessing profile, detector profile, and phase profile provenance.
+- [x] Reused the existing N3 extraction, broadband preprocessing, and strict
+  slow-oscillation detector on `SC4001E0-PSG_n3_0002`: `[31205, 31795)` s,
+  590 s, 59,000 samples per channel at 100 Hz.
+- [x] Real valid-phase ratios were 83.302% for `EEG Fpz-Cz` and 82.775% for
+  `EEG Pz-Oz`. Of the 78/79 accepted detector candidates, 56/55 passed the
+  configured event-level phase validity and forward-evolution checks.
+- [x] Across valid landmarks, circular MAE / median absolute error was
+  5.841° / 0.292° for Fpz-Cz and 5.764° / 0.640° for Pz-Oz. Zero-crossing
+  errors were below 0.015° mean; extrema errors were larger (8.713–13.959°),
+  as expected when a Hilbert phase of a non-sinusoidal waveform is compared
+  with sample extrema.
+- [x] Found 39 temporally overlapping accepted-event pairs; 33 had valid phase
+  at the overlap midpoint. The Fpz-Cz-minus-Pz-Oz circular mean was -2.897 rad
+  (-165.987°), with circular dispersion 0.283. This is descriptive algorithm
+  output, not a neural synchrony or connectivity result.
+- [x] Wrote ignored `hilbert_phase_landmarks.csv`,
+  `hilbert_phase_summary.json`, and `hilbert_phase_qa.png`. Manual QA of the
+  configured 20 s `[31290, 31310)` window confirmed aligned channels, expected
+  landmark ordering, visible phase wraps, envelope thresholds, and explicit
+  invalid regions. Only accepted candidates are overlaid.
+- [x] Added network-free synthetic unit and end-to-end tests for the phase
+  convention, wrapping, unwrapping, circular error, envelope/frequency,
+  validity masks, error cases, channel independence, input immutability,
+  provenance, landmarks, cross-channel comparison, and all three outputs.
+- [x] Explicitly labeled the FIR/Hilbert path as an offline, zero-phase,
+  non-causal baseline that may use future samples and cannot support a
+  real-time prediction or trigger claim.
+
 ## Next
 
-- Define the Hilbert phase baseline on accepted offline candidates while
-  preserving detector-profile provenance and avoiding causal/online claims.
+- Implement causal filtering and simulated real-time replay with explicit
+  algorithmic delay accounting; do not infer online performance from the
+  offline Hilbert result.
 - Expand manual candidate review and sensitivity analysis across detector
   profiles, segments, and subjects before treating density as a stable metric.

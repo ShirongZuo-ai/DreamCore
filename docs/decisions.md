@@ -205,3 +205,47 @@ These outputs are offline algorithm candidates only. They are not manually
 confirmed physiological slow oscillations and are not suitable for triggering.
 
 **Date**: 2026-08-06
+
+---
+
+## DD-011: Use a fixed-offset offline Hilbert phase as geometry baseline
+
+**Decision**: Estimate continuous phase independently for each configured EEG
+channel after a configured zero-phase FIR bandpass. Convert SciPy's analytic
+signal phase to the project convention with one fixed offset of `-pi`:
+
+- downward zero crossing: `-pi/2`;
+- negative trough: `0`;
+- upward zero crossing: `pi/2`;
+- positive peak: `pi` (equivalent to wrapped `-pi`).
+
+The offset is fixed for the entire profile and is never fitted per event. Keep
+the original sample timeline and attach a boolean validity mask. Mark configured
+segment boundaries, original non-finite samples, configured invalid intervals,
+samples below the configured envelope threshold, and samples outside the
+configured instantaneous-frequency range as invalid rather than deleting them.
+For the first Sleep-EDF baseline, use a 0.5–1.25 Hz phase band, a 5 s invalid
+boundary at each end, a per-channel 10th-percentile envelope floor, and a
+0.2–2.0 Hz instantaneous-frequency validity range.
+
+Accepted detector landmarks are used only to test consistency with the current
+zero-crossing geometry. Cross-channel comparison samples phase at the midpoint
+of overlapping accepted candidate intervals and reports circular direction and
+dispersion. Neither comparison is physiological ground truth or evidence of
+neural synchrony or causality.
+
+**Rationale**:
+
+- A fixed convention makes phase values reproducible across events and channels.
+- Separate invalid-reason masks preserve the time axis and expose why a phase
+  sample was excluded.
+- Detector landmarks offer a useful implementation and geometry check without
+  being mislabeled as manually validated brain phase.
+- Circular statistics correctly handle the `-pi`/`pi` boundary.
+
+Both the FIR filtering and Hilbert transform are offline and non-causal and may
+use future samples. This baseline cannot establish real-time phase prediction
+performance. The next implementation stage must introduce causal filtering and
+simulated real-time replay before any online claim is considered.
+
+**Date**: 2026-08-07

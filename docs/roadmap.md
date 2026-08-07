@@ -46,12 +46,22 @@ figure. Candidate status is not physiological ground truth.
 
 ## Milestone 4 — Phase estimation
 
-**Goal**: Estimate instantaneous and predict future phase.
+**Goal**: Establish phase-estimation baselines, then evaluate causal replay
+before considering future-phase prediction.
 
-- [ ] Implement `src/dreamcore/phase_prediction/hilbert.py`
+- [x] Implement offline `src/dreamcore/phase_prediction/hilbert.py`
+- [x] Validate the fixed phase convention against accepted detector landmarks
+  and export circular-error/cross-channel QA
+- [ ] Implement causal filtering and simulated real-time replay with explicit
+  algorithmic delay measurement
 - [ ] Implement `src/dreamcore/phase_prediction/threshold.py`
 - [ ] Implement `src/dreamcore/phase_prediction/state_space.py`
 - [ ] Method comparison notebook/script
+
+**Status**: the offline Hilbert baseline is reproducible on two real EEG
+channels, preserves invalid samples on the original timeline, and has reviewed
+landmark and QA outputs. Its zero-phase FIR and Hilbert transform use future
+samples, so it is not evidence of causal or real-time phase performance.
 
 ## Milestone 5 — Precision gating
 
