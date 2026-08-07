@@ -1,4 +1,4 @@
-import { Activity, ClipboardList, UserRound } from 'lucide-react';
+import { Activity, ClipboardList, Database, UserRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 import { ConnectionStatus } from './ConnectionStatus';
@@ -6,6 +6,12 @@ import { DemoModeBadge } from './DemoModeBadge';
 
 const links = [
   { to: '/live', label: 'Live Console', shortLabel: 'Live', icon: Activity },
+  {
+    to: '/datasets',
+    label: 'Dataset Library',
+    shortLabel: 'Data',
+    icon: Database,
+  },
   {
     to: '/review',
     label: 'Session Review',
@@ -41,7 +47,7 @@ export function TopNavigation() {
           aria-label="Primary navigation"
           className="order-last w-full sm:order-none sm:w-auto"
         >
-          <div className="fixed inset-x-0 bottom-0 z-50 grid h-16 grid-cols-3 border-t border-line bg-surface px-2 sm:static sm:flex sm:h-auto sm:border-0 sm:bg-transparent sm:p-0">
+          <div className="fixed inset-x-0 bottom-0 z-50 grid h-16 grid-cols-4 border-t border-line bg-surface px-2 sm:static sm:flex sm:h-auto sm:border-0 sm:bg-transparent sm:p-0">
             {links.map(({ to, label, shortLabel, icon: Icon }) => (
               <NavLink
                 key={to}

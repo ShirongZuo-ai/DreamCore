@@ -1,10 +1,17 @@
 import { ShieldCheck } from 'lucide-react';
 
-import type { SafetyStatus } from '../../types';
+import type { LoadedSession, SafetyStatus } from '../../types';
 import { PanelHeader } from '../common/PanelHeader';
 import { StatusPill } from '../common/StatusPill';
 
-export function SafetyPanel({ status }: { status: SafetyStatus }) {
+export function SafetyPanel({
+  status,
+  session,
+}: {
+  status: SafetyStatus;
+  session: LoadedSession;
+}) {
+  const isOfflineFixture = session.dataSource === 'offline-replay';
   const label = (value: string) =>
     value
       .split('-')
@@ -42,6 +49,14 @@ export function SafetyPanel({ status }: { status: SafetyStatus }) {
       tone: 'success' as const,
     },
   ];
+  const offlineRows = [
+    ['Signal Integrity', 'Metadata only'],
+    ['Electrode Contact', 'Unavailable'],
+    ['Device Temperature', 'Unavailable'],
+    ['Data Connection', 'Offline'],
+    ['Navigation Alignment', 'Unavailable'],
+    ['Automatic Stimulation', 'Disabled'],
+  ];
 
   return (
     <section
@@ -55,21 +70,40 @@ export function SafetyPanel({ status }: { status: SafetyStatus }) {
           <ShieldCheck aria-hidden="true" className="text-success" size={18} />
         }
       />
+      {isOfflineFixture ? (
+        <div className="mt-3 rounded-control border border-warning/30 bg-warning/5 px-3 py-2.5">
+          <p className="text-sm font-semibold text-warning">
+            Offline session — no hardware telemetry
+          </p>
+          <p className="mt-1 text-xs text-secondary">
+            {session.manifest.capabilities.hardware_telemetry.reason}
+          </p>
+        </div>
+      ) : null}
       <dl className="mt-3 divide-y divide-line">
-        {rows.map((row) => (
+        {(isOfflineFixture ? offlineRows : rows).map((row) => (
           <div
             className="flex items-center justify-between gap-3 py-2.5"
-            key={row.label}
+            key={Array.isArray(row) ? row[0] : row.label}
           >
-            <dt className="metric-label">{row.label}</dt>
+            <dt className="metric-label">
+              {Array.isArray(row) ? row[0] : row.label}
+            </dt>
             <dd>
-              <StatusPill tone={row.tone}>{row.value}</StatusPill>
+              {Array.isArray(row) ? (
+                <span className="text-xs font-medium text-secondary">
+                  {row[1]}
+                </span>
+              ) : (
+                <StatusPill tone={row.tone}>{row.value}</StatusPill>
+              )}
             </dd>
           </div>
         ))}
       </dl>
       <p className="mt-3 border-t border-line pt-3 text-[0.6875rem] leading-5 text-secondary">
-        No hardware interlock or stimulation pathway is connected in this demo.
+        No hardware interlock or stimulation pathway is connected in this{' '}
+        {isOfflineFixture ? 'offline fixture' : 'demo'}.
       </p>
     </section>
   );

@@ -190,3 +190,36 @@ timing that could be mapped later, after a stable export schema is agreed.
 Authentication, endpoint URLs, binary encoding, message batching, retention,
 clock synchronization, reconnect policy, backpressure, and hardware identifiers
 are unknown. They must be specified before either adapter is built.
+
+## Canonical Session Package contract (Phase 2A)
+
+The canonical manifest version is `dreamcore.session.v1`. Its owned schema and
+capability policy are documented in `dataset_session_framework.md`. Python and
+the frontend validate the same files under
+`tests/fixtures/session_packages/**/manifest.json`; these are marked `TEST
+FIXTURE — NOT REAL SUBJECT DATA` and are not evidence that a Python API or real
+dataset import exists.
+
+The frontend-facing package contains dataset/session identity, optional visit
+and night identifiers, duration plus optional start-time/timezone, lightweight
+signal metadata, annotation/derived-result presence, typed capabilities, and
+provenance. Complete EEG/physiology arrays are prohibited in catalog summaries
+and manifests. Future sample data is obtained only by a windowed read.
+
+Every canonical capability has `AVAILABLE | UNAVAILABLE | PLANNED | UNKNOWN`
+status and can carry `source`, `reason`, `derived_by`, and `version`. Absence is
+not represented by a fabricated numeric value. UI consumers display the status
+and reason and only render sourced values when the capability permits it.
+
+Current transport ownership is deliberately separated:
+
+- **Phase 2A:** deterministic frontend fixture transport plus Python canonical
+  domain/repository/registry contracts.
+- **Phase 2B:** planned Python-backed catalog and normalized real-dataset
+  window transport.
+- **Future:** versioned HTTP metadata and offline replay or live WebSocket
+  packets mapped into the same canonical types.
+
+Fields marked `simulated` are fixture/demo-only. Real signal locations,
+pagination, authentication, clock synchronization, binary packet encoding,
+device telemetry, and hardware identifiers remain unknown or planned.

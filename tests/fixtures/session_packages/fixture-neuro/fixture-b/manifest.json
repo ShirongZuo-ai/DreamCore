@@ -1,0 +1,79 @@
+{
+  "schema_version": "dreamcore.session.v1",
+  "dataset": {
+    "id": "fixture-neuro",
+    "display_name": "Neuro Capability Fixtures",
+    "version": "test-1"
+  },
+  "session": {
+    "session_id": "fixture-b",
+    "subject_id": "TEST-SUBJECT-B"
+  },
+  "recording": {
+    "duration_seconds": 21600
+  },
+  "signals": [
+    {
+      "id": "eeg-test-left",
+      "modality": "eeg",
+      "channel_name": "TEST-EEG-L",
+      "unit": "uV",
+      "sampling_rate_hz": 25,
+      "source": "simulated",
+      "available": true,
+      "metadata": {"fixture_generation": {"kind": "sine", "frequency_hz": 1.0, "amplitude": 12.0}}
+    },
+    {
+      "id": "eeg-test-right",
+      "modality": "eeg",
+      "channel_name": "TEST-EEG-R",
+      "unit": "uV",
+      "sampling_rate_hz": 25,
+      "source": "simulated",
+      "available": true,
+      "metadata": {"fixture_generation": {"kind": "sine", "frequency_hz": 1.1, "amplitude": 11.0}}
+    }
+  ],
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "source": "simulated",
+      "metadata": {"contains_stages": ["W", "N2", "N3"], "events": []}
+    },
+    "arousals": {"available": false, "source": "unknown", "reason": "Not contained in source fixture"},
+    "artifacts": {"available": false, "source": "unknown", "reason": "Not contained in source fixture"},
+    "manual_markers": {"available": false, "source": "unknown", "reason": "Not contained in source fixture"}
+  },
+  "derived": {
+    "slow_oscillations": {"available": false, "source": "unknown", "reason": "Not computed"},
+    "phase_estimates": {"available": false, "source": "unknown", "reason": "Not computed"},
+    "phase_precision": {"available": false, "source": "unknown", "reason": "No precision estimator output for this session"},
+    "sleep_stage_predictions": {"available": false, "source": "unknown", "reason": "Not computed"},
+    "decisions": {"available": false, "source": "unknown", "reason": "Not computed"}
+  },
+  "capabilities": {
+    "eeg": {"status": "AVAILABLE", "source": "simulated", "reason": "Deterministic test signal metadata"},
+    "sleep_stage_labels": {"status": "AVAILABLE", "source": "simulated", "reason": "Fixture annotations include N3"},
+    "sleep_stage_predictions": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not computed"},
+    "slow_oscillation_detection": {"status": "PLANNED", "source": "unknown", "reason": "Derived output not yet computed"},
+    "phase_estimation": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not computed"},
+    "phase_precision": {"status": "UNAVAILABLE", "source": "unknown", "reason": "No precision estimator output for this session"},
+    "decision_simulation": {"status": "PLANNED", "source": "unknown", "reason": "Offline simulation is planned"},
+    "heart_rate": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "ppg": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "spo2": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "movement": {"status": "UNKNOWN", "source": "unknown", "reason": "Source coverage is not declared"},
+    "snoring": {"status": "UNKNOWN", "source": "unknown", "reason": "Source coverage is not declared"},
+    "arousals": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not contained in source fixture"},
+    "artifacts": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not contained in source fixture"},
+    "stimulation_events": {"status": "UNAVAILABLE", "source": "unknown", "reason": "No stimulation data in offline fixture"},
+    "hardware_telemetry": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline session has no hardware telemetry"},
+    "navigation_alignment": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline recording has no navigation telemetry"}
+  },
+  "provenance": {
+    "classification": "simulated",
+    "source_dataset_uri": null,
+    "imported_by": "dreamcore-phase-2a-fixture-builder",
+    "notes": "TEST FIXTURE — NOT REAL SUBJECT DATA"
+  }
+}

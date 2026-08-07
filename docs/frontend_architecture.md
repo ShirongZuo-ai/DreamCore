@@ -7,13 +7,15 @@ research package. It is currently a static monitoring prototype. It neither
 imports Python modules nor changes algorithm outputs, and it has no EEG device,
 stimulation device, medical decision, or network integration.
 
-The application has three audiences and routes:
+The application has three audiences plus a dataset-neutral research library:
 
 | Route | Audience | Purpose |
 |---|---|---|
 | `/live` | Experiment operator | Observe a deterministic mock session and inspect safety state |
 | `/review` | Research analyst | Review a simulated, descriptive session summary |
 | `/subject` | Participant | See only fitting, recording, comfort, and assistance status |
+| `/datasets` | Research operator | Search, filter, select, and load canonical TEST FIXTURE sessions |
+| `/datasets/:datasetId/sessions/:sessionId` | Research operator | Inspect a shareable canonical session description |
 
 The root redirects to `/live`; unknown routes render a small Not Found view.
 
@@ -39,9 +41,34 @@ types + design tokens
 - `tests/` contains Vitest/Testing Library behavior tests.
 - `e2e/` contains browser layout, accessibility-visible behavior, and screenshot checks.
 
+## Dataset and session boundary
+
+Phase 2A adds the following application boundary:
+
+```text
+shared dreamcore.session.v1 fixture
+  → SessionCatalogService / ReplaySource
+  → SessionWorkspaceProvider
+  → Dataset Library and capability-aware Live Console
+```
+
+`SessionWorkspaceProvider` owns source selection, selected session, and the
+`idle | loading | ready | error` load state. It persists during in-app route
+navigation but not across a browser refresh. Pages consume only canonical
+`DatasetSummary`, `SessionSummary`, `SessionManifest`, `CapabilitySet`, and
+`LoadedSession` types. They do not parse dataset-specific metadata.
+
+The Phase 2A frontend transport imports the same deterministic JSON fixtures
+validated by Python. `SessionCatalogService` can later be replaced by an HTTP
+implementation and `ReplaySource` by a Python-backed window reader without
+changing core page logic. Adding a new dataset must require an adapter or
+normalized package, not conditionals in the Live Console.
+
 ## EEG rendering boundary
 
-The current waveform is a deterministic SVG renderer. `EEGWaveformPanel`
+For Demo Simulation, the current waveform is a deterministic SVG renderer. For
+an offline package it is shown only when EEG is `AVAILABLE` and remains clearly
+labeled as a static placeholder; no fixture signal is replayed. `EEGWaveformPanel`
 accepts one `EEGSampleWindow`; it does not synthesize data, open a connection,
 or own acquisition state. This makes it replaceable with a uPlot renderer.
 

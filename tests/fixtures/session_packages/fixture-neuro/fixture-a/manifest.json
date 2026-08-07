@@ -1,0 +1,124 @@
+{
+  "schema_version": "dreamcore.session.v1",
+  "dataset": {
+    "id": "fixture-neuro",
+    "display_name": "Neuro Capability Fixtures",
+    "version": "test-1"
+  },
+  "session": {
+    "session_id": "fixture-a",
+    "subject_id": "TEST-SUBJECT-A",
+    "visit_id": "TEST-VISIT-01",
+    "night_id": "TEST-NIGHT-01"
+  },
+  "recording": {
+    "start_time": "2026-01-01T22:00:00Z",
+    "duration_seconds": 28800,
+    "timezone": "UTC"
+  },
+  "signals": [
+    {
+      "id": "eeg-test-primary",
+      "modality": "eeg",
+      "channel_name": "TEST-EEG-A",
+      "unit": "uV",
+      "sampling_rate_hz": 32,
+      "source": "simulated",
+      "available": true,
+      "metadata": {
+        "fixture_generation": {
+          "kind": "sine",
+          "frequency_hz": 0.8,
+          "amplitude": 20.0
+        }
+      }
+    }
+  ],
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "source": "simulated",
+      "metadata": {
+        "contains_stages": ["W", "N2", "N3"],
+        "events": [
+          {"start_seconds": 0, "duration_seconds": 900, "label": "W"},
+          {"start_seconds": 900, "duration_seconds": 1800, "label": "N2"},
+          {"start_seconds": 2700, "duration_seconds": 1800, "label": "N3"}
+        ]
+      }
+    },
+    "arousals": {
+      "available": false,
+      "source": "unknown",
+      "reason": "Not included in this test fixture"
+    },
+    "artifacts": {
+      "available": true,
+      "source": "simulated",
+      "metadata": {"events": []}
+    },
+    "manual_markers": {
+      "available": false,
+      "source": "unknown",
+      "reason": "Not included in this test fixture"
+    }
+  },
+  "derived": {
+    "slow_oscillations": {
+      "available": true,
+      "source": "derived",
+      "derived_by": "fixture-so-v1",
+      "version": "test-1",
+      "metadata": {"events": []}
+    },
+    "phase_estimates": {
+      "available": true,
+      "source": "derived",
+      "derived_by": "fixture-hilbert-v1",
+      "version": "test-1",
+      "metadata": {"events": []}
+    },
+    "phase_precision": {
+      "available": true,
+      "source": "derived",
+      "derived_by": "fixture-precision-v1",
+      "version": "test-1",
+      "metadata": {"summary": "TEST FIXTURE output available"}
+    },
+    "sleep_stage_predictions": {
+      "available": false,
+      "source": "unknown",
+      "reason": "Only fixture annotations are present"
+    },
+    "decisions": {
+      "available": false,
+      "source": "unknown",
+      "reason": "Decision simulation not run"
+    }
+  },
+  "capabilities": {
+    "eeg": {"status": "AVAILABLE", "source": "simulated", "reason": "Deterministic test signal metadata"},
+    "sleep_stage_labels": {"status": "AVAILABLE", "source": "simulated", "reason": "Fixture annotations include N3"},
+    "sleep_stage_predictions": {"status": "UNAVAILABLE", "source": "unknown", "reason": "No staging model output"},
+    "slow_oscillation_detection": {"status": "AVAILABLE", "source": "derived", "derived_by": "fixture-so-v1", "version": "test-1"},
+    "phase_estimation": {"status": "AVAILABLE", "source": "derived", "derived_by": "fixture-hilbert-v1", "version": "test-1"},
+    "phase_precision": {"status": "AVAILABLE", "source": "derived", "derived_by": "fixture-precision-v1", "version": "test-1"},
+    "decision_simulation": {"status": "PLANNED", "source": "unknown", "reason": "Fixture replay decision stage is planned"},
+    "heart_rate": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "ppg": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "spo2": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "movement": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "snoring": {"status": "UNKNOWN", "source": "unknown", "reason": "Fixture does not declare snoring coverage"},
+    "arousals": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not included in this test fixture"},
+    "artifacts": {"status": "AVAILABLE", "source": "simulated", "reason": "Empty but valid fixture annotation set"},
+    "stimulation_events": {"status": "UNAVAILABLE", "source": "unknown", "reason": "No stimulation data in offline fixture"},
+    "hardware_telemetry": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline session has no hardware telemetry"},
+    "navigation_alignment": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline recording has no navigation telemetry"}
+  },
+  "provenance": {
+    "classification": "simulated",
+    "source_dataset_uri": null,
+    "imported_by": "dreamcore-phase-2a-fixture-builder",
+    "notes": "TEST FIXTURE — NOT REAL SUBJECT DATA"
+  }
+}

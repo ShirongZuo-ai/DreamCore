@@ -76,7 +76,13 @@ function WaveRow({ channel }: { channel: EEGChannel }) {
   );
 }
 
-export function EEGWaveformPanel({ window }: { window: EEGSampleWindow }) {
+export function EEGWaveformPanel({
+  window,
+  sourceLabel = 'Simulated',
+}: {
+  window: EEGSampleWindow;
+  sourceLabel?: string;
+}) {
   return (
     <section
       className="panel min-h-[29rem] overflow-hidden"
@@ -86,7 +92,7 @@ export function EEGWaveformPanel({ window }: { window: EEGSampleWindow }) {
         <PanelHeader
           title="EEG Signal Monitor"
           eyebrow="Shared time axis"
-          action={<span className="demo-chip">Simulated</span>}
+          action={<span className="demo-chip">{sourceLabel}</span>}
         />
         <div className="flex items-center gap-4 text-xs text-secondary">
           <span className="inline-flex items-center gap-1.5">
@@ -120,8 +126,8 @@ export function EEGWaveformPanel({ window }: { window: EEGSampleWindow }) {
         <div />
       </div>
       <p className="border-t border-line px-4 py-2.5 text-[0.6875rem] text-secondary">
-        Deterministic display waveform · no subject data · uPlot adapter
-        boundary
+        Deterministic display waveform · no subject data · {sourceLabel} · uPlot
+        adapter boundary
       </p>
     </section>
   );

@@ -7,7 +7,7 @@ import {
   UserRound,
 } from 'lucide-react';
 
-import type { SubjectSession } from '../../types';
+import type { LoadedSession } from '../../types';
 
 type SessionStatusItem = {
   label: string;
@@ -16,27 +16,50 @@ type SessionStatusItem = {
   tone?: 'warning' | 'success';
 };
 
-const statusItems = (session: SubjectSession): SessionStatusItem[] => [
-  { label: 'Subject ID', value: session.subjectId, icon: UserRound },
-  { label: 'Session ID', value: session.sessionId, icon: Radio },
-  { label: 'Protocol Code', value: session.protocolCode, icon: ShieldAlert },
-  { label: 'Recording Time', value: session.recordingTime, icon: Timer },
-  { label: 'Device Status', value: 'Offline', icon: Radio, tone: 'warning' },
-  { label: 'Data Latency', value: '—', icon: Timer },
-  { label: 'Storage', value: 'Ready', icon: Database, tone: 'success' },
-  { label: 'Battery', value: '—', icon: Battery },
-];
+function durationLabel(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+}
 
-export function SessionStatusBar({ session }: { session: SubjectSession }) {
+const statusItems = (loaded: LoadedSession): SessionStatusItem[] => {
+  const { manifest } = loaded;
+  return [
+    { label: 'Dataset', value: manifest.dataset.display_name, icon: Database },
+    { label: 'Session ID', value: manifest.session.session_id, icon: Radio },
+    {
+      label: 'Subject ID',
+      value: manifest.session.subject_id,
+      icon: UserRound,
+    },
+    {
+      label: 'Duration',
+      value: durationLabel(manifest.recording.duration_seconds),
+      icon: Timer,
+    },
+    {
+      label: 'Data Source',
+      value: loaded.fixture ? 'Test Fixture' : 'Demo Simulation',
+      icon: ShieldAlert,
+    },
+    { label: 'Replay State', value: 'Not started', icon: Timer },
+    { label: 'Metadata', value: 'Ready', icon: Database, tone: 'success' },
+    { label: 'Hardware', value: 'Offline', icon: Battery, tone: 'warning' },
+  ];
+};
+
+export function SessionStatusBar({ session }: { session: LoadedSession }) {
   return (
     <section aria-label="Session status" className="panel overflow-hidden">
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
         <div className="flex items-center gap-2">
           <span className="eyebrow">Session Status</span>
-          <span className="demo-chip">Simulated</span>
+          <span className="demo-chip">
+            {session.fixture ? 'Test Fixture' : 'Simulated'}
+          </span>
         </div>
         <span className="font-mono text-[0.6875rem] text-secondary">
-          LOCAL DEMO
+          {session.dataSource.replaceAll('-', ' ').toUpperCase()}
         </span>
       </div>
       <dl className="grid grid-cols-2 divide-x-0 divide-y divide-line sm:grid-cols-4 xl:grid-cols-8 xl:divide-x xl:divide-y-0">

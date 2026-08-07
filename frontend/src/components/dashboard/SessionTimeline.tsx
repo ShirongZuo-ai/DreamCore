@@ -51,18 +51,30 @@ function LaneMarks({ pattern, color }: { pattern: string; color: string }) {
   );
 }
 
-export function SessionTimeline({ events }: { events: TimelineEvent[] }) {
+export function SessionTimeline({
+  events,
+  showPlaceholders = true,
+}: {
+  events: TimelineEvent[];
+  showPlaceholders?: boolean;
+}) {
   return (
     <section className="panel overflow-hidden" aria-labelledby="timeline-title">
       <div className="flex items-center justify-between border-b border-line px-4 py-3.5">
         <PanelHeader
           title="Session Timeline"
           eyebrow="Structural placeholder"
-          action={<span className="demo-chip">Demo</span>}
+          action={
+            <span className="demo-chip">
+              {showPlaceholders ? 'Demo' : 'Metadata only'}
+            </span>
+          }
         />
         <span className="hidden items-center gap-1.5 text-xs text-secondary sm:flex">
           <Flag aria-hidden="true" size={14} />
-          {events.length} example events
+          {showPlaceholders
+            ? `${events.length} example events`
+            : 'No event payload loaded'}
         </span>
       </div>
       <div className="divide-y divide-line/70">
@@ -75,7 +87,9 @@ export function SessionTimeline({ events }: { events: TimelineEvent[] }) {
               {lane.label}
             </div>
             <div className="relative h-7 border-l border-line bg-[#111d2a]">
-              <LaneMarks pattern={lane.pattern} color={lane.color} />
+              {showPlaceholders ? (
+                <LaneMarks pattern={lane.pattern} color={lane.color} />
+              ) : null}
             </div>
           </div>
         ))}

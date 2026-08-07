@@ -249,3 +249,31 @@ performance. The next implementation stage must introduce causal filtering and
 simulated real-time replay before any online claim is considered.
 
 **Date**: 2026-08-07
+
+---
+
+## DD-012: Put dataset-specific knowledge behind a canonical session boundary
+
+**Decision**: Use the versioned `dreamcore.session.v1` package between dataset
+adapters and all catalog/replay/UI consumers. Represent every capability with
+`AVAILABLE`, `UNAVAILABLE`, `PLANNED`, or `UNKNOWN` plus optional provenance and
+reason metadata. Missing content is displayed explicitly and is never replaced
+with simulated medical values. Seeded random selection operates on a supplied
+candidate collection; valid random selection applies a generic session filter
+first.
+
+**Rationale**:
+
+- A second dataset should add an adapter or normalized package, not Live Console
+  branches.
+- Typed capabilities distinguish absent data from future work and unresolved
+  specifications.
+- Metadata-only catalogs and windowed reads scale without embedding signals in
+  manifests.
+- Shared fixtures keep the Python and TypeScript contracts aligned while no
+  transport API exists.
+
+Phase 2A uses synthetic TEST FIXTURES only. It does not implement a real dataset
+reader, playback clock, WebSocket, device transport, or stimulation control.
+
+**Date**: 2026-08-07

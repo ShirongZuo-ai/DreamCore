@@ -1,24 +1,43 @@
 import { AlertTriangle } from 'lucide-react';
 
+import { MissingDataState } from '../components/common/MissingDataState';
 import { AIDecisionPanel } from '../components/dashboard/AIDecisionPanel';
 import { PhysiologyPanel } from '../components/dashboard/PhysiologyPanel';
+import { SessionLoaderPanel } from '../components/dashboard/SessionLoaderPanel';
 import { SessionStatusBar } from '../components/dashboard/SessionStatusBar';
 import { SessionTimeline } from '../components/dashboard/SessionTimeline';
 import { EEGWaveformPanel } from '../components/eeg/EEGWaveformPanel';
 import { EmergencyStopButton } from '../components/safety/EmergencyStopButton';
 import { SafetyPanel } from '../components/safety/SafetyPanel';
 import { useLocalEmergencyStop } from '../hooks/useLocalEmergencyStop';
+import { useSessionWorkspace } from '../hooks/useSessionWorkspace';
 import {
   demoDecision,
   demoEEGWindow,
   demoPhysiology,
   demoSafety,
-  demoSession,
   demoTimelineEvents,
 } from '../mocks/demoData';
 
 export function LiveConsolePage() {
   const emergencyStop = useLocalEmergencyStop();
+  const workspace = useSessionWorkspace();
+  const loadedSession = workspace.loadState.session;
+
+  if (!loadedSession) {
+    return (
+      <div className="min-w-0 space-y-4" data-testid="live-page">
+        <SessionLoaderPanel />
+        <p className="panel p-5 text-sm text-secondary">
+          No session is loaded. Choose Demo Simulation or a TEST FIXTURE
+          session.
+        </p>
+      </div>
+    );
+  }
+
+  const isDemo = loadedSession.dataSource === 'demo-simulation';
+  const eegCapability = loadedSession.manifest.capabilities.eeg;
 
   return (
     <div className="min-w-0 space-y-4" data-testid="live-page">
@@ -26,13 +45,17 @@ export function LiveConsolePage() {
         <div>
           <div className="flex items-center gap-2">
             <p className="eyebrow">Operator workspace</p>
-            <span className="demo-chip">Simulated</span>
+            <span className="demo-chip">
+              {loadedSession.fixture ? 'Test Fixture' : 'Simulated'}
+            </span>
           </div>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-primary">
             Live Console
           </h1>
           <p className="mt-1 text-sm text-secondary">
-            Static research monitoring interface · no device connection
+            {loadedSession.fixture
+              ? 'Offline Session Package metadata · replay not started'
+              : 'Static research monitoring interface · no device connection'}
           </p>
         </div>
         <EmergencyStopButton
@@ -62,21 +85,50 @@ export function LiveConsolePage() {
         </div>
       ) : null}
 
-      <SessionStatusBar session={demoSession} />
+      <SessionLoaderPanel />
+
+      <SessionStatusBar session={loadedSession} />
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
-        <EEGWaveformPanel window={demoEEGWindow} />
+        {eegCapability.status === 'AVAILABLE' ? (
+          <EEGWaveformPanel
+            window={demoEEGWindow}
+            sourceLabel={isDemo ? 'Simulated' : 'Static Fixture Placeholder'}
+          />
+        ) : (
+          <section
+            className="panel min-h-[29rem] p-4"
+            aria-label="EEG unavailable"
+          >
+            <p className="eyebrow">Shared time axis</p>
+            <h2 className="mt-1 text-base font-semibold text-primary">
+              EEG Signal Monitor
+            </h2>
+            <div className="grid min-h-[23rem] place-items-center">
+              <div className="max-w-md">
+                <MissingDataState label="EEG" capability={eegCapability} />
+                <p className="mt-3 text-center text-xs text-secondary">
+                  No simulated waveform is substituted for a missing source
+                  signal.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
         <aside className="min-w-0" aria-label="AI decision panel">
-          <AIDecisionPanel decision={demoDecision} />
+          <AIDecisionPanel decision={demoDecision} session={loadedSession} />
         </aside>
       </div>
 
       <div className="grid min-w-0 items-start gap-4 lg:grid-cols-2">
-        <SafetyPanel status={demoSafety} />
-        <PhysiologyPanel snapshot={demoPhysiology} />
+        <SafetyPanel status={demoSafety} session={loadedSession} />
+        <PhysiologyPanel snapshot={demoPhysiology} session={loadedSession} />
       </div>
 
-      <SessionTimeline events={demoTimelineEvents} />
+      <SessionTimeline
+        events={isDemo ? demoTimelineEvents : []}
+        showPlaceholders={isDemo}
+      />
     </div>
   );
 }

@@ -183,3 +183,17 @@
   offline Hilbert result.
 - Expand manual candidate review and sensitivity analysis across detector
   profiles, segments, and subjects before treating density as a stable metric.
+
+## 2026-08-07 — Phase 2A generic dataset and session framework
+
+- [x] Added the versioned `dreamcore.session.v1` manifest, typed capability
+  semantics, filesystem package repository, generic adapter contract, registry,
+  filters, deterministic random selection, and windowed replay-source boundary.
+- [x] Added three tiny shared synthetic contract fixtures covering available,
+  unavailable, planned, unknown, derived, and partial-physiology behavior.
+- [x] Added the Dataset Library, shareable session details, source/session
+  loader, in-app selection persistence, and capability-aware Live Console.
+- [x] Kept all fixtures explicitly marked as not real subject data; no EDF
+  reader, real replay, API, WebSocket, hardware telemetry, or control was added.
+- [ ] Phase 2B: implement the first approved real dataset adapter/normalizer and
+  Python-backed catalog/window transport without changing core UI logic.
