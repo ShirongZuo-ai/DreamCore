@@ -1,0 +1,39 @@
+:root {
+  --color-background-rgb: 15 24 36;
+  --color-surface-rgb: 22 34 48;
+  --color-surface-elevated-rgb: 27 42 58;
+  --color-border-rgb: 42 58 75;
+  --color-text-primary-rgb: 238 245 247;
+  --color-text-secondary-rgb: 145 164 183;
+  --color-accent-rgb: 61 181 216;
+  --color-stimulation-rgb: 155 140 244;
+  --color-warning-rgb: 225 170 90;
+  --color-danger-rgb: 239 101 116;
+  --color-success-rgb: 89 197 155;
+
+  --color-background: rgb(var(--color-background-rgb));
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-surface-elevated: rgb(var(--color-surface-elevated-rgb));
+  --color-border: rgb(var(--color-border-rgb));
+  --color-text-primary: rgb(var(--color-text-primary-rgb));
+  --color-text-secondary: rgb(var(--color-text-secondary-rgb));
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-accent-muted: #173b4b;
+  --color-stimulation: rgb(var(--color-stimulation-rgb));
+  --color-warning: rgb(var(--color-warning-rgb));
+  --color-danger: rgb(var(--color-danger-rgb));
+  --color-success: rgb(var(--color-success-rgb));
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 2.5rem;
+  --space-6: 3rem;
+
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+  --shadow-card: 0 12px 32px rgb(4 10 18 / 18%);
+  --motion-fast: 180ms;
+  --motion-standard: 220ms;
+}

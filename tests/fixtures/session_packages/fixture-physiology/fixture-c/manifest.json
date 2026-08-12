@@ -1,0 +1,76 @@
+{
+  "schema_version": "dreamcore.session.v1",
+  "dataset": {
+    "id": "fixture-physiology",
+    "display_name": "Physiology Capability Fixtures"
+  },
+  "session": {
+    "session_id": "fixture-c",
+    "subject_id": "TEST-SUBJECT-C",
+    "visit_id": "TEST-VISIT-02"
+  },
+  "recording": {
+    "duration_seconds": 14400,
+    "timezone": "UTC"
+  },
+  "signals": [
+    {
+      "id": "ppg-test-primary",
+      "modality": "ppg",
+      "channel_name": "TEST-PPG",
+      "unit": "a.u.",
+      "sampling_rate_hz": 20,
+      "source": "simulated",
+      "available": true,
+      "metadata": {"fixture_generation": {"kind": "sine", "frequency_hz": 1.05, "amplitude": 1.0}}
+    },
+    {
+      "id": "spo2-test",
+      "modality": "spo2",
+      "channel_name": "TEST-SPO2",
+      "unit": "%",
+      "sampling_rate_hz": 1,
+      "source": "simulated",
+      "available": true,
+      "metadata": {"fixture_generation": {"kind": "constant", "value": 97.0}}
+    }
+  ],
+  "annotations": {
+    "sleep_stages": {"available": false, "source": "unknown", "reason": "Not present in source fixture"},
+    "arousals": {"available": false, "source": "unknown", "reason": "Not present in source fixture"},
+    "artifacts": {"available": false, "source": "unknown", "reason": "Not present in source fixture"},
+    "manual_markers": {"available": false, "source": "unknown", "reason": "Not present in source fixture"}
+  },
+  "derived": {
+    "slow_oscillations": {"available": false, "source": "unknown", "reason": "EEG unavailable"},
+    "phase_estimates": {"available": false, "source": "unknown", "reason": "EEG unavailable"},
+    "phase_precision": {"available": false, "source": "unknown", "reason": "EEG unavailable"},
+    "sleep_stage_predictions": {"available": false, "source": "unknown", "reason": "Not computed"},
+    "decisions": {"available": false, "source": "unknown", "reason": "Not computed"}
+  },
+  "capabilities": {
+    "eeg": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "sleep_stage_labels": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "sleep_stage_predictions": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not computed"},
+    "slow_oscillation_detection": {"status": "UNAVAILABLE", "source": "unknown", "reason": "EEG unavailable"},
+    "phase_estimation": {"status": "UNAVAILABLE", "source": "unknown", "reason": "EEG unavailable"},
+    "phase_precision": {"status": "UNAVAILABLE", "source": "unknown", "reason": "EEG unavailable"},
+    "decision_simulation": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Required EEG-derived inputs unavailable"},
+    "heart_rate": {"status": "AVAILABLE", "source": "derived", "derived_by": "fixture-ppg-heart-rate-v1", "version": "test-1"},
+    "ppg": {"status": "AVAILABLE", "source": "simulated", "reason": "Deterministic test signal metadata"},
+    "spo2": {"status": "AVAILABLE", "source": "simulated", "reason": "Deterministic test signal metadata"},
+    "movement": {"status": "PLANNED", "source": "unknown", "reason": "No movement channel in current fixture"},
+    "snoring": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "arousals": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Not present in source fixture"},
+    "artifacts": {"status": "UNKNOWN", "source": "unknown", "reason": "Artifact coverage is not declared"},
+    "stimulation_events": {"status": "UNAVAILABLE", "source": "unknown", "reason": "No stimulation data in offline fixture"},
+    "hardware_telemetry": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline session has no hardware telemetry"},
+    "navigation_alignment": {"status": "UNAVAILABLE", "source": "unknown", "reason": "Offline recording has no navigation telemetry"}
+  },
+  "provenance": {
+    "classification": "simulated",
+    "source_dataset_uri": null,
+    "imported_by": "dreamcore-phase-2a-fixture-builder",
+    "notes": "TEST FIXTURE — NOT REAL SUBJECT DATA"
+  }
+}

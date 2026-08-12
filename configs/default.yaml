@@ -1,0 +1,540 @@
+# DreamCore default configuration
+# ⚠ RESEARCH DEFAULTS ONLY — not final hardware specs.
+# All values are placeholders. Update when real hardware parameters are known.
+
+# ── General ──────────────────────────────────────────────────────────
+general:
+  project_name: "dreamcore"
+  random_seed: 42
+  log_level: "INFO"
+
+# ── Read-only Session HTTP Transport ─────────────────────────────────
+# Local offline viewer transport only. No streaming or command endpoints.
+session_transport:
+  api_version: "v1"
+  host: "127.0.0.1"
+  port: 8765
+  session_package_root: "data/session_packages"
+  max_signal_window_s: 120.0
+  cors_allowed_origins:
+    - "http://127.0.0.1:4173"
+    - "http://localhost:4173"
+
+# ── EEG Data ─────────────────────────────────────────────────────────
+# Sampling rate is unknown until hardware is selected. 100 Hz is a
+# common research default; replace with actual hardware spec later.
+eeg:
+  sampling_rate_hz: 100          # TODO: replace with real hardware spec
+  channel_names: []              # TODO: populate after electrode layout known
+  reference: "unknown"           # "mastoid", "cz", "average", etc.
+  unit: "uV"
+  montage: "unknown"             # 10-20, 10-10, custom
+
+# ── Data Loading & Quality ───────────────────────────────────────────
+data:
+  preload_edf: false             # false keeps large recordings memory efficient
+  sampling_rate_tolerance_hz: 0.01
+  quality:
+    flatline_threshold_s: 5.0    # flag identical runs longer than this duration
+    max_nan_ratio: 0.0           # per-channel ratio allowed for an overall pass
+    std_ddof: 0                  # population standard deviation
+
+# ── Preprocessing ────────────────────────────────────────────────────
+# Research comparison profiles only — these are not final product parameters.
+preprocessing:
+  active_profile: "slow_oscillation_observation"
+  eeg_channels: []               # supplied by a dataset config or CLI
+  profiles:
+    raw_eeg:
+      reference:
+        mode: "none"             # "none" | "average" | "channels"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: null
+        high_hz: null
+        method: "fir"
+      detrend: "none"            # "none" | "demean" | "linear"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 0.0
+    broadband_sleep_eeg:
+      reference:
+        mode: "none"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: 0.5
+        high_hz: 30.0
+        method: "fir"
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+    slow_oscillation_observation:
+      reference:
+        mode: "none"
+        channels: []
+      notch_freqs_hz: []
+      notch_method: "fir"
+      bandpass:
+        low_hz: 0.5
+        high_hz: 4.0
+        method: "fir"
+      detrend: "demean"
+      target_sampling_rate_hz: null
+      resample_method: "fft"
+      boundary_discard_s: 5.0
+
+# ── N3 EEG Visualization ─────────────────────────────────────────────
+n3_visualization:
+  segment_id: null               # set to a representative segment per dataset
+  preprocessing_profile: "slow_oscillation_observation"
+  amplitude_scale: 1000000.0     # EDF volts -> displayed microvolts
+  amplitude_unit: "µV"
+  figure_width_inches: 14.0
+  figure_height_per_channel_inches: 3.2
+  dpi: 160
+  raw_color: "#6B7280"
+  processed_color: "#2563EB"
+  raw_line_width: 0.7
+  processed_line_width: 1.0
+  raw_line_style: ":"
+  processed_line_style: "-"
+  grid_alpha: 0.18
+  windows:
+    long:
+      offset_s: 60.0
+      duration_s: 120.0
+      output_path: "results/n3_eeg_long.png"
+    short:
+      offset_s: 90.0
+      duration_s: 20.0
+      output_path: "results/n3_eeg_short.png"
+  summary_json: "results/n3_eeg_preprocessing_summary.json"
+  json_indent: 2
+
+# ── Sleep Staging ────────────────────────────────────────────────────
+sleep_staging:
+  # Unified label -> accepted raw dataset labels.
+  stage_labels:
+    W: ["Sleep stage W", "W", "Wake", "0"]
+    N1: ["Sleep stage 1", "N1", "S1", "1"]
+    N2: ["Sleep stage 2", "N2", "S2", "2"]
+    N3: ["Sleep stage 3", "Sleep stage 4", "N3", "S3", "S4", "3", "4", "SWS"]
+    REM: ["Sleep stage R", "R", "REM", "5"]
+    UNKNOWN: ["Sleep stage ?", "UNKNOWN"]
+    MOVEMENT: ["Movement time", "MOVEMENT"]
+  unknown_label_policy: "map_to_unknown"  # "map_to_unknown" | "raise"
+  unknown_label: "UNKNOWN"
+  merge_tolerance_s: 0.0
+  focus_stages: ["N2", "N3"]
+
+# ── N3 Segment Extraction ────────────────────────────────────────────
+n3_extraction:
+  target_label: "N3"
+  min_segment_duration_s: 30.0
+  eeg_channels: []               # must be supplied by dataset config or CLI
+  output_csv: "results/n3_segments.csv"
+  output_json: "results/n3_segments.json"
+  json_indent: 2
+
+# ── Slow Oscillation Detection ───────────────────────────────────────
+# Candidate-generation research defaults only — not physiological ground truth
+# and not product parameters.
+slow_oscillation:
+  active_profile: "strict_slow_oscillation"
+  amplitude_scale_to_uv: 1000000.0
+  profiles:
+    broad_slow_wave:
+      detection_band: {low_hz: 0.5, high_hz: 4.0, method: "fir"}
+      duration:
+        negative_halfwave_min_s: 0.125
+        negative_halfwave_max_s: 1.0
+        full_cycle_min_s: 0.25
+        full_cycle_max_s: 2.0
+      amplitude:
+        strategy: "none"         # "none" | "fixed" | "adaptive_quantile"
+        metric: "peak_to_peak_amplitude_uv"
+        fixed_min_uv: null
+        quantile: 0.75
+      artifact_rejection:
+        boundary_exclusion_s: 2.0
+        max_peak_to_peak_uv: 500.0
+        invalid_time_masks: []   # absolute half-open PSG ranges
+    strict_slow_oscillation:
+      detection_band: {low_hz: 0.5, high_hz: 1.25, method: "fir"}
+      duration:
+        negative_halfwave_min_s: 0.3
+        negative_halfwave_max_s: 1.2
+        full_cycle_min_s: 0.8
+        full_cycle_max_s: 2.0
+      amplitude:
+        strategy: "adaptive_quantile"
+        metric: "peak_to_peak_amplitude_uv"
+        fixed_min_uv: null
+        quantile: 0.75
+      artifact_rejection:
+        boundary_exclusion_s: 2.0
+        max_peak_to_peak_uv: 500.0
+        invalid_time_masks: []
+  overlap:
+    accepted_only: true
+    min_overlap_s: 0.0
+  output_csv: "results/slow_oscillation_events.csv"
+  summary_json: "results/slow_oscillation_summary.json"
+  json_indent: 2
+  qa:
+    segment_id: null
+    preprocessing_profile: "broadband_sleep_eeg"
+    offset_s: 90.0
+    duration_s: 20.0
+    output_path: "results/slow_oscillation_qa.png"
+    figure_width_inches: 14.0
+    figure_height_per_channel_inches: 3.4
+    dpi: 160
+    amplitude_scale: 1000000.0
+    amplitude_unit: "µV"
+    raw_color: "#6B7280"
+    detection_color: "#1D4ED8"
+    accepted_color: "#2563EB"
+    rejected_color: "#D97706"
+    grid_alpha: 0.18
+
+# ── Offline Hilbert Phase Estimation ─────────────────────────────────
+# Research baseline only. Zero-phase FIR and Hilbert use future samples.
+hilbert_phase:
+  active_profile: "offline_strict_so"
+  amplitude_scale_to_uv: 1000000.0
+  profiles:
+    offline_strict_so:
+      phase_band:
+        low_hz: 0.5
+        high_hz: 1.25
+        method: "fir"
+        phase: "zero"
+      project_phase_offset_rad: -3.141592653589793
+      boundary_invalid_s: 5.0
+      min_signal_duration_s: 10.0
+      constant_std_tolerance: 0.0
+      amplitude_envelope:
+        strategy: "adaptive_quantile"  # "none" | "fixed" | "adaptive_quantile"
+        fixed_min_uv: null
+        quantile: 0.10
+      instantaneous_frequency:
+        enabled: true
+        min_hz: 0.2
+        max_hz: 2.0
+      invalid_time_masks: []
+      expected_landmark_phases_rad:
+        downward_zero_crossing: -1.5707963267948966
+        trough: 0.0
+        upward_zero_crossing: 1.5707963267948966
+        positive_peak: 3.141592653589793
+      event_validation:
+        reverse_step_tolerance_rad: 0.05
+        max_reverse_step_fraction: 0.05
+        min_forward_advance_rad: 3.141592653589793
+        min_event_valid_fraction: 0.90
+  cross_channel:
+    accepted_only: true
+    min_overlap_s: 0.0
+    comparison_time: "overlap_midpoint"
+  landmarks_csv: "results/hilbert_phase_landmarks.csv"
+  summary_json: "results/hilbert_phase_summary.json"
+  json_indent: 2
+  qa:
+    segment_id: null
+    preprocessing_profile: "broadband_sleep_eeg"
+    detector_profile: "strict_slow_oscillation"
+    phase_profile: "offline_strict_so"
+    offset_s: 90.0
+    duration_s: 20.0
+    output_path: "results/hilbert_phase_qa.png"
+    figure_width_inches: 15.0
+    figure_height_inches: 10.5
+    dpi: 160
+    amplitude_unit: "µV"
+    signal_color: "#1D4ED8"
+    phase_color: "#2563EB"
+    envelope_color: "#1E40AF"
+    invalid_color: "#D97706"
+    accepted_color: "#2563EB"
+    grid_alpha: 0.18
+
+# ── Pre-sleep Alpha V1 Research Baseline ─────────────────────────────
+# Derived features use observed EEG. Demand/events are simulated abstract
+# control quantities and are never ultrasound dose, delivery, or response.
+alpha:
+  active_profile: "fixed_alpha"
+  comparison_profile: "individualized_alpha"
+  input_scale_to_uv: 1000000.0
+  channels: []
+  profiles:
+    fixed_alpha:
+      band_strategy: "fixed"
+      fixed_band: {low_hz: 8.0, high_hz: 13.0}
+      individualized_band: {half_width_hz: 2.0, fallback_to_fixed: false}
+      spectral:
+        total_power_band: {low_hz: 0.5, high_hz: 30.0}
+        welch_segment_s: 4.0
+        welch_overlap_fraction: 0.5
+        welch_window: "hann"
+        welch_detrend: "constant"
+        filter_method: "fir"
+        filter_phase: "zero"
+      iaf:
+        search_band_low_hz: 7.0
+        search_band_high_hz: 14.0
+        edge_margin_hz: 0.5
+        min_prominence_db: 3.0
+        high_confidence_prominence_db: 10.0
+    individualized_alpha:
+      band_strategy: "individualized"
+      fixed_band: {low_hz: 8.0, high_hz: 13.0}
+      individualized_band: {half_width_hz: 2.0, fallback_to_fixed: false}
+      spectral:
+        total_power_band: {low_hz: 0.5, high_hz: 30.0}
+        welch_segment_s: 4.0
+        welch_overlap_fraction: 0.5
+        welch_window: "hann"
+        welch_detrend: "constant"
+        filter_method: "fir"
+        filter_phase: "zero"
+      iaf:
+        search_band_low_hz: 7.0
+        search_band_high_hz: 14.0
+        edge_margin_hz: 0.5
+        min_prominence_db: 3.0
+        high_confidence_prominence_db: 10.0
+  quality:
+    min_finite_ratio: 0.99
+    min_standard_deviation_uv: 0.1
+    max_standard_deviation_uv: 200.0
+    max_peak_to_peak_uv: 1000.0
+    max_flatline_ratio: 0.05
+    invalid_score_ceiling: 0.25
+  windowing:
+    analysis_window_s: 30.0
+    step_s: 10.0
+  history:
+    short_window_s: 60.0
+    trend_window_s: 300.0
+    baseline_window_s: 300.0
+    minimum_points: 3
+    minimum_time_coverage_ratio: 0.7
+    stable_slope_fraction_per_min: 0.01
+  state:
+    awake_alpha_ratio: 0.95
+    drowsy_alpha_ratio: 0.60
+    full_scale_alpha_drop_fraction: 0.40
+    trend_drowsiness_scores:
+      rising: 0.0
+      stable: 0.35
+      falling: 1.0
+    weights: {low_alpha: 0.35, alpha_drop: 0.35, trend: 0.30}
+  simulated_demand:
+    initial_demand: 0.0
+    initial_observation_step_s: 10.0
+    minimum_valid_observation_s: 120.0
+    minimum_state_confidence: 0.65
+    minimum_active_demand: 0.15
+    maximum_demand: 1.0
+    drowsiness_reduction_weight: 0.85
+    falling_trend_multiplier: 0.65
+    smoothing_time_constant_s: 90.0
+    max_rise_per_minute: 0.20
+    max_fall_per_minute: 0.30
+    demand_hysteresis_deadband: 0.03
+    ready_drowsiness_entry: 0.75
+    ready_drowsiness_exit: 0.60
+    ready_alpha_change_max: -0.25
+    ready_allowed_trends: ["falling", "stable"]
+    ready_sustain_s: 120.0
+    ready_demand_max: 0.05
+    stopped_demand_threshold: 0.02
+    event_change_threshold: 0.01
+    event_drowsiness_label_threshold: 0.50
+  evaluation:
+    start_s: null
+    end_s: null
+    stages: ["W", "N1", "N2"]
+    iaf_baseline_start_s: null
+    iaf_baseline_end_s: null
+    control_channel: null
+  output:
+    features_csv: "results/alpha_v1_features.csv"
+    summary_json: "results/alpha_v1_summary.json"
+    qa_png: "results/alpha_v1_qa.png"
+    json_indent: 2
+  session_package:
+    manifest_path: "data/session_packages/sleep-edf/alpha-v1/manifest.json"
+    session_id: "alpha-v1"
+    viewer:
+      default_start_s: null
+      default_time_s: null
+      default_window_duration_s: 120.0
+      window_duration_options_s: [30.0, 60.0, 120.0]
+      display_max_points_per_signal: 2000
+      feature_timestamp_semantics: "window_end"
+      stage_jump_time_s: null
+      replay:
+        enabled: true
+        tick_interval_ms: 250
+        default_speed: 1.0
+        speed_options: [0.5, 1.0, 2.0, 5.0, 10.0]
+        cache_max_windows: 3
+        prefetch_threshold_fraction: 0.75
+        seek_cursor_fraction: 0.25
+        intervention_notice_duration_ms: 5000
+        intervention_marker_color: "#E1AA5A"
+        provenance_notice: "SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED"
+  qa:
+    start_s: null
+    duration_s: 600.0
+    raw_display_window_s: 30.0
+    figure_width_inches: 16.0
+    figure_height_inches: 15.0
+    dpi: 160
+    observed_color: "#6B7280"
+    derived_color: "#2563EB"
+    comparison_color: "#1E40AF"
+    simulated_color: "#D97706"
+    stage_colors: {W: "#E5E7EB", N1: "#BFDBFE", N2: "#93C5FD"}
+    grid_alpha: 0.18
+
+# ── Eye-Movement / EOG Research V1 ──────────────────────────────────
+# Primary exploratory research signal. Channel labels are discovered from
+# recording metadata using these configurable rules; no electrode is silently
+# substituted. Candidate events are signal-processing hypotheses, not REM or
+# dream labels.
+eye_movement:
+  feature_version: "eye-movement-v1"
+  input_scale_to_uv: 1000000.0
+  channel_discovery:
+    preferred_mne_types: ["eog"]
+    label_patterns: ['(?i)(^|[\s_-])eog([\s_-]|$)']
+    require_unique: true
+  filtering:
+    low_hz: 0.3
+    high_hz: 10.0
+    method: "butterworth"
+    order: 4
+    phase: "zero"
+  windowing:
+    analysis_window_s: 4.0
+    step_s: 1.0
+    timestamp_semantics: "window_end"
+  quality:
+    min_finite_ratio: 0.99
+    min_standard_deviation_uv: 0.1
+    max_peak_to_peak_uv: 1000.0
+  normalization:
+    low_quantile: 0.05
+    high_quantile: 0.95
+    epsilon: 1.0e-9
+  local_baseline:
+    duration_s: 60.0
+    robust_scale_factor: 1.4826
+  event_detection:
+    activity_robust_z_threshold: 3.0
+    minimum_separation_s: 0.5
+    minimum_duration_s: 0.1
+    maximum_duration_s: 2.0
+    peak_width_relative_height: 0.5
+    confidence_saturation_z: 10.0
+    event_rate_history_s: 30.0
+  output:
+    features_csv: "results/eye_movement_v1_features.csv"
+    events_csv: "results/eye_movement_v1_events.csv"
+    filtered_signal_binary: "results/eye_movement_v1_filtered_eog.f32"
+    indexed_artifact_database: "results/eye_movement_v1.sqlite"
+    summary_json: "results/eye_movement_v1_summary.json"
+    json_indent: 2
+  session_package:
+    manifest_path: "data/session_packages/sleep-edf/eye-movement-v1/manifest.json"
+    session_id: "eye-movement-v1"
+    viewer:
+      default_start_s: null
+      default_time_s: null
+      default_window_duration_s: 120.0
+      window_duration_options_s: [30.0, 60.0, 120.0]
+      display_max_points_per_signal: 2000
+      feature_timestamp_semantics: "window_end"
+      activity_jump_time_s: null
+
+# ── Deterministic Physiological Sonification V1 ─────────────────────
+# These are inspectable musical mappings, not physiological meanings and not
+# therapeutic parameters. Browser output is normalized below unity.
+sonification:
+  mapping_version: "sonification-mapping-v1"
+  control_version: "sonification-control-v1"
+  seed: 42
+  eye_movement:
+    tempo_bpm: {minimum: 54.0, maximum: 108.0, event_rate_max_per_min: 20.0}
+    density: {minimum: 0.08, maximum: 0.90}
+    intensity: {minimum: 0.05, maximum: 0.55}
+    brightness_hz: {minimum: 240.0, maximum: 2400.0}
+    midi_scale: [48, 50, 53, 55, 57, 60, 62, 65]
+    velocity: {minimum: 0.10, maximum: 0.70}
+  alpha_comparison:
+    source_channel: null
+    low_quantile: 0.05
+    high_quantile: 0.95
+    tempo_bpm: {minimum: 48.0, maximum: 84.0}
+    density: {minimum: 0.05, maximum: 0.55}
+    intensity: {minimum: 0.04, maximum: 0.35}
+    brightness_hz: {minimum: 180.0, maximum: 1400.0}
+    midi_scale: [45, 48, 52, 55, 57, 60]
+  baseline:
+    tempo_bpm: 60.0
+    density: 0.05
+    intensity: 0.04
+    brightness_hz: 220.0
+    midi_note: 48
+  audio:
+    master_gain: 0.16
+    attack_s: 0.01
+    release_s: 0.24
+    note_duration_s: 0.16
+    oscillator_type: "sine"
+  output:
+    controls_csv: "results/sonification_control_v1.csv"
+    json_indent: 2
+
+# ── Phase Prediction ─────────────────────────────────────────────────
+phase_prediction:
+  method: "hilbert"              # "hilbert", "fixed_threshold", "state_space"
+  lookahead_ms: 200              # how far ahead to predict
+  prediction_horizon_ms: 500     # total prediction window
+  phase_target_deg: [0, 180]     # target up-state onset or down-state onset
+
+# ── Precision Gating ─────────────────────────────────────────────────
+precision_gating:
+  confidence_threshold: 0.8      # 0-1; skip trigger below this
+  phase_error_tolerance_deg: 30  # ± degrees considered "on target"
+  min_consecutive_good_cycles: 3
+
+# ── Simulation (offline replay) ──────────────────────────────────────
+simulation:
+  buffer_duration_s: 30          # sliding window size
+  step_size_ms: 100              # replay step
+  trigger_mode: "log_only"       # "log_only" | "mock_output" — no real device
+
+# ── Evaluation ────────────────────────────────────────────────────────
+evaluation:
+  metrics:
+    - "phase_error_mae_deg"
+    - "trigger_precision"
+    - "trigger_recall"
+    - "skip_rate"
+  cross_validation_folds: 5
+
+# ── Output ───────────────────────────────────────────────────────────
+output:
+  results_dir: "./results"
+  save_figures: true
+  figure_format: "png"
+  dpi: 150

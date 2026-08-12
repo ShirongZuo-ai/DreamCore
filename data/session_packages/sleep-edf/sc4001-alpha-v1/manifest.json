@@ -1,0 +1,1133 @@
+{
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "storage": {
+          "kind": "sleep_edf_annotations",
+          "label_map": {
+            "Movement time": "MOVEMENT",
+            "Sleep stage 1": "N1",
+            "Sleep stage 2": "N2",
+            "Sleep stage 3": "N3",
+            "Sleep stage 4": "N3",
+            "Sleep stage ?": "UNKNOWN",
+            "Sleep stage R": "REM",
+            "Sleep stage W": "W"
+          },
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf"
+        }
+      },
+      "source": "imported"
+    }
+  },
+  "capabilities": {
+    "alpha_power": {
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "alpha_trend": {
+      "derived_by": "dreamcore-alpha-trend-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "arousals": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "artifacts": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "decision_simulation": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "drowsiness_score": {
+      "derived_by": "dreamcore-alpha-state-heuristic-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "eeg": {
+      "reason": "REAL PUBLIC EEG DATA referenced from Sleep-EDF",
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eog": {
+      "reason": "Discovered from EDF metadata label 'EOG horizontal'",
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eye_movement_activity": {
+      "derived_by": "dreamcore-eye-movement-classical-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_events": {
+      "derived_by": "dreamcore-eye-movement-classical-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "eye-movement-v1"
+    },
+    "hardware_telemetry": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "heart_rate": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "individual_alpha_frequency": {
+      "derived_by": "dreamcore-alpha-iaf-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "movement": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "navigation_alignment": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_estimation": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_precision": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ppg": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ready_to_remove": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "relative_alpha_power": {
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "sleep_stage_labels": {
+      "reason": "Imported R&K hypnogram annotations",
+      "source": "imported",
+      "status": "AVAILABLE"
+    },
+    "sleep_stage_predictions": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "slow_oscillation_detection": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "snoring": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "sonification_controls": {
+      "derived_by": "dreamcore-sonification-mapper-v1",
+      "source": "derived",
+      "status": "AVAILABLE",
+      "version": "sonification-control-v1"
+    },
+    "spo2": {
+      "reason": "Not produced by the Alpha V1 offline package",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_demand": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    },
+    "stimulation_events": {
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "reason": "SIMULATED CONTROL DEMAND \u2014 NOT ULTRASOUND DOSE",
+      "source": "simulated",
+      "status": "AVAILABLE",
+      "version": "alpha-v1"
+    }
+  },
+  "dataset": {
+    "display_name": "Sleep-EDF Expanded sleep-cassette",
+    "id": "sleep-edf-expanded-sc",
+    "version": "1.0.0"
+  },
+  "derived": {
+    "alpha_power": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "alpha_trend": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-trend-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "drowsiness_score": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-state-heuristic-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "eye_movement_activity_v1": {
+      "available": true,
+      "derived_by": "dreamcore-eye-movement-classical-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 79497,
+          "attempted_windows": 79497,
+          "event_count": 617,
+          "feature_row_count": 79497,
+          "first_feature_time_s": 4.0,
+          "last_feature_time_s": 79500.0,
+          "raw_sample_count": 7950000,
+          "rejected_windows": 0,
+          "rejection_reasons": {},
+          "selected_source_channel": "EOG horizontal",
+          "source_channel_dictionary": {
+            "EEG Fpz-Cz": "eeg",
+            "EEG Pz-Oz": "eeg",
+            "EMG submental": "eeg",
+            "EOG horizontal": "eeg",
+            "Event marker": "eeg",
+            "Resp oro-nasal": "eeg",
+            "Temp rectal": "eeg"
+          },
+          "stage_gating": false,
+          "valid_sample_count": 7950000
+        },
+        "artifact_schema_version": "dreamcore.eye_movement_feature.v1",
+        "audit_export": {
+          "kind": "csv",
+          "path": "../../../../results/eye_movement_v1_features.csv"
+        },
+        "coverage": {
+          "coverage_end_s": 79500.0,
+          "coverage_start_s": 4.0,
+          "row_count": 79497,
+          "source_channel": "EOG horizontal",
+          "step_s": 1.0,
+          "time_reference": "recording_relative",
+          "timestamp_semantics": "window_end",
+          "timestamp_unit": "seconds",
+          "window_s": 4.0
+        },
+        "created_at": "2026-08-12T07:11:37.113453+00:00",
+        "processing": {
+          "filtering": {
+            "high_hz": 10.0,
+            "low_hz": 0.3,
+            "method": "butterworth",
+            "order": 4,
+            "phase": "zero"
+          },
+          "local_baseline": {
+            "duration_s": 60.0,
+            "robust_scale_factor": 1.4826
+          },
+          "normalization": {
+            "epsilon": 1e-09,
+            "high_quantile": 0.95,
+            "low_quantile": 0.05
+          },
+          "quality": {
+            "max_peak_to_peak_uv": 1000.0,
+            "min_finite_ratio": 0.99,
+            "min_standard_deviation_uv": 0.1
+          },
+          "stage_gating": false,
+          "windowing": {
+            "analysis_window_s": 4.0,
+            "step_s": 1.0,
+            "timestamp_semantics": "window_end"
+          }
+        },
+        "source_file_fingerprint": {
+          "algorithm": "sha256",
+          "digest": "2b40a18adf76af69a42d6db1f30f31d26b369f6d27ca0050ef30147ef892b131",
+          "modified_time_ns": 1785996116215157871,
+          "size_bytes": 48338048
+        },
+        "storage": {
+          "kind": "sqlite_rows",
+          "metric": "eye_movement_activity_v1",
+          "path": "../../../../results/eye_movement_v1.sqlite"
+        },
+        "viewer": {
+          "activity_jump_time_s": 30700.0,
+          "audio": {
+            "attack_s": 0.01,
+            "master_gain": 0.16,
+            "note_duration_s": 0.16,
+            "oscillator_type": "sine",
+            "release_s": 0.24
+          },
+          "baseline_controls": {
+            "brightness_hz": 220.0,
+            "density": 0.05,
+            "intensity": 0.04,
+            "midi_note": 48,
+            "tempo_bpm": 60.0
+          },
+          "default_start_s": 30590.0,
+          "default_time_s": 30700.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_events_v1": {
+      "available": true,
+      "derived_by": "dreamcore-eye-movement-classical-v1",
+      "metadata": {
+        "artifact_schema_version": "dreamcore.eye_movement_feature.v1",
+        "audit_export": {
+          "kind": "csv",
+          "path": "../../../../results/eye_movement_v1_events.csv"
+        },
+        "coverage": {
+          "coverage_end_s": 79500.0,
+          "coverage_start_s": 4.0,
+          "row_count": 617,
+          "source_channel": "EOG horizontal",
+          "step_s": 1.0,
+          "time_reference": "recording_relative",
+          "timestamp_semantics": "window_end",
+          "timestamp_unit": "seconds",
+          "window_s": 4.0
+        },
+        "created_at": "2026-08-12T07:11:37.113453+00:00",
+        "detector": {
+          "activity_robust_z_threshold": 3.0,
+          "confidence_saturation_z": 10.0,
+          "event_rate_history_s": 30.0,
+          "maximum_duration_s": 2.0,
+          "minimum_duration_s": 0.1,
+          "minimum_separation_s": 0.5,
+          "peak_width_relative_height": 0.5
+        },
+        "event_semantics": "Eye Movement Candidate; not REM or dream detection",
+        "source_file_fingerprint": {
+          "algorithm": "sha256",
+          "digest": "2b40a18adf76af69a42d6db1f30f31d26b369f6d27ca0050ef30147ef892b131",
+          "modified_time_ns": 1785996116215157871,
+          "size_bytes": 48338048
+        },
+        "storage": {
+          "kind": "sqlite_rows",
+          "metric": "eye_movement_events_v1",
+          "path": "../../../../results/eye_movement_v1.sqlite"
+        }
+      },
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_summary_v1": {
+      "available": true,
+      "derived_by": "scripts/analyze_eye_movement_v1.py",
+      "metadata": {
+        "created_at": "2026-08-12T07:11:37.113453+00:00",
+        "storage": {
+          "kind": "json",
+          "path": "../../../../results/eye_movement_v1_summary.json"
+        }
+      },
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "individual_alpha_frequency": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-iaf-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "ready_to_remove": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    },
+    "relative_alpha_power": {
+      "available": true,
+      "derived_by": "dreamcore-alpha-welch-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "simulated_stimulation_events": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "notice": "SIMULATED CONTROL DEMAND \u2014 NOT ULTRASOUND DOSE",
+        "storage": {
+          "json_path": [
+            "simulated_stimulation_events"
+          ],
+          "kind": "json",
+          "path": "../../../../results/alpha_v1_summary.json"
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    },
+    "sonification_control_v1": {
+      "available": true,
+      "derived_by": "dreamcore-sonification-mapper-v1",
+      "metadata": {
+        "artifact_schema_version": "dreamcore.sonification_control.v1",
+        "audit_export": {
+          "kind": "csv",
+          "path": "../../../../results/sonification_control_v1.csv"
+        },
+        "coverage_by_source": {
+          "alpha": {
+            "coverage_end_s": 31140.0,
+            "coverage_start_s": 29760.0,
+            "row_count": 135,
+            "source_feature": "relative_alpha_power"
+          },
+          "eye_movement": {
+            "coverage_end_s": 79500.0,
+            "coverage_start_s": 4.0,
+            "row_count": 79497,
+            "source_feature": "eye_movement_activity_v1"
+          }
+        },
+        "created_at": "2026-08-12T07:11:37.113453+00:00",
+        "default_source": "eye_movement",
+        "mapping": {
+          "alpha_comparison": {
+            "brightness_hz": {
+              "maximum": 1400.0,
+              "minimum": 180.0
+            },
+            "density": {
+              "maximum": 0.55,
+              "minimum": 0.05
+            },
+            "high_quantile": 0.95,
+            "intensity": {
+              "maximum": 0.35,
+              "minimum": 0.04
+            },
+            "low_quantile": 0.05,
+            "midi_scale": [
+              45,
+              48,
+              52,
+              55,
+              57,
+              60
+            ],
+            "source_channel": "EEG Pz-Oz",
+            "tempo_bpm": {
+              "maximum": 84.0,
+              "minimum": 48.0
+            }
+          },
+          "audio": {
+            "attack_s": 0.01,
+            "master_gain": 0.16,
+            "note_duration_s": 0.16,
+            "oscillator_type": "sine",
+            "release_s": 0.24
+          },
+          "baseline": {
+            "brightness_hz": 220.0,
+            "density": 0.05,
+            "intensity": 0.04,
+            "midi_note": 48,
+            "tempo_bpm": 60.0
+          },
+          "control_version": "sonification-control-v1",
+          "eye_movement": {
+            "brightness_hz": {
+              "maximum": 2400.0,
+              "minimum": 240.0
+            },
+            "density": {
+              "maximum": 0.9,
+              "minimum": 0.08
+            },
+            "intensity": {
+              "maximum": 0.55,
+              "minimum": 0.05
+            },
+            "midi_scale": [
+              48,
+              50,
+              53,
+              55,
+              57,
+              60,
+              62,
+              65
+            ],
+            "tempo_bpm": {
+              "event_rate_max_per_min": 20.0,
+              "maximum": 108.0,
+              "minimum": 54.0
+            },
+            "velocity": {
+              "maximum": 0.7,
+              "minimum": 0.1
+            }
+          },
+          "mapping_version": "sonification-mapping-v1",
+          "scientific_boundary": "Musical mappings are deterministic exploratory controls, not physiological interpretations or therapeutic parameters.",
+          "seed": 42
+        },
+        "source_feature": "eye_movement_activity_v1",
+        "storage": {
+          "kind": "sqlite_rows",
+          "metric": "sonification_control_v1",
+          "path": "../../../../results/eye_movement_v1.sqlite"
+        },
+        "viewer": {
+          "activity_jump_time_s": 30700.0,
+          "audio": {
+            "attack_s": 0.01,
+            "master_gain": 0.16,
+            "note_duration_s": 0.16,
+            "oscillator_type": "sine",
+            "release_s": 0.24
+          },
+          "baseline_controls": {
+            "brightness_hz": 220.0,
+            "density": 0.05,
+            "intensity": 0.04,
+            "midi_note": 48,
+            "tempo_bpm": 60.0
+          },
+          "default_start_s": 30590.0,
+          "default_time_s": 30700.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "derived",
+      "version": "sonification-control-v1"
+    },
+    "stimulation_demand": {
+      "available": true,
+      "derived_by": "dreamcore-simulated-demand-v1",
+      "metadata": {
+        "analysis": {
+          "accepted_windows": 135,
+          "analysis_window_s": 30.0,
+          "attempted_windows": 139,
+          "channels": [
+            "EEG Fpz-Cz",
+            "EEG Pz-Oz"
+          ],
+          "evaluation_end_s": 31140.0,
+          "evaluation_start_s": 29730.0,
+          "feature_row_count": 270,
+          "first_feature_time_s": 29760.0,
+          "last_feature_time_s": 31140.0,
+          "rejected_windows": 4,
+          "rejection_reasons": {
+            "stage_transition:N1+N2": 2,
+            "stage_transition:N1+W": 2
+          },
+          "step_s": 10.0,
+          "time_reference": "recording_relative",
+          "timestamp_field": "window_end_s",
+          "timestamp_unit": "seconds"
+        },
+        "storage": {
+          "kind": "csv",
+          "path": "../../../../results/alpha_v1_features.csv"
+        },
+        "viewer": {
+          "default_start_s": 30590.0,
+          "default_time_s": 30620.0,
+          "default_window_duration_s": 120.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO ULTRASOUND DELIVERED",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": 30630.0,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "source": "simulated",
+      "version": "alpha-v1"
+    }
+  },
+  "provenance": {
+    "classification": "imported",
+    "imported_by": "scripts/analyze_alpha_v1.py; scripts/analyze_eye_movement_v1.py",
+    "notes": "REAL PUBLIC EEG DATA AND EOG DATA; DERIVED EYE-MOVEMENT CANDIDATES AND ALPHA FEATURES; SONIFICATION CONTROLS ARE EXPLORATORY; SIMULATED STIMULATION EVENTS AND INTERVENTION MARKERS NEVER MODIFY OBSERVED SIGNALS",
+    "source_dataset_uri": "Sleep-EDF Expanded SC4001E0"
+  },
+  "recording": {
+    "duration_seconds": 79500.0,
+    "start_time": "1989-04-24T16:13:00+00:00"
+  },
+  "schema_version": "dreamcore.session.v1",
+  "session": {
+    "night_id": "SC4001E0",
+    "session_id": "sc4001-alpha-v1",
+    "subject_id": "SC400",
+    "visit_id": "SC4001E0"
+  },
+  "signals": [
+    {
+      "available": true,
+      "channel_name": "EEG Fpz-Cz",
+      "id": "eeg-1",
+      "metadata": {
+        "notice": "REAL PUBLIC EEG DATA",
+        "storage": {
+          "channel_name": "EEG Fpz-Cz",
+          "kind": "edf",
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf",
+          "sampling_rate_tolerance_hz": 0.01,
+          "scale_to_unit": 1000000.0
+        }
+      },
+      "modality": "eeg",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "channel_name": "EEG Pz-Oz",
+      "id": "eeg-2",
+      "metadata": {
+        "notice": "REAL PUBLIC EEG DATA",
+        "storage": {
+          "channel_name": "EEG Pz-Oz",
+          "kind": "edf",
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf",
+          "sampling_rate_tolerance_hz": 0.01,
+          "scale_to_unit": 1000000.0
+        }
+      },
+      "modality": "eeg",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "channel_name": "EOG horizontal",
+      "id": "eog-1",
+      "metadata": {
+        "coverage_end_s": 79500.0,
+        "coverage_start_s": 0.0,
+        "notice": "REAL PUBLIC SLEEP-EDF EOG",
+        "storage": {
+          "channel_name": "EOG horizontal",
+          "kind": "edf",
+          "path": "../../../datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf",
+          "sampling_rate_tolerance_hz": 0.01,
+          "scale_to_unit": 1000000.0
+        }
+      },
+      "modality": "eog",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "channel_name": "EOG horizontal \u00b7 filtered",
+      "id": "eog-filtered-1",
+      "metadata": {
+        "coverage_end_s": 79500.0,
+        "coverage_start_s": 0.0,
+        "feature_version": "eye-movement-v1",
+        "processing": {
+          "high_hz": 10.0,
+          "low_hz": 0.3,
+          "method": "butterworth",
+          "order": 4,
+          "phase": "zero"
+        },
+        "source_channel": "EOG horizontal",
+        "storage": {
+          "dtype": "<f4",
+          "kind": "float32_binary",
+          "path": "../../../../results/eye_movement_v1_filtered_eog.f32",
+          "sample_count": 7950000
+        }
+      },
+      "modality": "eog",
+      "sampling_rate_hz": 100.0,
+      "source": "derived",
+      "unit": "uV"
+    }
+  ]
+}
