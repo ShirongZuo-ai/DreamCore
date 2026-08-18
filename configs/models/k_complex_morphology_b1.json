@@ -1,0 +1,119 @@
+{
+  "schema_version": "dreamcore.k_complex.morphology_verifier.v1",
+  "algorithm_version": "k-complex-morphology-b1-v1",
+  "verification_method": "morphology_b1",
+  "feature_names": [
+    "score",
+    "duration_s",
+    "negative_trough_amplitude",
+    "positive_peak_delay_s"
+  ],
+  "feature_semantics": {
+    "score": "K-Complex V0 morphology score",
+    "duration_s": "original V0 end_s minus onset_s",
+    "negative_trough_amplitude": "original signed V0 local-baseline amplitude in uV",
+    "positive_peak_delay_s": "positive_peak_s minus negative_trough_s; 0.0 when absent"
+  },
+  "preprocessing": {
+    "feature_extraction": "exact frozen B1 morphology(event) ordering",
+    "standard_scaler": {
+      "with_mean": true,
+      "with_std": true,
+      "mean": [
+        0.8149369488911548,
+        1.0245370370370372,
+        -89.96832606564762,
+        0.4953703703703636
+      ],
+      "scale": [
+        0.14253891331723553,
+        0.36195811160158275,
+        31.761624362341017,
+        0.33765785314242275
+      ]
+    }
+  },
+  "classifier": {
+    "family": "sklearn.linear_model.LogisticRegression",
+    "effective_regularization": "L2 under the frozen scikit-learn default",
+    "hyperparameters": {
+      "C": 1.0,
+      "class_weight": "balanced",
+      "dual": false,
+      "fit_intercept": true,
+      "intercept_scaling": 1.0,
+      "l1_ratio": 0.0,
+      "max_iter": 2000,
+      "n_jobs": null,
+      "penalty": "deprecated",
+      "random_state": 1729,
+      "solver": "lbfgs",
+      "tol": 0.0001,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "coefficients": [
+      1.3098752860049419,
+      -0.22070923899097292,
+      -0.7367084678349928,
+      -1.106240120262206
+    ],
+    "intercept": -1.1424314774993167
+  },
+  "decision_threshold": 0.5,
+  "threshold_semantics": "accepted when positive-class probability >= 0.5",
+  "source_benchmark": {
+    "contract_sha256": "d2d16ea5a98d865e31c6d7bdda1ed26733c890174dc340aebdb8d95761e8d152",
+    "split_protocol": "leave-one-DREAMS-excerpt-out",
+    "evaluation_separate_from_final_fit": true
+  },
+  "training_data_provenance": {
+    "dataset": "The DREAMS Databases and Assessment Algorithm",
+    "source_manifest": "data/dreams_signal_validation_v1.json",
+    "source_manifest_sha256": "96bb2f11c70daad25bc7b4dc14df8e2108fb46abdb308c0ee18bfe762028f716",
+    "archive_published_checksum": "md5:0bfc5bde8e36bcb1edcded50077423de",
+    "recording_source_sha256": {
+      "dreams-kc-excerpt1": "cf396eeed6cfc86adf6212502d88d0ee90005cc3e4b02e1094f4e993c26625be",
+      "dreams-kc-excerpt2": "1ecf0fda5f5665460515b09e09fc58846eb1d5b9ef0ac3c3ea3627440f3af3eb",
+      "dreams-kc-excerpt3": "b00fc5b0ab7bf3c6107adc8c595f7fa47b8636b29e7cf77481f82a62fe4c8496",
+      "dreams-kc-excerpt4": "26f48b8550921be7a6af2b5a15f8873027078fb85618a40a5e2e1b553f881af8",
+      "dreams-kc-excerpt5": "415ae704f92ddff5b91f443ff6009b1506e0dce41b2969a4afbeff474dcfb2ae",
+      "dreams-kc-excerpt6": "8d2ba963e4d77bbad4c9796ec9c43b35c4ba454f6d2dcfe599ba8d9cb2870267",
+      "dreams-kc-excerpt7": "fdf170644455fb4b9d8d9301720c946a42b25907e6daa79b0f3f4e394b7b06c1",
+      "dreams-kc-excerpt8": "86656e27e9ddd04c15d2a0ee0615a95968a10d57c10b10162a9e414bcc6a0af2",
+      "dreams-kc-excerpt9": "2320a0835f74f34a3f7a1bc7f2ebe2c4a9bf12f67a9eb37baaa1424d3657acf1",
+      "dreams-kc-excerpt10": "e7fa4b00b2c951bf12de066ee0f425807e9fd9475f881ab236d1f14334fe7a31"
+    },
+    "eligible_recordings": [
+      "dreams-kc-excerpt1",
+      "dreams-kc-excerpt2",
+      "dreams-kc-excerpt3",
+      "dreams-kc-excerpt4",
+      "dreams-kc-excerpt5"
+    ],
+    "eligible_example_count": 108,
+    "positive_example_count": 28,
+    "negative_example_count": 80,
+    "label_policy": {
+      "included": [
+        "high_confidence_positive",
+        "high_confidence_negative"
+      ],
+      "excluded": [
+        "ambiguous",
+        "single_expert_positive",
+        "single_expert_unmatched"
+      ],
+      "expert_2_missing": "never interpreted as a negative vote"
+    }
+  },
+  "fit": {
+    "scope": "all eligible frozen DREAMS B1 training examples",
+    "random_seed": 1729,
+    "scikit_learn_version": "1.9.0"
+  },
+  "artifact_checksum": {
+    "algorithm": "sha256-canonical-json-excluding-artifact_checksum",
+    "value": "ea4aa28d79a01af90a09d9474cfc25e461aafbca4b329a518e70251553b9b869"
+  }
+}

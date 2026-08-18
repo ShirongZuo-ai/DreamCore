@@ -1,5 +1,14 @@
-import { Database, Dices, Filter, Play, Search, Shuffle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import {
+  CheckCircle2,
+  Database,
+  Dices,
+  Filter,
+  FolderOpen,
+  Play,
+  Search,
+  Shuffle,
+} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { CapabilityStatus } from '../components/common/CapabilityStatus';
@@ -8,10 +17,11 @@ import { SessionCatalogTable } from '../components/datasets/SessionCatalogTable'
 import { useSessionWorkspace } from '../hooks/useSessionWorkspace';
 import {
   liveReplayEligibility,
+  httpSessionCatalogService,
   sessionCatalogService,
   sessionMatchesFilter,
 } from '../services/sessionCatalogService';
-import type { CapabilityName } from '../types';
+import type { CapabilityName, SessionManifest, SessionSummary } from '../types';
 
 const capabilityFilters: { name: CapabilityName; label: string }[] = [
   { name: 'eeg', label: 'EEG' },
@@ -26,6 +36,11 @@ export function DatasetLibraryPage() {
   const datasets = workspace.catalog.datasets;
   const [query, setQuery] = useState('');
   const [datasetId, setDatasetId] = useState('');
+  const [subjectId, setSubjectId] = useState('');
+  const [recordingId, setRecordingId] = useState('');
+  const [recordingPreview, setRecordingPreview] =
+    useState<SessionManifest | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [requiredCapabilities, setRequiredCapabilities] = useState<
     CapabilityName[]
   >([...liveReplayEligibility.requiredCapabilities]);
@@ -63,6 +78,91 @@ export function DatasetLibraryPage() {
   const validCount = candidates.filter((session) =>
     sessionMatchesFilter(session, validFilter),
   ).length;
+  const subjects = useMemo(
+    () =>
+      [
+        ...new Set(
+          workspace.catalog.sessions
+            .filter((session) => session.dataset.id === datasetId)
+            .map((session) => session.subjectId),
+        ),
+      ].sort(),
+    [datasetId, workspace.catalog.sessions],
+  );
+  const recordings = useMemo(
+    () =>
+      workspace.catalog.sessions.filter(
+        (session) =>
+          session.dataset.id === datasetId && session.subjectId === subjectId,
+      ),
+    [datasetId, subjectId, workspace.catalog.sessions],
+  );
+
+  useEffect(() => {
+    const selected = workspace.selectedSession;
+    if (!selected) {
+      setRecordingPreview(null);
+      setPreviewError(null);
+      return;
+    }
+    let active = true;
+    setRecordingPreview(null);
+    setPreviewError(null);
+    const service =
+      selected.catalogTransport === 'http'
+        ? httpSessionCatalogService
+        : sessionCatalogService;
+    void service
+      .loadSession(selected.dataset.id, selected.sessionId)
+      .then((manifest) => {
+        if (active) setRecordingPreview(manifest);
+      })
+      .catch((error: unknown) => {
+        if (active)
+          setPreviewError(
+            error instanceof Error ? error.message : 'Metadata unavailable',
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [workspace.selectedSession]);
+
+  function selectRecording(session: SessionSummary | null) {
+    workspace.selectSession(session);
+    if (session) {
+      workspace.setDataSource(
+        session.catalogTransport === 'http'
+          ? 'real-public-dataset'
+          : 'test-fixture',
+      );
+    }
+  }
+
+  function sourceCapabilityText(kind: 'eye' | 'alpha' | 'wake') {
+    if (!recordingPreview) return 'Select a recording';
+    const capabilities = recordingPreview.capabilities;
+    if (kind === 'eye') {
+      if (capabilities.eog.status !== 'AVAILABLE') return 'Not available';
+      return capabilities.eye_movement_activity.status === 'AVAILABLE'
+        ? 'Ready'
+        : 'Analyzes automatically';
+    }
+    if (kind === 'alpha') {
+      if (capabilities.eeg.status !== 'AVAILABLE') return 'Not available';
+      return capabilities.alpha_power.status === 'AVAILABLE'
+        ? 'Ready'
+        : 'Analyzes automatically';
+    }
+    if (
+      capabilities.eog.status !== 'AVAILABLE' ||
+      capabilities.sleep_stage_labels.status !== 'AVAILABLE'
+    )
+      return 'Not available';
+    return capabilities.eye_movement_activity.status === 'AVAILABLE'
+      ? 'Ready to generate'
+      : 'Analyzes automatically';
+  }
 
   function chooseRandom(validOnly: boolean) {
     try {
@@ -133,6 +233,201 @@ export function DatasetLibraryPage() {
           </button>
         </div>
       </div>
+
+      <section aria-label="Local dataset collection">
+        <div className="grid gap-3 lg:grid-cols-3">
+          {datasets.map((dataset) => (
+            <button
+              type="button"
+              key={dataset.id}
+              data-testid={`dataset-card-${dataset.id}`}
+              aria-pressed={datasetId === dataset.id}
+              onClick={() => {
+                setDatasetId(dataset.id);
+                setSubjectId('');
+                setRecordingId('');
+                selectRecording(null);
+              }}
+              className={`panel min-h-44 p-4 text-left transition-colors ${
+                datasetId === dataset.id
+                  ? 'border-accent/60 bg-accent/5'
+                  : 'hover:border-accent/30'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="eyebrow">{dataset.version ?? 'Unversioned'}</p>
+                  <h2 className="mt-1 text-base font-semibold text-primary">
+                    {dataset.display_name}
+                  </h2>
+                </div>
+                {dataset.localStatus === 'available_locally' ? (
+                  <CheckCircle2 className="text-accent" size={18} />
+                ) : (
+                  <FolderOpen className="text-secondary" size={18} />
+                )}
+              </div>
+              <p className="mt-4 font-mono text-sm text-primary">
+                {dataset.subjectCount} local subject
+                {dataset.subjectCount === 1 ? '' : 's'} ·{' '}
+                {dataset.localRecordingCount} recording
+                {dataset.localRecordingCount === 1 ? '' : 's'}
+              </p>
+              <p className="mt-2 text-xs uppercase tracking-wide text-secondary">
+                {dataset.signalModalities.length
+                  ? dataset.signalModalities.join(' · ')
+                  : 'Metadata catalog'}
+              </p>
+              <p className="mt-3 truncate text-[0.6875rem] text-secondary">
+                {dataset.official_source ??
+                  'DreamCore reproducible test fixture'}
+              </p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel p-4" aria-label="Recording selector">
+        <PanelHeader
+          eyebrow="Dataset → Subject → Recording"
+          title="Open a recording"
+        />
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="text-xs text-secondary">
+            Dataset
+            <select
+              aria-label="Dataset"
+              value={datasetId}
+              onChange={(event) => {
+                setDatasetId(event.target.value);
+                setSubjectId('');
+                setRecordingId('');
+                selectRecording(null);
+              }}
+              className="mt-1 min-h-11 w-full rounded-control border border-line bg-canvas px-3 text-sm text-primary"
+            >
+              <option value="">Choose dataset</option>
+              {datasets.map((dataset) => (
+                <option key={dataset.id} value={dataset.id}>
+                  {dataset.display_name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-secondary">
+            Subject
+            <select
+              aria-label="Subject"
+              value={subjectId}
+              disabled={!datasetId}
+              onChange={(event) => {
+                setSubjectId(event.target.value);
+                setRecordingId('');
+                selectRecording(null);
+              }}
+              className="mt-1 min-h-11 w-full rounded-control border border-line bg-canvas px-3 text-sm text-primary disabled:opacity-50"
+            >
+              <option value="">Choose subject</option>
+              {subjects.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-secondary">
+            Recording
+            <select
+              aria-label="Recording"
+              value={recordingId}
+              disabled={!subjectId}
+              onChange={(event) => {
+                setRecordingId(event.target.value);
+                selectRecording(
+                  recordings.find(
+                    (session) => session.sessionId === event.target.value,
+                  ) ?? null,
+                );
+              }}
+              className="mt-1 min-h-11 w-full rounded-control border border-line bg-canvas px-3 text-sm text-primary disabled:opacity-50"
+            >
+              <option value="">Choose recording</option>
+              {recordings.map((recording) => (
+                <option key={recording.sessionId} value={recording.sessionId}>
+                  {recording.sessionId}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        {recordingPreview ? (
+          <div className="mt-4 grid gap-4 border-t border-line pt-4 lg:grid-cols-[1.2fr_1fr]">
+            <div>
+              <p className="metric-label">Recording metadata</p>
+              <p className="mt-2 font-mono text-sm text-primary">
+                Duration{' '}
+                {(recordingPreview.recording.duration_seconds / 3600).toFixed(
+                  2,
+                )}{' '}
+                h{' · '}rates{' '}
+                {[
+                  ...new Set(
+                    recordingPreview.signals.map(
+                      (signal) => signal.sampling_rate_hz,
+                    ),
+                  ),
+                ]
+                  .sort((left, right) => left - right)
+                  .map((rate) => String(rate))
+                  .join(', ')}{' '}
+                Hz
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {recordingPreview.signals.map((signal) => (
+                  <span
+                    key={signal.id}
+                    className="rounded-full border border-line px-2 py-1 font-mono text-[0.6875rem] text-secondary"
+                  >
+                    {signal.original_channel_name ?? signal.channel_name} ·{' '}
+                    {signal.sampling_rate_hz} Hz
+                  </span>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-secondary">
+                Annotation:{' '}
+                {recordingPreview.annotations.sleep_stages?.available
+                  ? 'Ready · official sleep stages'
+                  : 'Not available'}
+              </p>
+            </div>
+            <dl className="grid gap-2 text-xs">
+              <div className="flex justify-between gap-3 border-b border-line/60 pb-2">
+                <dt className="text-secondary">Eye Movement</dt>
+                <dd className="text-right text-primary">
+                  {sourceCapabilityText('eye')}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3 border-b border-line/60 pb-2">
+                <dt className="text-secondary">Alpha</dt>
+                <dd className="text-right text-primary">
+                  {sourceCapabilityText('alpha')}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-secondary">Wake Music</dt>
+                <dd className="text-right text-primary">
+                  {sourceCapabilityText('wake')}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        ) : null}
+        {previewError ? (
+          <p role="alert" className="mt-3 text-xs text-warning">
+            {previewError}
+          </p>
+        ) : null}
+      </section>
 
       <section
         className="grid gap-3 sm:grid-cols-3"
@@ -309,7 +604,7 @@ export function DatasetLibraryPage() {
             onClick={loadSession}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-accent px-4 text-sm font-semibold text-canvas disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Play aria-hidden="true" size={15} /> Load Session
+            <Play aria-hidden="true" size={15} /> Open Viewer
           </button>
         </div>
       </section>

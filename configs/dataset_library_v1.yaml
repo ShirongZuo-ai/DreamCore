@@ -1,0 +1,212 @@
+catalog_version: "dreamcore.dataset_library.v1"
+raw_root: "data/datasets/raw"
+session_package_root: "data/session_packages"
+catalog_output: "data/dataset_catalog_v1.json"
+audit_output: "results/dataset_library_v1_audit.json"
+viewer:
+  default_start_s: 0.0
+  default_time_s: 0.0
+  default_window_duration_s: 60.0
+  window_duration_options_s: [30.0, 60.0, 120.0]
+  display_max_points_per_signal: 2000
+  feature_timestamp_semantics: "window_end"
+  stage_jump_time_s: null
+  activity_jump_time_s: null
+  replay:
+    enabled: true
+    tick_interval_ms: 250
+    default_speed: 1.0
+    speed_options: [0.5, 1.0, 2.0, 5.0, 10.0]
+    cache_max_windows: 3
+    prefetch_threshold_fraction: 0.75
+    seek_cursor_fraction: 0.25
+    intervention_notice_duration_ms: 5000
+    intervention_marker_color: "#E1AA5A"
+    provenance_notice: "SIMULATED INTERVENTION — NO HARDWARE COMMAND SENT"
+cross_dataset_eog_validation:
+  output: "results/dataset_library_v1_eog_validation.json"
+  window_start_s: 3600.0
+  window_duration_s: 600.0
+  recordings:
+    - {session_id: "SC4002", channels: ["EOG horizontal"]}
+    - {session_id: "SN001", channels: ["EOG E1-M2", "EOG E2-M2"]}
+    - {session_id: "SN002", channels: ["EOG E1-M2", "EOG E2-M2"]}
+    - {session_id: "isruc-c3-01", channels: ["LOC-A2", "ROC-A1"]}
+    - {session_id: "isruc-c3-02", channels: ["LOC-A2", "ROC-A1"]}
+signal_role_rules:
+  - {pattern: "(?i)(EOG horizontal|E1[- ]E2)", canonical_role: "EOG_HORIZONTAL", modality: "eog"}
+  - {pattern: "(?i)(EOG.*left|Left EOG|LOC|E1[/ -])", canonical_role: "EOG_LEFT", modality: "eog"}
+  - {pattern: "(?i)(EOG.*right|Right EOG|ROC|E2[/ -])", canonical_role: "EOG_RIGHT", modality: "eog"}
+  - {pattern: "(?i)(EOG|electroocul)", canonical_role: "EOG_HORIZONTAL", modality: "eog"}
+  - {pattern: "(?i)(EEG F|^Fp|^F[0-9z]|F[0-9z][-/])", canonical_role: "EEG_FRONTAL", modality: "eeg"}
+  - {pattern: "(?i)(EEG C|^C[0-9z]|C[0-9z][-/])", canonical_role: "EEG_CENTRAL", modality: "eeg"}
+  - {pattern: "(?i)(EEG.*O|Pz-Oz|^O[0-9z]|O[0-9z][-/])", canonical_role: "EEG_OCCIPITAL", modality: "eeg"}
+  - {pattern: "(?i)(EEG|^[FCPOT][p0-9z]+[-/])", canonical_role: "EEG_OTHER", modality: "eeg"}
+  - {pattern: "(?i)(EMG|chin|submental)", canonical_role: "EMG", modality: "emg"}
+  - {pattern: "(?i)(ECG|EKG)", canonical_role: "ECG", modality: "ecg"}
+  - {pattern: "(?i)(resp|airflow|nasal|thorax|abdomen|snore)", canonical_role: "RESPIRATORY", modality: "respiratory"}
+  - {pattern: ".*", canonical_role: "OTHER", modality: "other"}
+download:
+  timeout_s: 900
+  retries: 20
+  chunk_size_bytes: 1048576
+  user_agent: "DreamCore-Dataset-Library-V1/1.0"
+  max_parallel_files: 12
+
+datasets:
+  sleep_edfx:
+    dataset_id: "sleep-edf-expanded-sc"
+    title: "Sleep-EDF Database Expanded"
+    display_name: "Sleep-EDF Expanded"
+    version: "1.0.0"
+    official_source: "https://physionet.org/content/sleep-edfx/1.0.0/"
+    license_source: "https://physionet.org/content/sleep-edfx/1.0.0/"
+    scoring_standard: "Rechtschaffen and Kales"
+    stage_label_map:
+      "Sleep stage W": "W"
+      "Sleep stage 1": "N1"
+      "Sleep stage 2": "N2"
+      "Sleep stage 3": "N3"
+      "Sleep stage 4": "N3"
+      "Sleep stage R": "REM"
+      "Sleep stage ?": "UNKNOWN"
+      "Movement time": "MOVEMENT"
+    raw_subdirectory: "sleep_edfx/1.0.0/sleep-cassette"
+    base_url: "https://physionet-open.s3.amazonaws.com/sleep-edfx/1.0.0/sleep-cassette/"
+    recordings:
+      SC4002:
+        subject_id: "SC400"
+        psg: {name: "SC4002E0-PSG.edf", estimated_size_mb: 49.2, sha256: "bf91934cdbf7c9577bc91b411462ddb51c418e17e10a2f59a15feeeb917b0a5f"}
+        annotations: {name: "SC4002EC-Hypnogram.edf", estimated_size_mb: 0.005, sha256: "76e8457a67eaaaa62c7f6cc6e098fbe1c0a9c3fa02fa90ea01460aa481d71e82"}
+      SC4011:
+        subject_id: "SC401"
+        psg: {name: "SC4011E0-PSG.edf", estimated_size_mb: 48.7, sha256: "9e4c34f3f631275990fd7a2d61a24e998c7b03eb9b37ebe5cd7c8323d8310a15"}
+        annotations: {name: "SC4011EH-Hypnogram.edf", estimated_size_mb: 0.004, sha256: "5bbf7b4ed8a95c8d20e4347b08c2ded2ee21e2dac4680dedf629795adc2edc83"}
+      SC4012:
+        subject_id: "SC401"
+        psg: {name: "SC4012E0-PSG.edf", estimated_size_mb: 49.6, sha256: "1aa575e87d16f6c8f73c186d7a64a212de919bb9cbb62ac7c1750d3896852095"}
+        annotations: {name: "SC4012EC-Hypnogram.edf", estimated_size_mb: 0.005, sha256: "b6323df8b3867a5fdbd80f0cd8233b59659ac496fa48c8c7277f48bfbb1d9a0e"}
+      SC4021:
+        subject_id: "SC402"
+        psg: {name: "SC4021E0-PSG.edf", estimated_size_mb: 48.8, sha256: "810adaedf42621e389ca767274045fbafb123bbc5d99bc15ce2c5bacb52e378c"}
+        annotations: {name: "SC4021EH-Hypnogram.edf", estimated_size_mb: 0.005, sha256: "62b49b26bf08941cb0e974cfeeb0a820bf7dd43fb0c66dd89b4c3a6c0ee45dd8"}
+      SC4022:
+        subject_id: "SC402"
+        psg: {name: "SC4022E0-PSG.edf", estimated_size_mb: 47.9, sha256: "8573b32d49ff646b8c1c3589380346be02dc4f25ebcbabb05626cbdffd96d93a"}
+        annotations: {name: "SC4022EJ-Hypnogram.edf", estimated_size_mb: 0.006, sha256: "5289ca8a9417307cbbf8b2a4e511909ac742c69d45c17aee7f1731a2a98c49ce"}
+      SC4031:
+        subject_id: "SC403"
+        psg: {name: "SC4031E0-PSG.edf", estimated_size_mb: 49.1, sha256: "ce2314a60dd6e1437f9cd720c2e59c23aabe471e4821f9544593109a9b0715dd"}
+        annotations: {name: "SC4031EC-Hypnogram.edf", estimated_size_mb: 0.004, sha256: "7ec3d3c8d8f1a89d48df4cc85be374fbdf70d4b5ec5ec321c03d586dd2cc1617"}
+      SC4032:
+        subject_id: "SC403"
+        psg: {name: "SC4032E0-PSG.edf", estimated_size_mb: 47.5, sha256: "a2ae46bb9b9752bff538e1e9a0ad95f5a5eab8f654a4cd22d9f503b11b584b9d"}
+        annotations: {name: "SC4032EP-Hypnogram.edf", estimated_size_mb: 0.004, sha256: "0ef073c5cfba31459732be96cc51e7106d5650c1db1b9669f10c0482844c5641"}
+      SC4041:
+        subject_id: "SC404"
+        psg: {name: "SC4041E0-PSG.edf", estimated_size_mb: 44.7, sha256: "28ae3a51cca93bb1502a2c613b4a84758d09feee042b925a09a7cdce0c1bf4f5"}
+        annotations: {name: "SC4041EC-Hypnogram.edf", estimated_size_mb: 0.005, sha256: "da33d90216e031a6b04c9ebaddcdf7abc223f1e61fd5899093815c7aea65e39a"}
+      SC4042:
+        subject_id: "SC404"
+        psg: {name: "SC4042E0-PSG.edf", estimated_size_mb: 48.6, sha256: "a03fad405e182599e3204aeeedfde56e5f0ccc9107e63d1747317371bcccb20d"}
+        annotations: {name: "SC4042EC-Hypnogram.edf", estimated_size_mb: 0.006, sha256: "28ece9383d5c49f375a34d63c1226cd0eb8c5a4bb9f887eb80c18caccd3bc544"}
+      SC4051:
+        subject_id: "SC405"
+        psg: {name: "SC4051E0-PSG.edf", estimated_size_mb: 47.4, sha256: "e460a9589726f19a1fe544fb79c46f82562229f19696e0c0fb5ffd9f959dab7c"}
+        annotations: {name: "SC4051EC-Hypnogram.edf", estimated_size_mb: 0.004, sha256: "3551410c52b819efbe6297d333ee729e4f5c7ba11c0cae6d321feee79a39ed43"}
+
+  hmc:
+    dataset_id: "hmc-sleep-staging-1.1"
+    title: "Haaglanden Medisch Centrum Sleep Staging Database"
+    display_name: "HMC Sleep Staging"
+    version: "1.1"
+    official_source: "https://physionet.org/content/hmc-sleep-staging/1.1/"
+    license_source: "https://physionet.org/content/hmc-sleep-staging/1.1/"
+    scoring_standard: "AASM"
+    stage_label_map:
+      "Sleep stage W": "W"
+      "Sleep stage N1": "N1"
+      "Sleep stage N2": "N2"
+      "Sleep stage N3": "N3"
+      "Sleep stage R": "REM"
+      "Sleep stage REM": "REM"
+      "Sleep stage ?": "UNKNOWN"
+      "Movement time": "MOVEMENT"
+      "W": "W"
+      "N1": "N1"
+      "N2": "N2"
+      "N3": "N3"
+      "R": "REM"
+      "REM": "REM"
+    raw_subdirectory: "hmc_sleep_staging/1.1/recordings"
+    base_url: "https://physionet-open.s3.amazonaws.com/hmc-sleep-staging/1.1/recordings/"
+    recordings:
+      SN001:
+        subject_id: "SN001"
+        psg: {name: "SN001.edf", estimated_size_mb: 100.2, sha256: "8147d6359b442d411121613eeaf34db51c3f7b5ffd996894049d084bf4b06000"}
+        annotations: {name: "SN001_sleepscoring.edf", estimated_size_mb: 0.061, sha256: "fc2f6d4514ddd0c6f9c03a47122b293896dca38ab4bc8dc60f9edf34cc994561"}
+        annotation_audit: {name: "SN001_sleepscoring.txt", estimated_size_mb: 0.040, sha256: "297f7f22a3ebb595b8b37a83a4815511767ddf132b2a5a970bff338be32c6461"}
+      SN002:
+        subject_id: "SN002"
+        psg: {name: "SN002.edf", estimated_size_mb: 100.4, sha256: "4f176d9927651e0f9fd01610213170b4ba5fa84edad50740bb79fcf467811607"}
+        annotations: {name: "SN002_sleepscoring.edf", estimated_size_mb: 0.061, sha256: "4253073cb1de028d12ce4c5313c375c2da653ae55d30bca73c4d067a2dbf47be"}
+        annotation_audit: {name: "SN002_sleepscoring.txt", estimated_size_mb: 0.040, sha256: "f163d45394d98f4a15194ac7c2fdcd86275138b7baaaff36521707d40e960586"}
+      SN003:
+        subject_id: "SN003"
+        psg: {name: "SN003.edf", estimated_size_mb: 111.9, sha256: "0e13e8714da5d2988c78d8f338c805bf43050846ded5947dc6db8faf89ad5022"}
+        annotations: {name: "SN003_sleepscoring.edf", estimated_size_mb: 0.061, sha256: "b11505f2f82fd030aea5ddbc5f6aa98761fda433cb2a0749bdd57ce7b8ab10ec"}
+        annotation_audit: {name: "SN003_sleepscoring.txt", estimated_size_mb: 0.044, sha256: "8bd488a821228a88889eb9d3a031199a961077a9548dac3d2dbfebdde6a186c1"}
+      SN004:
+        subject_id: "SN004"
+        psg: {name: "SN004.edf", estimated_size_mb: 119.1, sha256: "847bba8d4bd6a894aab5904a72cf6388d2ec042734ad3c5796a74b7817acdd5b"}
+        annotations: {name: "SN004_sleepscoring.edf", estimated_size_mb: 0.061, sha256: "62d517659d84e625b40e735ab4d518b52e4e109767a0af56f6140bd7ecb66edd"}
+        annotation_audit: {name: "SN004_sleepscoring.txt", estimated_size_mb: 0.047, sha256: "11f0560c3a165082a927e5259c9be92c2ea3242c21899ee1a4eac28faf729154"}
+      SN005:
+        subject_id: "SN005"
+        psg: {name: "SN005.edf", estimated_size_mb: 112.5, sha256: "57647f878cd242876cf4c86eb3c090fc465bf4883ab38422b97adf8b9cd39d8f"}
+        annotations: {name: "SN005_sleepscoring.edf", estimated_size_mb: 0.061, sha256: "92d4c1299fa7b0df7488ad3f951131c546bd6949e459e912a22657769466e781"}
+        annotation_audit: {name: "SN005_sleepscoring.txt", estimated_size_mb: 0.044, sha256: "15d3c8e4edf60fee25d2fcc0ffc066774b09f84210035634e93c62c790daaaeb"}
+
+  isruc:
+    dataset_id: "isruc-sleep-cohort-iii"
+    title: "ISRUC-Sleep"
+    display_name: "ISRUC-Sleep Cohort III"
+    version: "Cohort III"
+    official_source: "https://sleeptight.isr.uc.pt/?page_id=48"
+    license_source: "https://sleeptight.isr.uc.pt/"
+    scoring_standard: "AASM"
+    stage_label_map:
+      "0": "W"
+      "1": "N1"
+      "2": "N2"
+      "3": "N3"
+      "4": "N3"
+      "5": "REM"
+      "W": "W"
+      "N1": "N1"
+      "N2": "N2"
+      "N3": "N3"
+      "R": "REM"
+      "REM": "REM"
+    raw_subdirectory: "isruc_sleep/cohort_iii"
+    package_type: "original_psg_official_public_folder"
+    public_folder_url: "https://mega.nz/folder/hMIDEBBJ#jzU5WOF7V5fQCgykEkOptA"
+    estimated_total_mb: 1350.0
+    expected_subjects: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    public_folder_selection_ids:
+      "1": 2
+      "10": 8
+      "2": 14
+      "3": 20
+      "4": 26
+      "5": 32
+      "6": 38
+      "7": 44
+      "8": 50
+      "9": 56
+    annotation_epoch_duration_s: 30.0
+    annotation_filename_patterns:
+      "1": "(?i)(^|[_-])1\\.txt$"
+      "2": "(?i)(^|[_-])2\\.txt$"
+    primary_scorer: "1"
+    alternate_scorer: "2"

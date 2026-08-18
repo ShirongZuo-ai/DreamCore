@@ -33,8 +33,26 @@ class ProvenanceClass(StrEnum):
     UNKNOWN = "unknown"
 
 
+class CanonicalSignalRole(StrEnum):
+    EEG_FRONTAL = "EEG_FRONTAL"
+    EEG_CENTRAL = "EEG_CENTRAL"
+    EEG_OCCIPITAL = "EEG_OCCIPITAL"
+    EEG_OTHER = "EEG_OTHER"
+    EOG_LEFT = "EOG_LEFT"
+    EOG_RIGHT = "EOG_RIGHT"
+    EOG_HORIZONTAL = "EOG_HORIZONTAL"
+    EMG = "EMG"
+    ECG = "ECG"
+    RESPIRATORY = "RESPIRATORY"
+    OTHER = "OTHER"
+
+
 class CapabilityName(StrEnum):
     EEG = "eeg"
+    EOG = "eog"
+    EYE_MOVEMENT_ACTIVITY = "eye_movement_activity"
+    EYE_MOVEMENT_EVENTS = "eye_movement_events"
+    SONIFICATION_CONTROLS = "sonification_controls"
     ALPHA_POWER = "alpha_power"
     RELATIVE_ALPHA_POWER = "relative_alpha_power"
     INDIVIDUAL_ALPHA_FREQUENCY = "individual_alpha_frequency"
@@ -75,6 +93,9 @@ class DatasetMetadata:
     id: str
     display_name: str
     version: str | None = None
+    official_source: str | None = None
+    license_source: str | None = None
+    metadata: Mapping[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -102,6 +123,8 @@ class SignalMetadata:
     source: ProvenanceClass
     available: bool
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    original_channel_name: str | None = None
+    canonical_role: CanonicalSignalRole = CanonicalSignalRole.OTHER
 
 
 @dataclass(frozen=True)
@@ -120,6 +143,7 @@ class SessionProvenance:
     source_dataset_uri: str | None = None
     imported_by: str | None = None
     notes: str | None = None
+    metadata: Mapping[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -246,6 +270,12 @@ def parse_session_manifest(data: Mapping[str, Any]) -> SessionManifest:
     session_raw = _required_mapping(data, "session")
     recording_raw = _required_mapping(data, "recording")
     provenance_raw = _required_mapping(data, "provenance")
+    dataset_metadata = dataset_raw.get("metadata", {})
+    if not isinstance(dataset_metadata, Mapping):
+        raise ManifestValidationError("dataset.metadata must be an object")
+    provenance_metadata = provenance_raw.get("metadata", {})
+    if not isinstance(provenance_metadata, Mapping):
+        raise ManifestValidationError("provenance.metadata must be an object")
 
     duration = recording_raw.get("duration_seconds")
     if not isinstance(duration, (int, float)) or isinstance(duration, bool) or duration <= 0:
@@ -276,16 +306,28 @@ def parse_session_manifest(data: Mapping[str, Any]) -> SessionManifest:
         metadata = raw.get("metadata", {})
         if not isinstance(metadata, Mapping):
             raise ManifestValidationError(f"signals[{index}].metadata must be an object")
+        channel_name = _required_string(raw, "channel_name")
+        original_channel_name = raw.get("original_channel_name", channel_name)
+        if not isinstance(original_channel_name, str) or not original_channel_name:
+            raise ManifestValidationError(
+                f"signals[{index}].original_channel_name must be a non-empty string"
+            )
+        try:
+            canonical_role = CanonicalSignalRole(raw.get("canonical_role", "OTHER"))
+        except (TypeError, ValueError) as error:
+            raise ManifestValidationError(f"signals[{index}].canonical_role is invalid") from error
         signals.append(
             SignalMetadata(
                 id=signal_id,
                 modality=_required_string(raw, "modality"),
-                channel_name=_required_string(raw, "channel_name"),
+                channel_name=channel_name,
                 unit=_required_string(raw, "unit"),
                 sampling_rate_hz=float(sampling_rate),
                 source=_parse_provenance(raw.get("source"), f"signals[{index}].source"),
                 available=available,
                 metadata=dict(metadata),
+                original_channel_name=original_channel_name,
+                canonical_role=canonical_role,
             )
         )
 
@@ -320,6 +362,9 @@ def parse_session_manifest(data: Mapping[str, Any]) -> SessionManifest:
             id=_required_string(dataset_raw, "id"),
             display_name=_required_string(dataset_raw, "display_name"),
             version=_optional_string(dataset_raw, "version"),
+            official_source=_optional_string(dataset_raw, "official_source"),
+            license_source=_optional_string(dataset_raw, "license_source"),
+            metadata=dict(dataset_metadata),
         ),
         session=SessionIdentity(
             session_id=_required_string(session_raw, "session_id"),
@@ -341,6 +386,7 @@ def parse_session_manifest(data: Mapping[str, Any]) -> SessionManifest:
             source_dataset_uri=_optional_string(provenance_raw, "source_dataset_uri"),
             imported_by=_optional_string(provenance_raw, "imported_by"),
             notes=_optional_string(provenance_raw, "notes"),
+            metadata=dict(provenance_metadata),
         ),
     )
 

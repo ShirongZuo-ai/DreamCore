@@ -163,17 +163,46 @@ class SessionApiApplication:
         if path == f"{API_PREFIX}/datasets":
             return self._ok(self._datasets())
 
+        match = re.fullmatch(rf"{API_PREFIX}/datasets/([^/]+)", path)
+        if match:
+            dataset_id = match.group(1)
+            self.registry.get_dataset_metadata(dataset_id)
+            return self._ok(next(item for item in self._datasets() if item["id"] == dataset_id))
+
         match = re.fullmatch(rf"{API_PREFIX}/datasets/([^/]+)/sessions", path)
         if match:
             return self._ok(self._dataset_sessions(match.group(1)))
 
+        match = re.fullmatch(rf"{API_PREFIX}/datasets/([^/]+)/subjects", path)
+        if match:
+            return self._ok(self.registry.list_dataset_subjects(match.group(1)))
+
+        match = re.fullmatch(rf"{API_PREFIX}/datasets/([^/]+)/subjects/([^/]+)/recordings", path)
+        if match:
+            return self._ok(
+                [
+                    _jsonable(item)
+                    for item in self.registry.list_subject_recordings(
+                        match.group(1), match.group(2)
+                    )
+                ]
+            )
+
         match = re.fullmatch(rf"{API_PREFIX}/sessions/([^/]+)", path)
+        if match:
+            return self._ok(_jsonable(self.registry.get_session_by_id(match.group(1))))
+
+        match = re.fullmatch(rf"{API_PREFIX}/recordings/([^/]+)", path)
         if match:
             return self._ok(_jsonable(self.registry.get_session_by_id(match.group(1))))
 
         match = re.fullmatch(rf"{API_PREFIX}/sessions/([^/]+)/signals", path)
         if match:
             return self._ok(self._signals(match.group(1)))
+
+        match = re.fullmatch(rf"{API_PREFIX}/sessions/([^/]+)/signals/window", path)
+        if match:
+            return self._ok(self._signal_windows(match.group(1), query))
 
         match = re.fullmatch(rf"{API_PREFIX}/sessions/([^/]+)/signals/([^/]+)/window", path)
         if match:
@@ -209,6 +238,19 @@ class SessionApiApplication:
                 {
                     **_jsonable(dataset),
                     "session_count": len(sessions),
+                    "subject_count": len({session.session.subject_id for session in sessions}),
+                    "local_recording_count": len(sessions),
+                    "local_status": "available_locally" if sessions else "metadata_only",
+                    "signal_modalities": sorted(
+                        {
+                            signal.modality
+                            for session in sessions
+                            for signal in self.registry.get_session(
+                                dataset.id, session.session.session_id
+                            ).signals
+                            if signal.available
+                        }
+                    ),
                     "available_capabilities": capabilities,
                 }
             )
@@ -231,6 +273,48 @@ class SessionApiApplication:
         signal_id: str,
         query: dict[str, list[str]],
     ) -> dict[str, Any]:
+        start_s, clipped_duration = self._bounded_signal_range(session_id, query)
+        window = self.registry.load_signal_window(
+            session_id,
+            signal_id,
+            start_s,
+            clipped_duration,
+        )
+        return self._signal_window_payload(window)
+
+    def _signal_windows(
+        self,
+        session_id: str,
+        query: dict[str, list[str]],
+    ) -> dict[str, Any]:
+        signal_ids = tuple(query.get("signal_id", ()))
+        if not signal_ids or any(not signal_id for signal_id in signal_ids):
+            raise ApiError(
+                400,
+                "invalid_query",
+                "At least one non-empty signal_id is required",
+            )
+        if len(set(signal_ids)) != len(signal_ids):
+            raise ApiError(400, "invalid_query", "signal_id values must be unique")
+        start_s, clipped_duration = self._bounded_signal_range(session_id, query)
+        windows = self.registry.load_signal_windows(
+            session_id,
+            signal_ids,
+            start_s,
+            clipped_duration,
+        )
+        return {
+            "session_id": session_id,
+            "start_s": start_s,
+            "duration_s": clipped_duration,
+            "windows": [self._signal_window_payload(window) for window in windows],
+        }
+
+    def _bounded_signal_range(
+        self,
+        session_id: str,
+        query: dict[str, list[str]],
+    ) -> tuple[float, float]:
         start_s = self._required_float(query, "start_s")
         duration_s = self._required_float(query, "duration_s")
         if start_s < 0 or duration_s <= 0:
@@ -253,19 +337,17 @@ class SessionApiApplication:
                 "invalid_time_range",
                 "start_s must be before the end of the recording",
             )
-        clipped_duration = min(duration_s, manifest.recording.duration_seconds - start_s)
-        window = self.registry.load_signal_window(
-            session_id,
-            signal_id,
-            start_s,
-            clipped_duration,
-        )
+        return start_s, min(duration_s, manifest.recording.duration_seconds - start_s)
+
+    @staticmethod
+    def _signal_window_payload(window) -> dict[str, Any]:
+        start_s = window.start_seconds
         rate = window.signal.sampling_rate_hz
         timestamps = [start_s + index / rate for index in range(len(window.samples))]
         end_s = start_s + len(window.samples) / rate
         return {
-            "session_id": session_id,
-            "signal_id": signal_id,
+            "session_id": window.session_id,
+            "signal_id": window.signal.id,
             "channel": window.signal.channel_name,
             "provenance": window.signal.source.value,
             "start_s": start_s,
@@ -287,6 +369,8 @@ class SessionApiApplication:
             descriptors[annotation_type] = _descriptor_payload(descriptor)
             if not descriptor.available:
                 continue
+            if descriptor.metadata.get("primary_for_viewer") is False:
+                continue
             for item in self.registry.load_annotations(session_id, annotation_type):
                 item_start = float(item.get("start_seconds", 0.0))
                 item_end = item_start + float(item.get("duration_seconds", 0.0))
@@ -303,18 +387,17 @@ class SessionApiApplication:
     def _derived(self, session_id: str, query: dict[str, list[str]]) -> dict[str, Any]:
         metric = self._required_string(query, "metric")
         manifest = self.registry.get_session_by_id(session_id)
-        descriptor = manifest.derived.get(metric)
+        descriptor = self.registry.runtime_derived_descriptor(session_id, metric)
+        if descriptor is None:
+            descriptor = manifest.derived.get(metric)
         if descriptor is None:
             raise ApiError(404, "metric_not_found", f"Derived metric {metric!r} is not declared")
         start_s, end_s = self._optional_range(query, manifest)
         records = []
         if descriptor.available:
-            for raw in self.registry.load_derived_results(session_id, metric):
+            for raw in self.registry.load_derived_window(session_id, metric, start_s, end_s):
                 record = _coerce_record(raw)
-                item_start = float(record.get("window_start_s", record.get("timestamp", 0.0)))
-                item_end = float(record.get("window_end_s", item_start))
-                if item_end >= start_s and item_start < end_s:
-                    records.append(record)
+                records.append(record)
         return {
             "session_id": session_id,
             "metric": metric,

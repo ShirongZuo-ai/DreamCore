@@ -3,9 +3,10 @@
 ## Purpose and boundary
 
 `frontend/` is an independent Vite application that coexists with the Python
-research package. It now supports a local read-only HTTP view of canonical
-public-data sessions. It neither imports Python modules nor changes algorithm
-outputs, and it has no EEG device, stimulation device, or medical decision.
+research package. It supports read-only canonical public-data sessions plus the
+separate local Wake Music generation service. It neither imports Python modules
+nor changes algorithm outputs, and it has no EEG device, stimulation device, or
+medical decision.
 
 The application has three audiences plus a dataset-neutral research library:
 
@@ -64,7 +65,27 @@ chooses the transport from catalog metadata and binds the loaded source. Pages
 never fetch directly. Adding a dataset still requires an adapter or normalized
 package, not conditionals in the Live Console.
 
-## EEG rendering boundary
+## Signal and sonification rendering boundary
+
+The real-session workspace presents AI Wake Music first:
+
+```text
+derived EOG profile → POST /api/wake-music/generate → local master MP3
+                                                        ↓
+                                             local 60 s Wake Version
+                                                        ↓
+                                             native browser audio player
+```
+
+The browser sends only session/style/window/variation choices. It never receives
+a provider credential, calls MiniMax, uploads raw samples, or depends on a
+temporary provider URL. `Generate New Variation` references the preceding local
+generation; the backend preserves its physiology and applies the configured
+seed increment. The native player owns play/pause/seek/volume, and a small local
+control resets playback to the beginning. It defaults to the locally
+postprocessed `/api/wake-music/<generation>/audio` Wake Version and offers the
+unchanged master through `/api/wake-music/<generation>/audio/master`; both
+routes support HTTP byte-range seeking.
 
 For Demo Simulation, the waveform remains deterministic SVG. Real offline
 sessions request only the configured window through `ReplaySource` and render
@@ -72,9 +93,61 @@ two signals on a shared uPlot axis. React owns only current bounded arrays. The
 configured point limit can downsample the plotted copy, while units, sample
 count, timestamps, and transported values remain intact.
 
-The real Alpha workspace uses one manual range for EEG, imported stages,
-derived Alpha/state records, and simulated demand/events. It has
-previous/next/duration/jump controls but no timer or play/pause behavior.
+The real workspace uses one bounded range for EEG, raw/filtered EOG, imported
+stages, eye-movement features/events, sonification controls, Alpha diagnostics,
+and simulated demand/events. `src/replay/` owns an independent five-state
+clock; `sessionTimeSeconds` is the only authoritative time and panels own no
+timers. Manual navigation remains available. Crossing a range consumes a
+prefetched window or requests the next bounded window through `ReplaySource`;
+it does not create a streaming or full-record transport.
+
+The separate Research Sonification boundary mirrors EEGsynth's modular concept without importing
+its runtime dependencies:
+
+```text
+ReplaySource → EyeMovementFeatureTrack → control frames
+                                           ↓ same cursor
+                                   useSonificationAudio
+                                           ↓ user gesture
+                                      Web Audio API
+```
+
+The audio hook owns only browser audio nodes and last-trigger bookkeeping. It
+does not own time, recompute physiology, or mutate transported arrays. Tempo
+sets beat cadence, density deterministically gates beats, intensity/velocity
+sets the envelope, brightness sets the low-pass cutoff, and candidate events
+can trigger notes. Source selection changes only the musical-control track.
+
+K-complex detail follows a separate local analysis boundary:
+
+```text
+bounded native EEG → K-Complex V0 candidate → Morphology B1 verification
+                                              ↓
+                                  verified default view + rejected audit view
+```
+
+The frontend consumes verifier output and never recomputes a probability or
+moves a detector landmark. CBraMod fields are optional advanced comparison
+metadata; missing checkpoint/cache state cannot block the normal panel.
+
+The window coordinator keeps a configured, bounded LRU outside React state,
+prefetches only once near the next boundary, passes AbortSignal to HTTP reads,
+and ignores responses from obsolete generations after seek. React holds only
+the active bounded window. EEG samples after the current cursor are visually
+masked, features become visible at their analysis-window end, and simulated
+events appear only when replay reaches their timestamps.
+
+The replay cursor is positioned from uPlot's own x-scale plus its measured plot
+bounding box, so it shares the exact coordinate system used by the waveform.
+Derived Alpha/state and simulated-demand charts use a labelled stepwise
+last-value hold between source feature timestamps. This makes replay progress
+visible without interpolating, recomputing, or fabricating derived physiology.
+
+An operator can add an in-memory simulated-intervention marker at the current
+cursor. The marker is synchronized across EEG, hypnogram, Alpha/state, and
+demand charts and displays `SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED`.
+It is not persisted, does not call an API, does not send a hardware command, and
+does not modify observed EEG or derived features.
 
 A future streaming implementation should follow this flow:
 
@@ -94,7 +167,9 @@ sleep architecture and post-session statistics.
 
 ## State and safety
 
-No general state library is used. Current state is page-local and limited to:
+No general state library is used. Offline replay state is isolated in a
+reducer/hook and owns session time, state, and speed. Other page-local state is
+limited to:
 
 - the local Emergency Stop demonstration;
 - the local Request Assistance acknowledgement.

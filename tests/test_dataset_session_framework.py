@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import sqlite3
+import struct
 from pathlib import Path
 
 import pytest
@@ -183,3 +185,85 @@ def test_fixture_replay_source_reads_only_requested_window(
     assert window.start_seconds == 1.0
     assert source.get_annotations("sleep_stages")
     assert source.get_derived_events("phase_estimates") == ()
+
+
+def test_repository_reads_indexed_derived_and_filtered_signal_windows(tmp_path: Path) -> None:
+    source_manifest = FIXTURE_ROOT / "fixture-neuro" / "fixture-a" / "manifest.json"
+    raw = json.loads(source_manifest.read_text(encoding="utf-8"))
+    package = tmp_path / "packages" / "fixture-neuro" / "fixture-a"
+    package.mkdir(parents=True)
+    database_path = package / "eye.sqlite"
+    with sqlite3.connect(database_path) as database:
+        database.execute(
+            "CREATE TABLE derived_rows (metric TEXT, sequence INTEGER, "
+            "window_start_s REAL, window_end_s REAL, payload_json TEXT, "
+            "PRIMARY KEY(metric, sequence))"
+        )
+        rows = [
+            (0, 0.0, 4.0, 0.25),
+            (1, 4.0, 8.0, 0.75),
+            (2, 8.0, 12.0, 0.5),
+        ]
+        database.executemany(
+            "INSERT INTO derived_rows VALUES (?, ?, ?, ?, ?)",
+            (
+                (
+                    "eye_movement_activity_v1",
+                    sequence,
+                    start_s,
+                    end_s,
+                    json.dumps(
+                        {
+                            "window_start_s": start_s,
+                            "window_end_s": end_s,
+                            "activity_score": score,
+                        }
+                    ),
+                )
+                for sequence, start_s, end_s, score in rows
+            ),
+        )
+        database.execute(
+            "CREATE INDEX derived_rows_time ON derived_rows(metric, window_end_s, window_start_s)"
+        )
+    raw["derived"]["eye_movement_activity_v1"] = {
+        "available": True,
+        "source": "derived",
+        "metadata": {
+            "storage": {
+                "kind": "sqlite_rows",
+                "path": "eye.sqlite",
+                "metric": "eye_movement_activity_v1",
+            }
+        },
+    }
+    filtered_path = package / "filtered.f32"
+    filtered_path.write_bytes(struct.pack("<8f", *range(8)))
+    raw["recording"]["duration_seconds"] = 8.0
+    raw["signals"].append(
+        {
+            "id": "eog-filtered",
+            "modality": "eog",
+            "channel_name": "fixture EOG filtered",
+            "unit": "uV",
+            "sampling_rate_hz": 1.0,
+            "source": "derived",
+            "available": True,
+            "metadata": {
+                "storage": {
+                    "kind": "float32_binary",
+                    "path": "filtered.f32",
+                    "dtype": "<f4",
+                    "sample_count": 8,
+                }
+            },
+        }
+    )
+    (package / "manifest.json").write_text(json.dumps(raw), encoding="utf-8")
+    adapter = SessionPackageRepository(tmp_path / "packages").adapters()[0]
+
+    derived = adapter.load_derived_window("fixture-a", "eye_movement_activity_v1", 5.0, 9.0)
+    filtered = adapter.load_signal_window("fixture-a", "eog-filtered", 2.0, 3.0)
+
+    assert [row["activity_score"] for row in derived] == [0.75, 0.5]
+    assert filtered.samples == (2.0, 3.0, 4.0)

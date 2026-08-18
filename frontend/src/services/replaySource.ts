@@ -5,6 +5,7 @@ import type {
   EventWindowResponse,
   SessionManifest,
   SignalWindowResponse,
+  SignalWindowsResponse,
 } from '../types';
 
 export type ReplaySignalWindow = {
@@ -23,19 +24,29 @@ export interface ReplaySource {
     signalId: string,
     startSeconds: number,
     durationSeconds: number,
+    signal?: AbortSignal,
   ): Promise<ReplaySignalWindow>;
+  readSignalWindows?(
+    signalIds: readonly string[],
+    startSeconds: number,
+    durationSeconds: number,
+    signal?: AbortSignal,
+  ): Promise<ReplaySignalWindow[]>;
   readAnnotations(
     startSeconds: number,
     endSeconds: number,
+    signal?: AbortSignal,
   ): Promise<AnnotationWindowResponse>;
   readDerived(
     metric: string,
     startSeconds: number,
     endSeconds: number,
+    signal?: AbortSignal,
   ): Promise<DerivedWindowResponse>;
   readEvents(
     startSeconds: number,
     endSeconds: number,
+    signal?: AbortSignal,
   ): Promise<EventWindowResponse>;
 }
 
@@ -70,7 +81,11 @@ export class FixtureReplaySource implements ReplaySource {
     });
   }
 
-  async readDerived(metric: string, startSeconds: number, endSeconds: number) {
+  async readDerived(
+    metric: string,
+    startSeconds: number,
+    endSeconds: number,
+  ): Promise<DerivedWindowResponse> {
     const descriptor = this.manifest.derived[metric];
     if (!descriptor) throw new Error(`Derived metric unavailable: ${metric}`);
     return Promise.resolve({
@@ -118,8 +133,8 @@ export class HttpReplaySource implements ReplaySource {
     return this.manifest.signals;
   }
 
-  private async get<T>(path: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`);
+  private async get<T>(path: string, signal?: AbortSignal): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, { signal });
     const payload = (await response.json()) as ApiEnvelope<T> | ApiFailure;
     if (!response.ok || 'error' in payload) {
       throw new Error(
@@ -133,10 +148,47 @@ export class HttpReplaySource implements ReplaySource {
     signalId: string,
     startSeconds: number,
     durationSeconds: number,
+    abortSignal?: AbortSignal,
   ) {
     const data = await this.get<SignalWindowResponse>(
       `/sessions/${encodeURIComponent(this.manifest.session.session_id)}/signals/${encodeURIComponent(signalId)}/window?start_s=${startSeconds}&duration_s=${durationSeconds}`,
+      abortSignal,
     );
+    return this.toReplaySignalWindow(data, signalId);
+  }
+
+  async readSignalWindows(
+    signalIds: readonly string[],
+    startSeconds: number,
+    durationSeconds: number,
+    abortSignal?: AbortSignal,
+  ) {
+    const query = new URLSearchParams({
+      start_s: String(startSeconds),
+      duration_s: String(durationSeconds),
+    });
+    signalIds.forEach((signalId) => query.append('signal_id', signalId));
+    const data = await this.get<SignalWindowsResponse>(
+      `/sessions/${encodeURIComponent(this.manifest.session.session_id)}/signals/window?${query.toString()}`,
+      abortSignal,
+    );
+    if (
+      data.windows.length !== signalIds.length ||
+      data.windows.some(
+        (window, index) => window.signal_id !== signalIds[index],
+      )
+    ) {
+      throw new Error('Multi-signal window response order is inconsistent');
+    }
+    return data.windows.map((window, index) =>
+      this.toReplaySignalWindow(window, signalIds[index]),
+    );
+  }
+
+  private toReplaySignalWindow(
+    data: SignalWindowResponse,
+    signalId: string,
+  ): ReplaySignalWindow {
     const signal = this.manifest.signals.find((item) => item.id === signalId);
     if (!signal) throw new Error(`Signal metadata unavailable: ${signalId}`);
     if (
@@ -159,21 +211,33 @@ export class HttpReplaySource implements ReplaySource {
     };
   }
 
-  readAnnotations(startSeconds: number, endSeconds: number) {
+  readAnnotations(
+    startSeconds: number,
+    endSeconds: number,
+    signal?: AbortSignal,
+  ) {
     return this.get<AnnotationWindowResponse>(
       `/sessions/${encodeURIComponent(this.manifest.session.session_id)}/annotations?start_s=${startSeconds}&end_s=${endSeconds}`,
+      signal,
     );
   }
 
-  readDerived(metric: string, startSeconds: number, endSeconds: number) {
+  readDerived(
+    metric: string,
+    startSeconds: number,
+    endSeconds: number,
+    signal?: AbortSignal,
+  ) {
     return this.get<DerivedWindowResponse>(
       `/sessions/${encodeURIComponent(this.manifest.session.session_id)}/derived?metric=${encodeURIComponent(metric)}&start_s=${startSeconds}&end_s=${endSeconds}`,
+      signal,
     );
   }
 
-  readEvents(startSeconds: number, endSeconds: number) {
+  readEvents(startSeconds: number, endSeconds: number, signal?: AbortSignal) {
     return this.get<EventWindowResponse>(
       `/sessions/${encodeURIComponent(this.manifest.session.session_id)}/events?start_s=${startSeconds}&end_s=${endSeconds}`,
+      signal,
     );
   }
 }

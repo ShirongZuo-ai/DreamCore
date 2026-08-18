@@ -1,0 +1,836 @@
+{
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "primary_for_viewer": true,
+        "raw_labels_preserved": true,
+        "scorer": "1",
+        "scoring_standard": "AASM",
+        "storage": {
+          "epoch_duration_s": 30.0,
+          "kind": "epoch_labels_text",
+          "label_map": {
+            "0": "W",
+            "1": "N1",
+            "2": "N2",
+            "3": "N3",
+            "4": "N3",
+            "5": "REM",
+            "N1": "N1",
+            "N2": "N2",
+            "N3": "N3",
+            "R": "REM",
+            "REM": "REM",
+            "W": "W"
+          },
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_1.txt",
+          "scorer": "1",
+          "scoring_standard": "AASM",
+          "skip_unmapped": true
+        }
+      },
+      "source": "imported"
+    },
+    "sleep_stages_scorer_1": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "primary_for_viewer": false,
+        "raw_labels_preserved": true,
+        "scorer": "1",
+        "scoring_standard": "AASM",
+        "storage": {
+          "epoch_duration_s": 30.0,
+          "kind": "epoch_labels_text",
+          "label_map": {
+            "0": "W",
+            "1": "N1",
+            "2": "N2",
+            "3": "N3",
+            "4": "N3",
+            "5": "REM",
+            "N1": "N1",
+            "N2": "N2",
+            "N3": "N3",
+            "R": "REM",
+            "REM": "REM",
+            "W": "W"
+          },
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_1.txt",
+          "scorer": "1",
+          "scoring_standard": "AASM",
+          "skip_unmapped": true
+        }
+      },
+      "source": "imported"
+    },
+    "sleep_stages_scorer_2": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "primary_for_viewer": false,
+        "raw_labels_preserved": true,
+        "scorer": "2",
+        "scoring_standard": "AASM",
+        "storage": {
+          "epoch_duration_s": 30.0,
+          "kind": "epoch_labels_text",
+          "label_map": {
+            "0": "W",
+            "1": "N1",
+            "2": "N2",
+            "3": "N3",
+            "4": "N3",
+            "5": "REM",
+            "N1": "N1",
+            "N2": "N2",
+            "N3": "N3",
+            "R": "REM",
+            "REM": "REM",
+            "W": "W"
+          },
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_2.txt",
+          "scorer": "2",
+          "scoring_standard": "AASM",
+          "skip_unmapped": true
+        }
+      },
+      "source": "imported"
+    }
+  },
+  "capabilities": {
+    "alpha_power": {
+      "reason": "Source available; Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "alpha_trend": {
+      "reason": "Source available; Alpha trend not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "arousals": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "artifacts": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "decision_simulation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "drowsiness_score": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "eeg": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eog": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eye_movement_activity": {
+      "reason": "Source available; Eye Movement not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "eye_movement_events": {
+      "reason": "Source available; Eye Movement candidate events not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "hardware_telemetry": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "heart_rate": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "individual_alpha_frequency": {
+      "reason": "Source available; IAF diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "movement": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "navigation_alignment": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_estimation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_precision": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ppg": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ready_to_remove": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "relative_alpha_power": {
+      "reason": "Source available; Relative Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "sleep_stage_labels": {
+      "reason": null,
+      "source": "imported",
+      "status": "AVAILABLE"
+    },
+    "sleep_stage_predictions": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "slow_oscillation_detection": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "snoring": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "sonification_controls": {
+      "reason": "Source available; Research Sonification controls not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "spo2": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_demand": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_events": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    }
+  },
+  "dataset": {
+    "display_name": "ISRUC-Sleep Cohort III",
+    "id": "isruc-sleep-cohort-iii",
+    "license_source": "https://sleeptight.isr.uc.pt/",
+    "metadata": {
+      "local_status": "available_locally",
+      "official_title": "ISRUC-Sleep",
+      "scoring_standard": "AASM"
+    },
+    "official_source": "https://sleeptight.isr.uc.pt/?page_id=48",
+    "version": "Cohort III"
+  },
+  "derived": {
+    "alpha_power": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed",
+        "viewer": {
+          "activity_jump_time_s": null,
+          "default_start_s": 0.0,
+          "default_time_s": 0.0,
+          "default_window_duration_s": 60.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO HARDWARE COMMAND SENT",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": null,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "reason": "Available EEG source; Alpha diagnostic not computed",
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "eog_validation_v1": {
+      "available": true,
+      "derived_by": "dreamcore-eog-validation-v1",
+      "metadata": {
+        "channels": [
+          "LOC-A2",
+          "ROC-A1"
+        ],
+        "contract_sha256": "8431359286a04b9a4b02bac5b1d458bca3f6c4d9b9e18bf0270dca19fd8bd53c",
+        "detector_parameters_frozen": true,
+        "manual_review_status": "pending",
+        "result_root": "../../../../results/eog_validation_v1"
+      },
+      "source": "derived",
+      "version": "eog-validation-v1"
+    },
+    "eye_movement_activity_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; Eye Movement analysis not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_events_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; candidate events not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    }
+  },
+  "provenance": {
+    "classification": "imported",
+    "imported_by": "scripts/index_datasets.py",
+    "metadata": {
+      "source_files": [
+        {
+          "downloaded_at": null,
+          "file_name": "2.rec",
+          "file_size_bytes": 153858620,
+          "local_path": "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "official_source": "https://sleeptight.isr.uc.pt/?page_id=48",
+          "sha256": null
+        },
+        {
+          "downloaded_at": null,
+          "file_name": "2_1.txt",
+          "file_size_bytes": 2823,
+          "local_path": "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_1.txt",
+          "official_source": "https://sleeptight.isr.uc.pt/?page_id=48",
+          "sha256": null
+        },
+        {
+          "downloaded_at": null,
+          "file_name": "2_2.txt",
+          "file_size_bytes": 2823,
+          "local_path": "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_2.txt",
+          "official_source": "https://sleeptight.isr.uc.pt/?page_id=48",
+          "sha256": null
+        }
+      ]
+    },
+    "notes": "Official public source files; DreamCore metadata normalization only",
+    "source_dataset_uri": "https://sleeptight.isr.uc.pt/?page_id=48"
+  },
+  "recording": {
+    "duration_seconds": 28230.0,
+    "start_time": "2009-04-25T00:21:00"
+  },
+  "schema_version": "dreamcore.session.v1",
+  "session": {
+    "night_id": "isruc-c3-02",
+    "session_id": "isruc-c3-02",
+    "subject_id": "ISRUC-C3-02",
+    "visit_id": "isruc-c3-02"
+  },
+  "signals": [
+    {
+      "available": true,
+      "canonical_role": "EOG_LEFT",
+      "channel_name": "LOC-A2",
+      "id": "eog-1",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "LOC-A2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eog",
+      "original_channel_name": "LOC-A2",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EOG_RIGHT",
+      "channel_name": "ROC-A1",
+      "id": "eog-2",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "ROC-A1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eog",
+      "original_channel_name": "ROC-A1",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_FRONTAL",
+      "channel_name": "F3-A2",
+      "id": "eeg-1",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "F3-A2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "F3-A2",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_CENTRAL",
+      "channel_name": "C3-A2",
+      "id": "eeg-2",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "C3-A2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "C3-A2",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_OCCIPITAL",
+      "channel_name": "O1-A2",
+      "id": "eeg-3",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "O1-A2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "O1-A2",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_FRONTAL",
+      "channel_name": "F4-A1",
+      "id": "eeg-4",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "F4-A1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "F4-A1",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_CENTRAL",
+      "channel_name": "C4-A1",
+      "id": "eeg-5",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "C4-A1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "C4-A1",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_OCCIPITAL",
+      "channel_name": "O2-A1",
+      "id": "eeg-6",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "O2-A1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "O2-A1",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X1",
+      "id": "other-1",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X1",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X2",
+      "id": "other-2",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X2",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X3",
+      "id": "other-3",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X3",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X3",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X4",
+      "id": "other-4",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X4",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X4",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X5",
+      "id": "other-5",
+      "metadata": {
+        "native_sample_count": 5646000,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X5",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X5",
+      "sampling_rate_hz": 200.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X6",
+      "id": "other-6",
+      "metadata": {
+        "native_sample_count": 352875,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X6",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X6",
+      "sampling_rate_hz": 12.5,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "DC3",
+      "id": "other-7",
+      "metadata": {
+        "native_sample_count": 705750,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "DC3",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "DC3",
+      "sampling_rate_hz": 25.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X7",
+      "id": "other-8",
+      "metadata": {
+        "native_sample_count": 705750,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X7",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X7",
+      "sampling_rate_hz": 25.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "X8",
+      "id": "other-9",
+      "metadata": {
+        "native_sample_count": 705750,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "X8",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "X8",
+      "sampling_rate_hz": 25.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "SaO2",
+      "id": "other-10",
+      "metadata": {
+        "native_sample_count": 352875,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "SaO2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "SaO2",
+      "sampling_rate_hz": 12.5,
+      "source": "raw",
+      "unit": "%"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "DC8",
+      "id": "other-11",
+      "metadata": {
+        "native_sample_count": 705750,
+        "source_file": "2.rec",
+        "storage": {
+          "channel_name": "DC8",
+          "kind": "edf",
+          "path": "../../../datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "DC8",
+      "sampling_rate_hz": 25.0,
+      "source": "raw",
+      "unit": "unknown"
+    }
+  ]
+}

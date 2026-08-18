@@ -1,8 +1,9 @@
 import { Activity, SlidersHorizontal } from 'lucide-react';
+import { useMemo } from 'react';
 
 import type { EEGChannel, EEGSampleWindow } from '../../types';
 import type { ReplaySignalWindow } from '../../services/replaySource';
-import { UPlotTimeSeries } from '../charts/UPlotTimeSeries';
+import { UPlotTimeSeries, type TimeMarker } from '../charts/UPlotTimeSeries';
 import { PanelHeader } from '../common/PanelHeader';
 
 const SVG_WIDTH = 1000;
@@ -22,20 +23,40 @@ function signalPath(channel: EEGChannel): string {
 export function RealEEGWaveformPanel({
   windows,
   maxDisplayPoints,
+  replayCursorSeconds,
+  interventionMarkers,
+  kComplexMarkers = [],
+  onKComplexMarkerClick,
+  focused = false,
 }: {
   windows: readonly ReplaySignalWindow[];
   maxDisplayPoints: number;
+  replayCursorSeconds: number;
+  interventionMarkers: readonly TimeMarker[];
+  kComplexMarkers?: readonly TimeMarker[];
+  onKComplexMarkerClick?: (marker: TimeMarker) => void;
+  focused?: boolean;
 }) {
   const first = windows[0];
+  const plotLines = useMemo(
+    () =>
+      windows.map((window, index) => ({
+        label: window.signal.channel_name,
+        values: window.samples,
+        stroke: index === 0 ? '#3db5d8' : '#9b8cf4',
+        dash: index === 0 ? undefined : [8, 5],
+      })),
+    [windows],
+  );
   if (!first || !first.timestamps?.length) return null;
   const endSeconds = first.startSeconds + first.durationSeconds;
   return (
     <section className="panel overflow-hidden" aria-labelledby="real-eeg-title">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5">
         <PanelHeader
-          title="Real EEG signal window"
+          title="Recorded EEG Replay"
           eyebrow="Observed · Public Sleep-EDF"
-          action={<span className="demo-chip">REAL PUBLIC EEG DATA</span>}
+          action={<span className="demo-chip">OFFLINE PUBLIC EEG REPLAY</span>}
         />
         <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-secondary">
           <span>
@@ -68,24 +89,33 @@ export function RealEEGWaveformPanel({
                 : window.signal.source}
             </span>
           ))}
+          <span className="inline-flex items-center gap-2">
+            <span className="h-3 w-px bg-white/70" aria-hidden="true" />
+            Offline replay cursor
+          </span>
+          <span className="inline-flex items-center gap-2 text-warning">
+            <span className="h-3 w-0.5 bg-warning" aria-hidden="true" />
+            Simulated intervention marker
+          </span>
         </div>
         <UPlotTimeSeries
           timestamps={first.timestamps}
-          lines={windows.map((window, index) => ({
-            label: window.signal.channel_name,
-            values: window.samples,
-            stroke: index === 0 ? '#3db5d8' : '#9b8cf4',
-            dash: index === 0 ? undefined : [8, 5],
-          }))}
+          lines={plotLines}
           unit={first.signal.unit}
           height={250}
           maxPoints={maxDisplayPoints}
           testId="real-eeg-uplot"
+          cursorTimestamp={replayCursorSeconds}
+          xRange={[first.startSeconds, endSeconds]}
+          revealUntilTimestamp={focused ? undefined : replayCursorSeconds}
+          markers={[...interventionMarkers, ...kComplexMarkers]}
+          showMarkerLabels
+          onMarkerClick={onKComplexMarkerClick}
         />
       </div>
       <p className="border-t border-line px-4 py-2.5 text-[0.6875rem] text-secondary">
         Windowed read only · display downsampling does not alter transport
-        samples or statistics
+        samples or statistics · intervention markers never modify EEG
       </p>
     </section>
   );

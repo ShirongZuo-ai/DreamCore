@@ -22,6 +22,15 @@ env/
 Thumbs.db
 
 # Data — never commit raw or processed data
+*.edf
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.npy
+*.npz
+*.bin
+*.f32
 data/*.edf
 data/*.csv
 data/*.npy
@@ -30,7 +39,16 @@ data/*.fif
 data/*.hdf5
 data/*.h5
 data/*.mat
-data/datasets/
+data/datasets/raw/
+data/datasets/sleep-edf/physionet-sleep-data/
+data/datasets/**/*.rec
+data/datasets/**/*.mat
+data/datasets/**/*.zip
+data/datasets/**/*.tar
+data/datasets/**/*.tar.gz
+data/datasets/**/*.tgz
+data/datasets/**/*.part
+data/datasets/**/*.download
 
 # Results (keep .gitkeep only)
 results/*
@@ -53,5 +71,10 @@ htmlcov/
 
 # Secrets
 .env
+.env.*
 *.pem
 *.key
+
+# Tool caches
+.ruff_cache/
+.cache/

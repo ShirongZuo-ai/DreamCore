@@ -344,3 +344,340 @@ This phase adds no WebSocket, replay clock, live EEG, stimulation command,
 ultrasound parameter, or hardware integration.
 
 **Date**: 2026-08-07
+
+---
+
+## DD-015: Replay public EEG in real-time cadence without implying intervention response
+
+**Decision**: Add a configuration-driven, client-side offline replay clock over
+the existing bounded `ReplaySource` windows. The clock supports play/pause,
+reset, speed selection, cursor synchronization, and bounded-window rollover. It
+does not add a full-record endpoint, WebSocket, live EEG, or server-side clock.
+
+An operator may place an in-memory `simulated_intervention_marker` at the
+current replay cursor. Every marker has `simulated` provenance and the notice
+`SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED`. The marker appears across
+the observed EEG, imported hypnogram, derived Alpha/state, and simulated-demand
+views but never changes any source or derived value. It is not persisted and
+does not send a command.
+
+**Rationale**:
+
+- Real-time cadence lets the existing public record exercise synchronized UI
+  behavior without presenting prerecorded data as a live acquisition.
+- A single cross-panel cursor and marker make temporal comparison auditable.
+- Browser-memory-only events preserve the read-only API and prevent a visual
+  annotation from being mistaken for an actual Sleep-EDF intervention.
+- The explicit negative hardware statement is required because no DreamCore
+  ultrasound stimulus-response data exists.
+
+This decision authorizes only offline replay and abstract simulated annotation.
+It does not authorize ultrasound dose, FUS delivery wording, device control,
+EEG modification, efficacy claims, or causal pre/post interpretation.
+
+**Date**: 2026-08-07
+
+---
+
+## DD-016: Use one authoritative offline replay clock and window-end feature semantics
+
+**Decision**: Phase A3 replaces the component-local replay cursor in DD-015
+with an independent `idle | playing | paused | ended | error` state machine.
+`sessionTimeSeconds` is the only authoritative time. EEG reveal, current
+imported stage, derived Alpha/state visibility, simulated demand, and simulated
+event visibility all consume that value; panels do not own timers.
+
+An Alpha feature timestamp means the **analysis-window end**. The frontend does
+not expose a feature until `window_end_s <= sessionTimeSeconds`. A simulated
+event likewise remains hidden until its timestamp is reached. The imported
+hypnogram remains an independent reference and is never regenerated from the
+drowsiness heuristic.
+
+Signal transport remains bounded and read-only. A small configured LRU cache
+stores at most three window packages outside React state. The next window is
+prefetched once near the current boundary; seek/window changes abort obsolete
+requests, and a generation guard prevents stale responses from replacing the
+new window. uPlot updates data without recreating its chart for every clock
+tick.
+
+**Rationale**:
+
+- One clock prevents independent panel drift.
+- Window-end semantics avoid revealing a derived value before all samples used
+  to compute it have occurred in replay time.
+- Bounded caching and cancellation support long replay without accumulating an
+  all-night signal or issuing a request every animation frame.
+- Progressive display is a visualization of a fixed public record, not live
+  acquisition or evidence that a simulated event affected later EEG.
+
+This demonstrator adds no WebSocket, hardware ring buffer, EEG acquisition,
+ultrasound parameter, stimulation command, or counterfactual signal.
+
+**Date**: 2026-08-07
+
+---
+
+## DD-017: Declare precomputed derived coverage separately from raw-session coverage
+
+**Decision**: A real Session Package with precomputed Alpha rows records compact
+`metadata.analysis` coverage: recording-relative seconds, window-end timestamp
+semantics, evaluation range, configured window/step, exact channels,
+attempted/accepted/rejected window counts and reasons, total row count, and
+first/last feature times. The frontend may use this metadata to explain why a
+bounded raw-EEG window has no derived rows, but it must not synthesize a row or
+change the replay clock.
+
+**Rationale**:
+
+- Raw EEG may cover a much longer recording than a configured research analysis.
+- An empty bounded response before or after derived coverage is not an extraction
+  failure and should not be presented as an unexplained unavailable value.
+- Compact coverage metadata preserves the bounded transport and makes timestamp
+  units and channel mapping auditable.
+
+**Date**: 2026-08-12
+
+---
+
+## DD-018: Make EOG/eye movement primary and sonification modular
+
+**Decision**: Supersede DD-013's product priority without deleting its
+implementation. The primary V1 path is now:
+
+```text
+Sleep-EDF EOG
+→ EyeMovementFeatureTrack
+→ Eye Movement Candidate events/activity
+→ SonificationMapper
+→ SonificationControlFrame
+→ browser AudioRenderer
+```
+
+Discover EOG from recording metadata and configured label rules; fail
+explicitly if discovery is absent or ambiguous. Compute features independently
+of imported sleep stage. Use 4 s windows stepped every 1 s, window-end feature
+timestamps, configured 0.3–10 Hz zero-phase Butterworth filtering, robust local
+activity deviation, and deterministic mapping defaults for the first SC4001
+experiment. All values and thresholds remain configuration-owned.
+
+Extend `dreamcore.session.v1` additively with EOG, eye-movement activity/event,
+and sonification-control capabilities. Raw EOG, filtered EOG, derived windows,
+events, controls, stages, and Alpha share one `sessionTimeSeconds`. Persist
+full coverage and source fingerprints. Keep CSVs as audit exports and use a
+recording-relative SQLite time index for bounded API reads; this changes no
+feature values or public API shape.
+
+Adopt EEGsynth's conceptual separation of signal processing, controls, and
+sound output, but do not require Redis, FieldTrip, MIDI hardware, or an external
+synthesizer for V1. Web Audio begins only after a user gesture. Eye Movement is
+the default source; Alpha is optional comparison; baseline is explicitly
+configured. Musical parameters have `sonification_control` provenance and are
+not measured physiology.
+
+**Rationale**:
+
+- SC4001 posterior and frontal Alpha differed enough that Alpha should remain a
+  diagnostic rather than the default product signal.
+- A real EOG path supports an interpretable, testable physiological driver
+  without claiming that an event equals REM or a dream.
+- Module boundaries allow a later MIDI/OSC/EEGsynth adapter without duplicating
+  the current Session/replay architecture.
+- Explicit coverage and indexed window reads prevent the previous mismatch
+  between a long raw timeline and a small or slow derived artifact.
+
+**Date**: 2026-08-12
+
+---
+
+## DD-019: Separate post-waking AI music from replay sonification
+
+**Decision**: Make AI Wake Music the primary product-facing research experience
+while retaining the oscillator path as `Physiological Sonification · Research`.
+The backend selects the final annotation-confirmed non-Wake→Wake transition and
+uses the configured preceding interval, or an explicit manual research window.
+Only existing derived EOG feature rows enter `dreamcore.wake_music.profile.v1`.
+
+DreamCore maps activity→register, candidate rate→density, trend→brightness and
+energy curve, and amplitude→bounded expression. A six-family style bank and
+seeded arrangement variants produce a reproducible prompt configuration. Auto
+style is an exploratory seeded choice, not a claim that physiology determines
+genre. Energy and percussiveness are capped; vocals and aggressive styles are
+disabled.
+
+MiniMax calls originate only in the Python backend, use a single configurable
+base URL, request non-streaming URL output with `is_instrumental=true`, omit
+lyrics, and immediately download the temporary URL. Each generation stores the
+profile, exact prompt, safe metadata, and local MP3 under ignored results. The
+cache key includes session/window/versions/style/seed/provider/model/prompt hash.
+The read-only `/api/v1` Session contract is unchanged; mutations are isolated
+under `/api/wake-music`.
+
+**Rationale**:
+
+- A categorical profile preserves an explainable DreamCore-owned mapping and
+  prevents a provider from interpreting raw physiology.
+- Seeded bounded variation supports comparisons and auditability without
+  promising deterministic provider audio.
+- Immediate local download avoids dependence on expiring provider URLs.
+- Separate APIs preserve canonical Session semantics and keep credentials out
+  of the browser.
+
+**Date**: 2026-08-13
+
+---
+
+## DD-020: Preserve generated masters and derive product playback locally
+
+**Decision**: Keep each provider-generated `wake_music.mp3` byte-preserved as
+the full master. Create `wake_music_60s.mp3` locally using configured FFmpeg
+postprocessing: take the first configured 60 seconds, apply no fade-in, and
+apply a gentle configured three-second fade-out beginning at 57 seconds. Store
+separate `master_audio` and `wake_version` metadata. Default the Viewer and
+`/audio` route to the Wake Version while retaining the master under
+`/audio/master`.
+
+Missing derivatives are created or reused during local storage lookup or by an
+explicit helper command. This operation does not invoke MiniMax and does not
+alter physiology, mapping, prompt, style, variation, seed, or generation-cache
+identity.
+
+**Rationale**:
+
+- A bounded product playback duration is easier to review and use as a wake cue.
+- Keeping the provider master byte-identical preserves reproducibility and
+  permits full-track research inspection.
+- A local derivative avoids consuming generation quota and keeps playback
+  policy separate from physiological and musical-generation parameters.
+
+**Date**: 2026-08-13
+
+---
+
+## DD-021: Index source files; do not construct a duplicate signal database
+
+**Decision**: Extend `dreamcore.session.v1`, `DatasetRegistry`, and the existing
+bounded Session API for Sleep-EDF Expanded, HMC v1.1, and ISRUC Cohort III.
+Adapters inspect native EDF/REC metadata and keep source signals in place.
+Lightweight manifests/catalog entries store dataset, subject, recording,
+channel, annotation, capability, and provenance metadata only.
+
+Preserve `original_channel_name`, per-channel sampling frequency and unit beside
+a conservative `canonical_role`. Normalize stages to W/N1/N2/N3/REM/UNKNOWN/
+MOVEMENT while retaining every raw stage label. ISRUC scorer 1 is the configured
+primary Viewer source; scorer 2 remains a separately queryable annotation.
+Source availability and derived availability are distinct states.
+
+**Rationale**: This prevents multi-gigabyte duplication, avoids global montage
+and sampling-rate assumptions, preserves disagreements, and lets the unified
+Viewer load only requested time windows.
+
+**Date**: 2026-08-13
+
+---
+
+## DD-022: Freeze Eye Movement V1 before cross-dataset descriptive validation
+
+**Decision**: Hash a machine-readable contract before applying the unchanged
+Eye Movement V1 detector to SC4002, HMC SN001/SN002, and ISRUC Cohort III
+subjects 1/2. Analyze every native EOG channel independently over the full
+recording. Use deterministic one-to-one temporal matching for dual EOG,
+exposure-normalized stage summaries, and separate ISRUC scorer assignments.
+
+Add a seeded candidate sample and a stage-stratified non-candidate control
+sample to the unified Viewer. Human labels persist locally as a separate
+versioned annotation layer; they never overwrite a detector candidate. Until
+humans complete review, precision and sampled miss metrics remain unavailable.
+
+**Rationale**: Freezing parameters prevents post-result tuning, dual-channel
+matching exposes montage-dependent behavior without declaring a correct
+channel, and stage/scorer denominators avoid misleading raw-count comparisons.
+The control sample can reveal possible misses descriptively but cannot provide
+formal recall without exhaustive ground truth.
+
+**Date**: 2026-08-14
+
+---
+
+## DD-023: Product-first automatic local analysis with identity-based reuse
+
+**Decision**: Opening a recording starts non-blocking local Alpha and Eye
+Movement jobs when compatible source channels exist, followed by a local Wake
+Music Profile when its inputs become ready. Jobs are keyed by recording source
+fingerprint, algorithm version, and configuration hash, deduplicated in-process,
+and persisted under ignored results. Full-night Cross-Dataset EOG Validation
+artifacts are referenced when their frozen detector contract, channels,
+sampling rates, and coverage are equivalent; large results are not copied.
+
+The primary Viewer exposes only Not available, Analyzing, Ready, and Error.
+Detailed hashes and provenance remain internal. MiniMax generation remains an
+explicit user action, and K-Complex remains an unimplemented future feature.
+
+**Rationale**: Product users should receive useful insights without managing
+artifact lifecycles. Stable cache identity preserves scientific auditability,
+while per-feature background jobs keep initial rendering responsive and prevent
+duplicate analysis.
+
+**Date**: 2026-08-14
+
+---
+
+## DD-024: Add retrospective K-Complex V0 to automatic local analysis
+
+**Decision**: Supersede DD-023's K-Complex placeholder with a transparent,
+configuration-hashed `k_complex_v0` detector. Select one primary EEG channel
+independently from Alpha using frontal→central→other compatible EEG role
+priority, gate normal counts to normalized N2, merge continuous N2 bouts, and
+assign within-bout ordinals. Detect complete-waveform negative-positive
+morphology after zero-phase 0.3–4 Hz filtering using local median/MAD depth and
+prominence, configurable duration bounds, artifact limits, and refractory
+suppression. A positive peak stays absent unless it passes its configured
+threshold.
+
+Run K-Complex through the existing automatic-analysis executor and persistent
+identity cache. Expose event focus through the existing bounded multi-signal
+reader. Persist Looks right/Wrong/Uncertain reviews and manual N2 trough
+candidates in a separate local SQLite overlay; neither changes detector output.
+
+**Rationale**: Retrospective morphology and lightweight human review establish
+an inspectable cross-dataset baseline before any causal early-trough work. The
+separate channel policy avoids inheriting Alpha's posterior preference, robust
+local thresholds accommodate heterogeneous native montages/scales, and explicit
+N2 bout ordinals make the first and second candidates directly reviewable.
+
+This V0 may inspect samples after the trough. It is not an early predictor,
+clinical detector, or ground truth and exposes no causal lead time.
+
+**Date**: 2026-08-14
+
+---
+
+## DD-025: Productize frozen B1 morphology and keep CBraMod research-only
+
+**Decision**: Keep K-Complex V0 as the retrospective candidate detector and use
+the already-benchmarked B1 Morphology verifier as the default product filter.
+B1 retains exactly four ordered V0 features (`score`, `duration_s`, signed
+`negative_trough_amplitude`, and zero-or-observed `positive_peak_delay_s`), a
+standard scaler, class-balanced L2 logistic regression with the frozen
+hyperparameters and seed, and an inclusive 0.5 probability threshold. The
+verifier changes acceptance only and never changes V0 onset, trough, positive
+peak, end, duration, score, or morphology measurements.
+
+Preserve the recording-grouped DREAMS OOF benchmark as evaluation evidence.
+Fit the product artifact separately on all 108 label-eligible frozen examples;
+do not assign the OOF metrics to that final fit. Store coefficients, scaler,
+threshold, label policy, provenance, benchmark contract hash, and a canonical
+checksum in a small JSON artifact. Include its checksum in product cache
+identity.
+
+Keep frozen CBraMod available for explicitly enabled research comparison, off
+by default. Normal K-complex inference must not load its checkpoint or require
+PyTorch, CUDA, embeddings, or cache files. Expose verified/rejected-by-verifier
+semantics while retaining rejected V0 proposals for inspection; neither status
+is ground truth.
+
+**Rationale**: B1 was the strongest arm of the frozen comparison and is small,
+auditable, deterministic, and operational without a foundation-model runtime.
+Separating OOF evaluation from the final all-eligible-data fit prevents an
+unsupported performance claim for the product artifact.
+
+**Date**: 2026-08-18

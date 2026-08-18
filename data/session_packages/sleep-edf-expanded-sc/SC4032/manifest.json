@@ -1,0 +1,454 @@
+{
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "metadata": {
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "UNKNOWN",
+          "W"
+        ],
+        "primary_for_viewer": true,
+        "raw_labels_preserved": true,
+        "scorer": "official",
+        "scoring_standard": "Rechtschaffen and Kales",
+        "storage": {
+          "kind": "edf_annotations",
+          "label_map": {
+            "Movement time": "MOVEMENT",
+            "Sleep stage 1": "N1",
+            "Sleep stage 2": "N2",
+            "Sleep stage 3": "N3",
+            "Sleep stage 4": "N3",
+            "Sleep stage ?": "UNKNOWN",
+            "Sleep stage R": "REM",
+            "Sleep stage W": "W"
+          },
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032EP-Hypnogram.edf",
+          "scorer": "official",
+          "scoring_standard": "Rechtschaffen and Kales",
+          "skip_unmapped": true
+        }
+      },
+      "source": "imported"
+    }
+  },
+  "capabilities": {
+    "alpha_power": {
+      "reason": "Source available; Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "alpha_trend": {
+      "reason": "Source available; Alpha trend not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "arousals": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "artifacts": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "decision_simulation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "drowsiness_score": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "eeg": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eog": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eye_movement_activity": {
+      "reason": "Source available; Eye Movement not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "eye_movement_events": {
+      "reason": "Source available; Eye Movement candidate events not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "hardware_telemetry": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "heart_rate": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "individual_alpha_frequency": {
+      "reason": "Source available; IAF diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "movement": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "navigation_alignment": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_estimation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_precision": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ppg": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ready_to_remove": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "relative_alpha_power": {
+      "reason": "Source available; Relative Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "sleep_stage_labels": {
+      "reason": null,
+      "source": "imported",
+      "status": "AVAILABLE"
+    },
+    "sleep_stage_predictions": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "slow_oscillation_detection": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "snoring": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "sonification_controls": {
+      "reason": "Source available; Research Sonification controls not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "spo2": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_demand": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_events": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    }
+  },
+  "dataset": {
+    "display_name": "Sleep-EDF Expanded",
+    "id": "sleep-edf-expanded-sc",
+    "license_source": "https://physionet.org/content/sleep-edfx/1.0.0/",
+    "metadata": {
+      "local_status": "available_locally",
+      "official_title": "Sleep-EDF Database Expanded",
+      "scoring_standard": "Rechtschaffen and Kales"
+    },
+    "official_source": "https://physionet.org/content/sleep-edfx/1.0.0/",
+    "version": "1.0.0"
+  },
+  "derived": {
+    "alpha_power": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed",
+        "viewer": {
+          "activity_jump_time_s": null,
+          "default_start_s": 0.0,
+          "default_time_s": 0.0,
+          "default_window_duration_s": 60.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO HARDWARE COMMAND SENT",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": null,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "reason": "Available EEG source; Alpha diagnostic not computed",
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "eye_movement_activity_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; Eye Movement analysis not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_events_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; candidate events not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    }
+  },
+  "provenance": {
+    "classification": "imported",
+    "imported_by": "scripts/index_datasets.py",
+    "metadata": {
+      "source_files": [
+        {
+          "downloaded_at": null,
+          "file_name": "SC4032E0-PSG.edf",
+          "file_size_bytes": 49833728,
+          "local_path": "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "official_source": "https://physionet.org/content/sleep-edfx/1.0.0/",
+          "sha256": null
+        },
+        {
+          "downloaded_at": "2026-08-13T09:16:16.785835+00:00",
+          "file_name": "SC4032EP-Hypnogram.edf",
+          "file_size_bytes": 3800,
+          "local_path": "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032EP-Hypnogram.edf",
+          "official_source": "https://physionet.org/content/sleep-edfx/1.0.0/",
+          "sha256": "0ef073c5cfba31459732be96cc51e7106d5650c1db1b9669f10c0482844c5641"
+        }
+      ]
+    },
+    "notes": "Official public source files; DreamCore metadata normalization only",
+    "source_dataset_uri": "https://physionet.org/content/sleep-edfx/1.0.0/"
+  },
+  "recording": {
+    "duration_seconds": 81960.0,
+    "start_time": "1989-04-11T16:49:00"
+  },
+  "schema_version": "dreamcore.session.v1",
+  "session": {
+    "night_id": "SC4032",
+    "session_id": "SC4032",
+    "subject_id": "SC403",
+    "visit_id": "SC4032"
+  },
+  "signals": [
+    {
+      "available": true,
+      "canonical_role": "EEG_FRONTAL",
+      "channel_name": "EEG Fpz-Cz",
+      "id": "eeg-1",
+      "metadata": {
+        "native_sample_count": 8196000,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "EEG Fpz-Cz",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG Fpz-Cz",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_OCCIPITAL",
+      "channel_name": "EEG Pz-Oz",
+      "id": "eeg-2",
+      "metadata": {
+        "native_sample_count": 8196000,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "EEG Pz-Oz",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG Pz-Oz",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EOG_HORIZONTAL",
+      "channel_name": "EOG horizontal",
+      "id": "eog-1",
+      "metadata": {
+        "native_sample_count": 8196000,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "EOG horizontal",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eog",
+      "original_channel_name": "EOG horizontal",
+      "sampling_rate_hz": 100.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "RESPIRATORY",
+      "channel_name": "Resp oro-nasal",
+      "id": "respiratory-1",
+      "metadata": {
+        "native_sample_count": 81960,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "Resp oro-nasal",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "respiratory",
+      "original_channel_name": "Resp oro-nasal",
+      "sampling_rate_hz": 1.0,
+      "source": "raw",
+      "unit": "unknown"
+    },
+    {
+      "available": true,
+      "canonical_role": "EMG",
+      "channel_name": "EMG submental",
+      "id": "emg-1",
+      "metadata": {
+        "native_sample_count": 81960,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "EMG submental",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "emg",
+      "original_channel_name": "EMG submental",
+      "sampling_rate_hz": 1.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "Temp rectal",
+      "id": "other-1",
+      "metadata": {
+        "native_sample_count": 81960,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "Temp rectal",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "Temp rectal",
+      "sampling_rate_hz": 1.0,
+      "source": "raw",
+      "unit": "DegC"
+    },
+    {
+      "available": true,
+      "canonical_role": "OTHER",
+      "channel_name": "Event marker",
+      "id": "other-2",
+      "metadata": {
+        "native_sample_count": 81960,
+        "source_file": "SC4032E0-PSG.edf",
+        "storage": {
+          "channel_name": "Event marker",
+          "kind": "edf",
+          "path": "../../../datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "other",
+      "original_channel_name": "Event marker",
+      "sampling_rate_hz": 1.0,
+      "source": "raw",
+      "unit": "unknown"
+    }
+  ]
+}

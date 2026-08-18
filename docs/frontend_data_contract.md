@@ -3,7 +3,8 @@
 ## Contract status
 
 Phase A2 exposes a local read-only `/api/v1` HTTP service for canonical offline
-sessions. There is still no WebSocket, live EEG, replay clock, device telemetry,
+sessions. Phase A3 adds a browser-owned offline replay clock over the same
+bounded GET endpoints. There is still no WebSocket, live EEG, device telemetry,
 or hardware command channel. Deterministic fixture transport remains available.
 
 ## Actual offline signal window
@@ -30,6 +31,71 @@ The shortened arrays above illustrate fields only. In every actual response,
 `end_s - start_s == n_samples / sampling_rate_hz`. `uV` is explicit and must
 not be inferred by the frontend. Requests are bounded by configured maximum
 duration and can be clipped only at the recording end.
+
+## Offline replay time contract
+
+- `sessionTimeSeconds` is the sole authoritative replay time.
+- The visible signal range is `[visibleStartSeconds, visibleEndSeconds)` and is
+  shared by EEG, annotations, derived metrics, and simulated events.
+- Imported sleep stage at time `t` satisfies
+  `start_seconds <= t < start_seconds + duration_seconds`.
+- Alpha V1 feature timestamps use **analysis-window end** semantics. A record is
+  visible only when `window_end_s <= sessionTimeSeconds`.
+- Eye Movement V1 features and sonification controls use the same
+  recording-relative seconds and **analysis-window end** semantics.
+- Raw EOG and derived filtered EOG are separate signal records; the derived
+  track never replaces or mutates the raw track.
+- Eye Movement Candidate events are visible only when
+  `event.timestamp <= sessionTimeSeconds` and are not REM/dream labels.
+- Between two feature timestamps, trend charts extend the most recently
+  available derived value to `sessionTimeSeconds` as an explicitly labelled
+  stepwise last-value hold. This endpoint is a display continuation, not a new
+  Alpha estimate; the value changes only when the next source record is reached.
+- Simulated events are visible only when
+  `event.timestamp <= sessionTimeSeconds`.
+- UI display downsampling and masking do not change HTTP samples, timestamps,
+  units, or the underlying recorded EEG.
+
+Each precomputed Alpha descriptor also carries `metadata.analysis`. It declares
+the recording-relative time reference and seconds unit, evaluation range,
+analysis-window length and step, attempted/accepted/rejected window counts,
+rejection-reason counts, exact channel names, total feature-row count, and the
+first/last `window_end_s`. This metadata explains bounded windows outside
+derived coverage without generating substitute values or fetching the full
+feature table.
+
+The replay clock is local visualization state. It is not returned by the API,
+not persisted in the Session Package, and not evidence of real-time acquisition.
+
+## Eye Movement V1 derived records
+
+`eye_movement_activity_v1` returns bounded rows with `session_id`,
+`source_channel`, `window_start_s`, `window_end_s`, optional absolute ISO window
+times, RMS, peak-to-peak, mean absolute derivative, robust deviation,
+activity/amplitude scores, event rate, quality/reasons, and feature version.
+Unavailable/invalid numerical fields are `null`, never zero-filled.
+
+`eye_movement_events_v1` returns bounded Eye Movement Candidate rows with event
+ID, timestamp, event window/duration, signed amplitude, signal polarity,
+confidence, robust score, source channel, version, and `derived` provenance.
+
+Every descriptor contains explicit coverage start/end, window/step, row count,
+source channel, recording-relative seconds, and window-end semantics. The raw
+signal may start at 0 while the first 4 s feature ends at 4 s; this is expected
+and displayed explicitly.
+
+## Sonification control records
+
+`sonification_control_v1` is a separate namespace with `eye_movement` or
+`alpha` source, source feature, window bounds, availability, tempo, density,
+intensity, brightness, optional trigger/event/note/velocity, mapping/control
+versions, and seed. Provenance is `sonification_control`, not raw/annotation.
+The configured baseline is a UI/audio comparison and is never used to replace
+missing physiology.
+
+Derived audit exports remain CSV, while the adapter uses an indexed SQLite
+artifact for bounded time queries. This storage choice is internal to the
+DatasetAdapter and does not change `/api/v1/.../derived` responses.
 
 Status terminology:
 
@@ -241,10 +307,41 @@ Current transport ownership is deliberately separated:
   domain/repository/registry contracts.
 - **Phase A2:** implemented Python-backed catalog and normalized real-dataset
   window transport.
-- **Future:** an explicit offline replay clock or live WebSocket packets mapped
-  into the same canonical types.
+- **Offline replay simulation:** a configuration-driven frontend clock advances
+  a cursor over those bounded windows. Operator-created intervention markers
+  exist only in browser memory and always retain `simulated` provenance plus a
+  no-ultrasound-delivered notice.
+- **Future:** live WebSocket packets may map into the same canonical types.
 
 Fields marked `simulated` may appear in fixtures or real-public-data packages,
 but always describe abstract simulated control—not observed stimulation or an
 EEG effect. Authentication, clock synchronization, binary packet encoding,
 device telemetry, and hardware identifiers remain unknown or planned.
+
+## Automatic K-Complex V0 + Morphology B1 product contract
+
+The automatic-analysis status adds `k_complex` with the same `NOT_AVAILABLE |
+ANALYZING | READY | ERROR` states as other product features. Its identity is
+recording plus source fingerprint, detector version, and configuration hash.
+
+The local K-Complex detail response exposes `candidate_count`, `verified_count`,
+and `rejected_count`. Every V0 proposal remains in `events` and carries
+`verification_method=morphology_b1`, `verification_probability`,
+`verification_status`, `original_morphology_score`, and `trough_s`. The default
+product view includes verified candidates; rejected-by-verifier proposals remain
+available through an explicit inspection control. Rejection is not a ground
+truth non-K-complex label.
+
+The response also contains N2 bouts, primary/focus channel metadata, immutable
+detector and verifier identities, review progress, and separate manual trough
+candidates. Event time fields are recording-relative seconds. `positive_peak_s`
+is nullable and `causal_lead_time` is always null for V0. Verification never
+changes onset, trough, positive peak, end, or morphology. The browser retrieves
+waveform samples only through the existing bounded multi-signal endpoint, using
+the configured event focus window. CBraMod stays behind an advanced comparison
+toggle and is off by default.
+
+Review mutations accept only Looks right, Wrong, or Uncertain plus bounded
+optional notes. Manual marking accepts a recording-relative cursor only inside
+configured N2. Both persist locally as annotation overlays and never rewrite
+automatic event artifacts.

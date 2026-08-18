@@ -41,10 +41,13 @@ def estimate_iaf(
     edge_margin_hz = float(iaf["edge_margin_hz"])
     min_prominence_db = float(iaf["min_prominence_db"])
     high_confidence_db = float(iaf["high_confidence_prominence_db"])
+    product_display_min_confidence = float(iaf["product_display_min_confidence"])
     if low_hz <= 0 or high_hz <= low_hz or edge_margin_hz < 0:
         raise ValueError("IAF search bounds and edge margin are invalid")
     if high_confidence_db <= min_prominence_db:
         raise ValueError("IAF high-confidence prominence must exceed its minimum")
+    if not 0.0 <= product_display_min_confidence <= 1.0:
+        raise ValueError("IAF product display confidence must be within [0, 1]")
 
     mask = (estimate.frequencies_hz >= low_hz) & (estimate.frequencies_hz <= high_hz)
     frequencies = estimate.frequencies_hz[mask]

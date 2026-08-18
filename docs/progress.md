@@ -256,3 +256,162 @@
   from observed and derived content.
 - [x] Added Python transport tests, frontend HTTP/viewer tests, real-data
   Playwright coverage, and ignored desktop/mobile QA screenshots.
+
+## 2026-08-07 — Offline replay and simulated-intervention overlay
+
+- [x] Added a Session Package configuration-driven client clock with
+  play/pause, reset, speed selection, bounded-window rollover, and one shared
+  cursor across observed, imported, derived, and simulated panels.
+- [x] Added an operator action that records a browser-memory-only simulated
+  intervention at the current cursor and shows synchronized orange markers.
+- [x] Added the mandatory notice `SIMULATED INTERVENTION — NO ULTRASOUND
+  DELIVERED`; no hardware endpoint, command, ultrasound parameter, persistence,
+  or source EEG mutation was introduced.
+- [x] Added a persistent two-channel legend to the Alpha panel and unit/E2E
+  coverage for replay advancement, intervention provenance, alert text, and
+  responsive layout.
+
+## 2026-08-07 — DreamCore V1 Phase A3 synchronized offline replay
+
+- [x] Replaced the viewer-local timer with an independent five-state replay
+  clock and one authoritative `sessionTimeSeconds` shared by every panel.
+- [x] Added play/pause/restart/seek, 0.5×/1×/2×/5×/10× speeds, manual window
+  navigation, configured W→N1 jump, and an all-session seek slider.
+- [x] Added progressive recorded-EEG reveal, current imported-stage tracking,
+  window-end Alpha/state availability, and reached-time gating for simulated
+  events and `ready_to_remove`.
+- [x] Added a configured bounded LRU cache, next-window prefetch, AbortSignal
+  cancellation, and stale-response protection without a frame-level API loop.
+- [x] Added explicit Observed/Imported/Derived/Simulated flow language and the
+  warning that simulated control events did not produce the recorded EEG.
+- [x] Added clock, end-state, cache-eviction, prefetch, cancellation, stale
+  response, viewer synchronization, provenance, and browser replay coverage.
+- [x] Generated ignored QA screenshots for paused, playing, W→N1, Alpha plus
+  simulated demand, and 390 px mobile states.
+- [x] Corrected replay chart synchronization by positioning the white cursor in
+  uPlot's measured plot coordinates and retaining the final revealed EEG sample
+  in display downsampling. Added a labelled stepwise last-value hold so sparse
+  Alpha/state/demand records visibly advance with replay without creating new
+  metric values.
+
+## 2026-08-12 — Eye Movement Sonification V1
+
+- [x] Confirmed the actual SC4001 EDF labels and discovered `EOG horizontal`
+  from metadata/configured patterns. MNE classifies this legacy EDF label as a
+  generic EEG type, so type-only discovery would have missed it.
+- [x] Processed all 7,950,000 EOG samples at the EDF-native 100 Hz rate. All
+  samples were finite. Generated 79,497 stage-agnostic 4 s windows at a 1 s
+  step; 79,497 were accepted and none rejected.
+- [x] Added RMS, peak-to-peak, mean absolute derivative, robust local deviation,
+  normalized activity/amplitude, candidate flag, and 30 s candidate rate.
+- [x] Detected 617 robust `Eye Movement Candidate` events across the full
+  recording. Coverage is 4.0–79,500.0 s. No event is labeled REM or dream.
+- [x] Added exact relative/absolute window times, source channel, versions,
+  processing parameters, source SHA-256, quality, coverage, and rejection
+  diagnostics to the Session Package.
+- [x] Added deterministic controls: event→note, rate→tempo,
+  activity→density/brightness, amplitude→intensity, plus Alpha comparison and
+  configured baseline. The mapping seed and bounds are persisted.
+- [x] Added raw/filtered EOG, activity/event, four control, audio, and comparison
+  UI to the existing Viewer. Every panel uses the existing replay clock/cursor.
+- [x] Added user-gesture Web Audio play/mute/reset with configured master gain.
+  Observed EEG/EOG is never modified.
+- [x] Kept Alpha APIs/tests/panels and moved their UI under secondary Research /
+  Diagnostics with a single-session interpretation note.
+
+## 2026-08-13 — AI Wake Music V1
+
+- [x] Added `dreamcore.wake_music.profile.v1` typed profiles and
+  `wake_music_mapping.v1` with configurable thresholds and product safety caps.
+- [x] Added deterministic final annotation-confirmed Wake-transition selection,
+  a configured 10-minute preceding interval, explicit unavailable behavior, and
+  manual research-window support.
+- [x] Added six bounded style families with four seeded arrangement variants
+  each, deterministic Auto selection, structured prompts, and stored prompt hashes.
+- [x] Added backend-only MiniMax `music-2.6-free` integration using instrumental,
+  non-streaming URL output and immediate local MP3 download.
+- [x] Added safe provider errors, exact-generation caching, versioned metadata,
+  and a separate `/api/wake-music` service without changing `/api/v1` Session reads.
+- [x] Added the primary WAKE MUSIC Viewer panel with style selection, automatic
+  or manual source window, generation/new-variation actions, profile explanation,
+  and a standard audio player. The oscillator panel is labeled Research Sonification.
+- [x] Added mocked Python and frontend coverage; ordinary tests consume no provider quota.
+- [x] Completed one controlled provider smoke against the account-authorized
+  `api.minimaxi.com` host on 2026-08-13 after an authenticated `/v1/models`
+  preflight. MiniMax generated a 328.464 s instrumental MP3, which DreamCore
+  downloaded locally and validated by full decode plus HTTP byte-range playback.
+- [x] Added config-driven local Wake Audio postprocessing. The provider master
+  remains untouched while FFmpeg derives the first 60 s with a gentle 57–60 s
+  fade-out. The Viewer defaults to this Wake Version and retains Full Track
+  playback; legacy masters are migrated locally without a provider request.
+- [ ] Generate the prepared SC4001 A–D comparison artifacts. These were
+  intentionally not submitted after the successful smoke so its result could be
+  reviewed first.
+
+## 2026-08-13 — Multi-Dataset Library V1
+
+- [x] Added exact bounded acquisition manifests and resumable tooling for ten
+  additional Sleep-EDF recordings, HMC SN001–SN005, and ISRUC Cohort III.
+- [x] Added native-rate EDF/REC inspection and bounded per-channel reads without
+  full-night browser or database preload.
+- [x] Added Sleep-EDF, HMC, and ISRUC adapters, canonical roles, raw/normalized
+  annotation fields, ISRUC dual-scorer preservation, and explicit capability
+  states.
+- [x] Added persistent lightweight catalog generation, Dataset/Subject/Recording
+  read APIs, Dataset Library cards/selectors, metadata preview, capability
+  indicators, and unified Viewer navigation.
+- [x] Kept SC4001 in its original location and unified it under the Sleep-EDF
+  dataset identity without copying its raw data.
+- [x] Downloaded and indexed the bounded batch: 10 Sleep-EDF pairs, 5 HMC PSGs
+  with official scoring EDF/TXT files, and 10 original ISRUC Cohort III REC
+  recordings with both expert annotations (2.530 GB total raw files).
+- [x] Ran unchanged Eye Movement V1 logic on bounded windows from SC4002,
+  HMC SN001/SN002, and ISRUC subjects 1/2. All nine source-channel checks were
+  compatible; dual EOG channels were evaluated independently, not combined.
+- [x] Opened representative Sleep-EDF, HMC, and ISRUC recordings through the
+  real Dataset → Subject → Recording → unified Viewer Playwright flow.
+
+## 2026-08-14 — Cross-Dataset EOG Validation V1
+
+- [x] Froze and hashed the existing Eye Movement V1 detector contract before
+  full-night processing.
+- [x] Computed nine full-night native-channel tracks across the selected five
+  recordings without threshold tuning or channel combination.
+- [x] Added deterministic ±0.25/±0.5/±1.0 s dual-EOG matching,
+  exposure-normalized stage summaries, and separate ISRUC scorer comparisons.
+- [x] Created seeded candidate and non-candidate review samples and a local,
+  versioned, updateable human-review store. Manual review remains pending.
+- [x] Added Candidate Review, Non-candidate Review, Channel Agreement, Stage
+  Distribution, and Review Progress inside the unified Viewer.
+- [x] Retained CSV audit exports and added a SQLite time index. The measured
+  120 s derived-feature API read decreased from whole-CSV parsing to about
+  0.05 s on the local validation machine.
+
+## 2026-08-14 — Product-first automatic analysis
+
+- [x] Added a background analysis manager with per-recording/per-feature job
+  identity, in-process deduplication, persistent cache metadata, and clean
+  shutdown.
+- [x] Added automatic local Alpha, Eye Movement, and Wake Music Profile
+  preparation without any automatic provider call.
+- [x] Reused equivalent full-night validation EOG artifacts by reference for
+  SC4002, HMC SN001/SN002, and ISRUC subjects 1/2.
+- [x] Added the compact Sleep Insights product panel and moved Eye Movement
+  Validation behind a collapsed research section.
+- [x] Added local latest-generation lookup so existing Wake Music playback can
+  appear without regenerating music.
+
+## 2026-08-18 — Frozen B1 K-complex verifier productization
+
+- [x] Preserved the unchanged grouped DREAMS benchmark. B1 Morphology reproduced
+  precision 0.575, recall 0.821, F1 0.676, AUROC 0.904, and AUPRC 0.832.
+- [x] Fit a separate final class-balanced logistic verifier on all 108 eligible
+  frozen examples and persisted its exact feature order, scaler, coefficients,
+  threshold, provenance, contract hash, seed, and checksum.
+- [x] Made Morphology B1 the default product verifier while retaining all V0
+  landmarks and rejected candidates. CBraMod remains available for advanced
+  research comparison and is off by default.
+- [x] Ran untuned HMC SN001 inference: 226 V0 candidates, 22 verified and 204
+  rejected by B1. These are product sanity outputs, not ground truth.
+- [x] Kept benchmark evaluation distinct from the final all-eligible-data
+  product fit. No Early Predictor work was started.

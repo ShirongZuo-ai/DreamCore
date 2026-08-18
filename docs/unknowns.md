@@ -39,6 +39,19 @@ Items awaiting clarification. Do NOT code assumptions — wait for answers.
   - Wisconsin Sleep Cohort
 - [ ] Will we collect our own pilot data? Timeline?
 - [ ] Annotation reliability (single scorer? consensus?)
+- [ ] Cross-dataset Eye Movement V1 sensitivity without retuning on HMC and
+  ISRUC montages
+- [ ] Whether ISRUC scorer disagreements should be displayed side-by-side or
+  only exposed as alternate annotation metadata after V1
+
+## Eye Movement / Sonification
+
+- [ ] Candidate-event precision against expert-reviewed EOG intervals
+- [ ] Generalization across EOG derivations, polarities, gains, and datasets
+- [ ] Whether future hardware provides one or two EOG-capable channels
+- [ ] Whether any montage supports defensible left/right direction inference
+- [ ] Preferred musical mapping after blinded comparison studies
+- [ ] MIDI/OSC/EEGsynth adapter requirements and timing tolerance
 
 ## Evaluation
 

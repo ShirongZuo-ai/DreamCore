@@ -1,0 +1,44 @@
+{
+  "schema_version": "dreamcore.benchmark_source.v1",
+  "dataset_title": "The DREAMS Databases and Assessment Algorithm",
+  "record_id": 2650142,
+  "doi": "10.5281/zenodo.2650142",
+  "record_url": "https://zenodo.org/records/2650142",
+  "publisher": "Zenodo",
+  "original_author": "Stephanie Devuyst",
+  "attribution_parties": [
+    "University of MONS - TCTS Laboratory (Stephanie Devuyst, Thierry Dutoit)",
+    "Universite Libre de Bruxelles - CHU de Charleroi Sleep Laboratory (Myriam Kerkhofs)"
+  ],
+  "license": {
+    "id": "cc-by-nc-nd-3.0",
+    "name": "CC BY-NC-ND 3.0",
+    "source": "DREAMS_databases_License.txt included in each official archive"
+  },
+  "downloaded_at_utc": "2026-08-14T08:54:37Z",
+  "extraction": {
+    "tool": "unar 1.10.1",
+    "archive_format": "RAR4",
+    "preserved_native_filenames": true
+  },
+  "archives": [
+    {
+      "resource": "DREAMS K-complexes Database",
+      "filename": "DatabaseKcomplexes.rar",
+      "size_bytes": 46387323,
+      "published_checksum": "md5:0bfc5bde8e36bcb1edcded50077423de",
+      "local_checksum": "md5:0bfc5bde8e36bcb1edcded50077423de",
+      "official_content_url": "https://zenodo.org/api/records/2650142/files/DatabaseKcomplexes.rar/content",
+      "raw_git_policy": "ignored"
+    },
+    {
+      "resource": "DREAMS REMs Database",
+      "filename": "DatabaseREMs.rar",
+      "size_bytes": 37771731,
+      "published_checksum": "md5:03275d367096af03a8673dd4b0b82500",
+      "local_checksum": "md5:03275d367096af03a8673dd4b0b82500",
+      "official_content_url": "https://zenodo.org/api/records/2650142/files/DatabaseREMs.rar/content",
+      "raw_git_policy": "ignored"
+    }
+  ]
+}

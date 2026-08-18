@@ -291,6 +291,7 @@ alpha:
         edge_margin_hz: 0.5
         min_prominence_db: 3.0
         high_confidence_prominence_db: 10.0
+        product_display_min_confidence: 1.0
     individualized_alpha:
       band_strategy: "individualized"
       fixed_band: {low_hz: 8.0, high_hz: 13.0}
@@ -309,6 +310,7 @@ alpha:
         edge_margin_hz: 0.5
         min_prominence_db: 3.0
         high_confidence_prominence_db: 10.0
+        product_display_min_confidence: 1.0
   quality:
     min_finite_ratio: 0.99
     min_standard_deviation_uv: 0.1
@@ -374,9 +376,23 @@ alpha:
     session_id: "alpha-v1"
     viewer:
       default_start_s: null
+      default_time_s: null
       default_window_duration_s: 120.0
       window_duration_options_s: [30.0, 60.0, 120.0]
       display_max_points_per_signal: 2000
+      feature_timestamp_semantics: "window_end"
+      stage_jump_time_s: null
+      replay:
+        enabled: true
+        tick_interval_ms: 250
+        default_speed: 1.0
+        speed_options: [0.5, 1.0, 2.0, 5.0, 10.0]
+        cache_max_windows: 3
+        prefetch_threshold_fraction: 0.75
+        seek_cursor_fraction: 0.25
+        intervention_notice_duration_ms: 5000
+        intervention_marker_color: "#E1AA5A"
+        provenance_notice: "SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED"
   qa:
     start_s: null
     duration_s: 600.0
@@ -390,6 +406,535 @@ alpha:
     simulated_color: "#D97706"
     stage_colors: {W: "#E5E7EB", N1: "#BFDBFE", N2: "#93C5FD"}
     grid_alpha: 0.18
+
+# ── Eye-Movement / EOG Research V1 ──────────────────────────────────
+# Primary exploratory research signal. Channel labels are discovered from
+# recording metadata using these configurable rules; no electrode is silently
+# substituted. Candidate events are signal-processing hypotheses, not REM or
+# dream labels.
+eye_movement:
+  feature_version: "eye-movement-v1"
+  input_scale_to_uv: 1000000.0
+  channel_discovery:
+    preferred_mne_types: ["eog"]
+    label_patterns: ['(?i)(^|[\s_-])eog([\s_-]|$)']
+    require_unique: true
+  filtering:
+    low_hz: 0.3
+    high_hz: 10.0
+    method: "butterworth"
+    order: 4
+    phase: "zero"
+  windowing:
+    analysis_window_s: 4.0
+    step_s: 1.0
+    timestamp_semantics: "window_end"
+  quality:
+    min_finite_ratio: 0.99
+    min_standard_deviation_uv: 0.1
+    max_peak_to_peak_uv: 1000.0
+  normalization:
+    low_quantile: 0.05
+    high_quantile: 0.95
+    epsilon: 1.0e-9
+  local_baseline:
+    duration_s: 60.0
+    robust_scale_factor: 1.4826
+  event_detection:
+    activity_robust_z_threshold: 3.0
+    minimum_separation_s: 0.5
+    minimum_duration_s: 0.1
+    maximum_duration_s: 2.0
+    peak_width_relative_height: 0.5
+    confidence_saturation_z: 10.0
+    event_rate_history_s: 30.0
+  output:
+    features_csv: "results/eye_movement_v1_features.csv"
+    events_csv: "results/eye_movement_v1_events.csv"
+    filtered_signal_binary: "results/eye_movement_v1_filtered_eog.f32"
+    indexed_artifact_database: "results/eye_movement_v1.sqlite"
+    summary_json: "results/eye_movement_v1_summary.json"
+    json_indent: 2
+  session_package:
+    manifest_path: "data/session_packages/sleep-edf/eye-movement-v1/manifest.json"
+    session_id: "eye-movement-v1"
+    viewer:
+      default_start_s: null
+      default_time_s: null
+      default_window_duration_s: 120.0
+      window_duration_options_s: [30.0, 60.0, 120.0]
+      display_max_points_per_signal: 2000
+      feature_timestamp_semantics: "window_end"
+      activity_jump_time_s: null
+
+# Cross-dataset detector validation is configured separately so its frozen
+# contract and human-review layer cannot mutate Eye Movement V1 parameters.
+eog_validation:
+  config_path: "configs/eog_validation_v1.yaml"
+
+# ── Product automatic local analyses ───────────────────────────────────
+# These settings control local product orchestration and cache identity. They
+# are not physiological parameters and never trigger an external music model.
+automatic_analysis:
+  schema_version: "dreamcore.automatic_analysis.v1"
+  api_prefix: "/api/analysis/v1"
+  cache_root: "results/product_analysis_v1"
+  maximum_workers: 1
+  status_poll_interval_ms: 500
+  json_indent: 2
+  alpha:
+    feature_key: "alpha"
+    algorithm_version: "alpha-product-v1"
+    maximum_channels: 1
+    canonical_role_priority:
+      - "EEG_OCCIPITAL"
+      - "EEG_CENTRAL"
+      - "EEG_FRONTAL"
+      - "EEG_OTHER"
+    analysis_window_s: 30.0
+    step_s: 30.0
+    input_scale_to_uv_by_unit:
+      uV: 1.0
+      µV: 1.0
+      V: 1000000.0
+    stage_annotation_type: "sleep_stages"
+  eye_movement:
+    feature_key: "eye_movement"
+    algorithm_version: "eye-movement-v1"
+    maximum_channels: 2
+    reusable_validation_root: "results/eog_validation_v1/derived"
+    validation_contract: "results/eog_validation_v1/validation_contract.json"
+  wake_music_profile:
+    feature_key: "wake_music_profile"
+    algorithm_version: "wake-music-profile-v1"
+  k_complex:
+    feature_key: "k_complex"
+    algorithm_version: "k-complex-morphology-b1-v1"
+    maximum_channels: 1
+    canonical_role_priority:
+      - "EEG_FRONTAL"
+      - "EEG_CENTRAL"
+      - "EEG_OTHER"
+      - "EEG_OCCIPITAL"
+    focus_role_priority:
+      - "EEG_FRONTAL"
+      - "EEG_CENTRAL"
+    maximum_focus_channels: 4
+    input_scale_to_uv_by_unit:
+      uV: 1.0
+      µV: 1.0
+      V: 1000000.0
+    stage_annotation_type: "sleep_stages"
+    focus_half_window_s: 5.0
+    maximum_request_bytes: 8192
+    maximum_notes_characters: 1000
+    review_labels: ["Looks right", "Wrong", "Uncertain"]
+    verifier:
+      method: "morphology_b1"
+      version: "k-complex-morphology-b1-v1"
+      artifact_path: "configs/models/k_complex_morphology_b1.json"
+      artifact_checksum: "ea4aa28d79a01af90a09d9474cfc25e461aafbca4b329a518e70251553b9b869"
+      decision_threshold: 0.5
+      default_enabled: true
+      sanity_output_root: "results/k_complex_morphology_b1_v1"
+      sanity_session_id: "SN001"
+      sanity_expected_v0_candidate_count: 226
+
+# Retrospective morphology detector. This complete-waveform V0 is explicitly
+# non-causal and makes no before-trough or lead-time claim.
+k_complex_v0:
+  detector_version: "k_complex_v0"
+  stage_gating:
+    enabled: true
+    primary_stage: "N2"
+    annotation_type: "sleep_stages"
+    bout_merge_tolerance_s: 0.001
+  filtering:
+    low_hz: 0.3
+    high_hz: 4.0
+    method: "butterworth"
+    order: 4
+    phase: "zero"
+  baseline:
+    strategy: "local_median_mad"
+    local_window_s: 20.0
+    robust_scale_factor: 1.4826
+    minimum_scale_uv: 1.0
+  candidate:
+    negative_depth_robust_z: 5.0
+    prominence_robust_z: 4.0
+    confidence_saturation_z: 8.0
+  morphology:
+    onset_search_s: 1.5
+    negative_halfwave_min_s: 0.10
+    negative_halfwave_max_s: 1.50
+    positive_peak_min_delay_s: 0.10
+    positive_peak_max_delay_s: 1.50
+    positive_peak_min_robust_z: 1.0
+    end_search_after_peak_s: 1.0
+    event_duration_min_s: 0.50
+    event_duration_max_s: 2.50
+    require_positive_peak: false
+  refractory_interval_s: 0.80
+  artifact_rejection:
+    minimum_finite_ratio: 0.99
+    maximum_absolute_amplitude_uv: 500.0
+    maximum_peak_to_peak_uv: 750.0
+  score:
+    negative_depth_weight: 0.55
+    prominence_weight: 0.30
+    positive_component_weight: 0.15
+    high_confidence_min: 0.75
+    medium_confidence_min: 0.50
+
+# Optional, explicitly triggered frozen foundation-model verifier. It never
+# changes K-Complex V0 proposal thresholds or trough timing.
+cbramod_kc_v1:
+  adapter_version: "dreamcore-cbramod-adapter-v1"
+  verifier_version: "cbramod-kc-linear-v1"
+  status: "research_comparison_only"
+  default_enabled: false
+  output_root: "results/cbramod_kc_v1"
+  cached_session_predictions:
+    SN001: "hmc_sn001_inference.csv"
+  device: "auto"
+  checkpoint_path: ".cache/foundation_models/cbramod/pretrained_weights.pth"
+  checkpoint_sha256: "0792cb808c14e6b7a2bb2ce1dff379bc47bc54c49a779825bdfeb33bf8157178"
+  model_sampling_rate_hz: 200.0
+  volts_to_microvolts: 1000000.0
+  resampling_max_denominator: 1000
+  context_before_s: 5.0
+  context_after_s: 5.0
+  exclusion_margin_s: 1.0
+  random_seed: 1729
+  benchmark_contract_frozen_at: "2026-08-17T03:49:14.913174+00:00"
+  channel_policy: "all available compatible EEG channels; never fabricate missing channels"
+  filtering:
+    low_hz: 0.3
+    high_hz: 75.0
+    order: 5
+    nyquist_guard: 0.99
+    notch_hz: 60.0
+    notch_quality: 30.0
+  architecture:
+    patch_points: 200
+    out_dim: 200
+    d_model: 200
+    dim_feedforward: 800
+    layers: 12
+    nhead: 8
+    dropout: 0.1
+  split_protocol: "leave-one-DREAMS-excerpt-out"
+  classifier:
+    linear_max_iterations: 2000
+    class_weight: "balanced"
+    decision_threshold: 0.5
+  operating_point:
+    minimum_recall_retained: 0.90
+
+# ── Signal Validation V1 ─────────────────────────────────────────────
+# Explicit internal benchmark job. It never runs when the Viewer opens and
+# never mutates the frozen Alpha, Eye Movement V1, or K-complex V0 thresholds.
+signal_validation_v1:
+  schema_version: "dreamcore.signal_validation.contract.v1"
+  validation_version: "signal_validation_v1.4"
+  revision_note: "V1.4 adds explicit Alpha absolute-power relative-error summaries against theoretical injected sinusoid power; V1.3 preserved legacy DREAMS EDF microvolt magnitudes and earlier revisions corrected unit/header parsing. No production thresholds changed."
+  output_root: "results/signal_validation_v1"
+  summary_filename: "summary.json"
+  contract_filename: "validation_contract.json"
+  contract_hash_filename: "validation_contract.sha256"
+  source_manifest: "data/dreams_signal_validation_v1.json"
+  dreams:
+    dataset_title: "The DREAMS Databases and Assessment Algorithm"
+    record_id: 2650142
+    doi: "10.5281/zenodo.2650142"
+    record_url: "https://zenodo.org/records/2650142"
+    license_id: "cc-by-nc-nd-3.0"
+    annotation_time_unit: "seconds"
+    hypnogram_epoch_s: 5.0
+    stage_code_map:
+      "5": "W"
+      "4": "REM"
+      "3": "N1"
+      "2": "N2"
+      "1": "N3"
+      "0": "N3"
+      "-1": "MOVEMENT"
+      "-2": "UNKNOWN"
+      "-3": "UNKNOWN"
+    k_complex:
+      archive_filename: "DatabaseKcomplexes.rar"
+      archive_path: "data/datasets/raw/dreams/k_complex/DatabaseKcomplexes.rar"
+      extracted_root: "data/datasets/raw/dreams/k_complex/extracted/DatabaseKcomplexes"
+      published_size_bytes: 46387323
+      published_checksum: "md5:0bfc5bde8e36bcb1edcded50077423de"
+      official_content_url: "https://zenodo.org/api/records/2650142/files/DatabaseKcomplexes.rar/content"
+      recording_glob: "excerpt*.edf"
+      signal_text_template: "excerpt{index}.txt"
+      expert_1_template: "Visual_scoring1_excerpt{index}.txt"
+      expert_2_template: "Visual_scoring2_excerpt{index}.txt"
+      hypnogram_template: "Hypnogram_excerpt{index}.txt"
+      channel: "CZ-A1"
+      sampling_rate_hz: 200.0
+      unit: "uV"
+    rem:
+      archive_filename: "DatabaseREMs.rar"
+      archive_path: "data/datasets/raw/dreams/rem/DatabaseREMs.rar"
+      extracted_root: "data/datasets/raw/dreams/rem/extracted/DatabaseREMs"
+      published_size_bytes: 37771731
+      published_checksum: "md5:03275d367096af03a8673dd4b0b82500"
+      official_content_url: "https://zenodo.org/api/records/2650142/files/DatabaseREMs.rar/content"
+      recording_glob: "excerpt*.edf"
+      expert_template: "Visual_scoring1_excerpt{index}.txt"
+      hypnogram_template: "Hypnogram_excerpt{index}.txt"
+      primary_eog_patterns: ["^EOG1(?:-A2)?$"]
+      compatible_eog_patterns: ["^EOG[12](?:-A2)?$"]
+      sampling_rate_hz: 200.0
+      unit: "uV"
+  matching:
+    k_complex:
+      rule: "maximum_weight_one_to_one_interval_overlap"
+      minimum_overlap_s: 0.0
+      timing_offset: "detector_trough_minus_signal_minimum_within_expert_interval"
+    eye_movement:
+      rule: "minimum_cost_one_to_one_candidate_point_to_expert_interval"
+      primary_tolerance_s: 0.0
+      sensitivity_tolerances_s: [0.0, 0.25, 0.5, 1.0]
+      timing_offset: "candidate_peak_minus_expert_interval_midpoint"
+  alpha_synthetic:
+    sampling_rate_hz: 100.0
+    duration_s: 300.0
+    window_s: 30.0
+    step_s: 30.0
+    seeds: [1729, 1730, 1731]
+    frequencies_hz: [8.0, 10.0, 12.0]
+    reference_frequency_hz: 10.0
+    snr_db: [-5.0, 0.0, 10.0]
+    stationary_amplitude_uv: 20.0
+    amplitude_levels_uv: [5.0, 10.0, 20.0, 40.0]
+    background_rms_uv: 15.0
+    ramp_start_uv: 5.0
+    ramp_end_uv: 35.0
+    transient_negative_uv: -100.0
+    transient_positive_uv: 55.0
+    transient_center_s: 150.0
+    transient_width_s: 0.35
+    no_alpha_controls_per_seed: 1
+    reliable_window_fraction: 0.5
+  synthetic_crosstalk:
+    sampling_rate_hz: 200.0
+    duration_s: 120.0
+    seeds: [2718, 2719, 2720]
+    levels: [0.5, 1.0, 2.0]
+    background_rms_uv: 10.0
+    alpha_frequency_hz: 10.0
+    alpha_amplitude_uv: 20.0
+    k_complex_time_s: 60.0
+    k_complex_negative_uv: -110.0
+    k_complex_positive_uv: 65.0
+    k_complex_width_s: 0.25
+    eog_time_s: 60.0
+    eog_amplitude_uv: 180.0
+    eog_width_s: 0.18
+    ocular_leakage_fraction: 0.25
+    eeg_posterior_channel: "synthetic-posterior"
+    eeg_frontal_channel: "synthetic-frontal"
+    eog_channel: "synthetic-eog"
+    cases:
+      - "alpha_only"
+      - "k_complex_only"
+      - "eog_only"
+      - "alpha_plus_k_complex"
+      - "alpha_plus_ocular_leakage"
+      - "k_complex_plus_eog"
+      - "noise_only"
+  dashboard:
+    api_path: "/api/validation/v1/summary"
+    route: "/validation"
+
+# ── Deterministic Physiological Sonification V1 ─────────────────────
+# These are inspectable musical mappings, not physiological meanings and not
+# therapeutic parameters. Browser output is normalized below unity.
+sonification:
+  mapping_version: "sonification-mapping-v1"
+  control_version: "sonification-control-v1"
+  seed: 42
+  eye_movement:
+    tempo_bpm: {minimum: 54.0, maximum: 108.0, event_rate_max_per_min: 20.0}
+    density: {minimum: 0.08, maximum: 0.90}
+    intensity: {minimum: 0.05, maximum: 0.55}
+    brightness_hz: {minimum: 240.0, maximum: 2400.0}
+    midi_scale: [48, 50, 53, 55, 57, 60, 62, 65]
+    velocity: {minimum: 0.10, maximum: 0.70}
+  alpha_comparison:
+    source_channel: null
+    low_quantile: 0.05
+    high_quantile: 0.95
+    tempo_bpm: {minimum: 48.0, maximum: 84.0}
+    density: {minimum: 0.05, maximum: 0.55}
+    intensity: {minimum: 0.04, maximum: 0.35}
+    brightness_hz: {minimum: 180.0, maximum: 1400.0}
+    midi_scale: [45, 48, 52, 55, 57, 60]
+  baseline:
+    tempo_bpm: 60.0
+    density: 1.0
+    intensity: 0.20
+    brightness_hz: 1200.0
+    midi_note: 60
+  audio:
+    master_gain: 0.16
+    minimum_rendered_velocity: 0.12
+    attack_s: 0.01
+    release_s: 0.24
+    note_duration_s: 0.16
+    oscillator_type: "sine"
+    filter_q: 0.7
+    test_sound:
+      midi_note: 69
+      velocity: 0.35
+      brightness_hz: 2400.0
+      duration_s: 0.25
+  output:
+    controls_csv: "results/sonification_control_v1.csv"
+    json_indent: 2
+
+# ── AI Wake Music V1 ────────────────────────────────────────────────
+# Exploratory, post-waking generative music. DreamCore maps existing EOG
+# features into bounded musical directions before the provider is called.
+# These settings are product-generation constraints, not physiological facts.
+wake_music:
+  profile_version: "dreamcore.wake_music.profile.v1"
+  mapping_version: "wake_music_mapping.v1"
+  default_generation_seed: 42
+  seed_increment: 1
+  source_feature_metric: "eye_movement_activity_v1"
+  playback:
+    strategy: "first_excerpt_v1"
+    excerpt_start_s: 0.0
+    default_excerpt_seconds: 60.0
+    fade_out_seconds: 3.0
+    wake_audio_filename: "wake_music_60s.mp3"
+    audio_codec: "libmp3lame"
+    audio_bitrate: "256k"
+    ffmpeg_executable: "ffmpeg"
+    ffprobe_executable: "ffprobe"
+    processing_timeout_s: 180.0
+    duration_tolerance_s: 0.1
+  wake_window:
+    duration_s: 600.0
+    wake_stage_label: "W"
+    annotation_type: "sleep_stages"
+    transition_gap_tolerance_s: 0.0
+    minimum_feature_rows: 30
+  mapping:
+    activity_register_thresholds: {low_max: 0.33, middle_max: 0.66}
+    event_rate_density_thresholds_per_min: {sparse_max: 2.0, moderate_max: 8.0}
+    trend_thresholds_per_min:
+      stable_absolute_max: 0.01
+      strongly_rising_min: 0.05
+    amplitude_expression_thresholds: {delicate_max: 0.33, natural_max: 0.66}
+    auto_style_candidates:
+      warm: ["soft_piano_ambient", "calm_ambient", "gentle_acoustic", "classical_chamber"]
+      gradually_brighter: ["bright_morning", "neoclassical", "gentle_acoustic", "soft_piano_ambient"]
+      noticeably_brighter: ["bright_morning", "neoclassical", "classical_chamber"]
+  constraints:
+    max_energy: "moderate"
+    max_percussiveness: "low_to_moderate"
+    allow_aggressive_styles: false
+    allow_vocals: false
+  prompt_phrases:
+    register:
+      low: "Keep the main melody in a comfortable lower register."
+      mid: "Keep the main melody primarily in a clear middle register."
+      high: "Use a somewhat higher melodic register while keeping the tone soft."
+    density:
+      sparse: "Use sparse melodic activity with generous breathing room."
+      moderate: "Use moderate melodic activity with unhurried phrasing."
+      moderately_active: "Use somewhat richer note activity, capped at moderately active; never rapid or frantic."
+    brightness:
+      warm: "Keep the texture warm, soft, and stable throughout."
+      gradually_brighter: "Begin warm and gradually become brighter and clearer."
+      noticeably_brighter: "Become noticeably brighter and more awake, while remaining gentle."
+    expression:
+      delicate: "Use delicate expressive strength and restrained dynamics."
+      natural: "Use natural expressive strength with smooth dynamics."
+      slightly_more_present: "Use a slightly more present expression without aggressive loudness."
+    ending:
+      stable: "End with a warm, gentle, resolved morning cadence."
+      slightly_rising: "End with a bright, gentle, resolved morning cadence."
+      rising: "End clearly and brightly with a gentle resolved cadence, without a climax."
+  styles:
+    soft_piano_ambient:
+      label: "Soft & Calm"
+      description: "Soft piano, warm ambient pads, slow-to-moderate movement, and minimal percussion."
+      variants:
+        - "intimate felt piano with a quiet halo of warm pads"
+        - "soft grand piano with airy sustained ambience"
+        - "minimal piano figures with a restrained warm drone"
+        - "gentle piano arpeggios with spacious, diffused pads"
+    bright_morning:
+      label: "Bright Morning"
+      description: "Bright acoustic piano, light strings or woodwinds, fresh harmony, and gentle rhythmic motion."
+      variants:
+        - "bright acoustic piano with light flute and restrained strings"
+        - "clear piano with soft woodwinds and a subtle morning pulse"
+        - "fresh piano motifs with delicate pizzicato and sustained strings"
+        - "warm piano, quiet clarinet, and gently moving string harmony"
+    classical_chamber:
+      label: "Classical"
+      description: "Classical instrumental writing for piano and a small light-string ensemble, without a dramatic climax."
+      variants:
+        - "piano with light strings"
+        - "piano, cello, and soft violin"
+        - "small chamber ensemble with piano"
+        - "impressionist piano with restrained strings"
+    neoclassical:
+      label: "Neo-Classical"
+      description: "Minimalist piano, soft strings, modern classical texture, and clear repeating motifs."
+      variants:
+        - "minimal piano ostinato with a warm cello line"
+        - "clear repeating piano motif with soft violin harmonics"
+        - "modern chamber piano with restrained layered strings"
+        - "gentle impressionist piano patterns with a quiet string trio"
+    gentle_acoustic:
+      label: "Gentle Acoustic"
+      description: "Acoustic guitar and piano with a soft organic texture and warm morning feeling."
+      variants:
+        - "fingerstyle acoustic guitar with delicate piano responses"
+        - "soft nylon guitar, warm piano, and a light bowed texture"
+        - "quiet acoustic guitar patterns with sparse upright piano"
+        - "organic guitar and piano duet with subtle string warmth"
+    calm_ambient:
+      label: "Ambient"
+      description: "Warm ambient pads, very light melodic material, and a soft spacious instrumental texture."
+      variants:
+        - "warm evolving pads with a few bell-like piano tones"
+        - "spacious soft synthesizer layers with a restrained piano motif"
+        - "slow ambient harmony with delicate mallet-like accents"
+        - "airy pads and a minimal, rounded keyboard melody"
+  provider:
+    name: "minimax"
+    model: "music-2.6-free"
+    api_base_url: "https://api.minimax.io"
+    endpoint_path: "/v1/music_generation"
+    stream: false
+    output_format: "url"
+    is_instrumental: true
+    lyrics_optimizer: false
+    request_timeout_s: 900.0
+    download_timeout_s: 60.0
+    maximum_download_bytes: 52428800
+    audio_setting: {sample_rate: 44100, bitrate: 256000, format: "mp3"}
+  storage:
+    root: "results/wake_music"
+    audio_filename: "wake_music.mp3"
+    profile_filename: "profile.json"
+    prompt_filename: "prompt.txt"
+    metadata_filename: "metadata.json"
+    json_indent: 2
+  api:
+    prefix: "/api/wake-music"
+    maximum_request_bytes: 16384
 
 # ── Phase Prediction ─────────────────────────────────────────────────
 phase_prediction:

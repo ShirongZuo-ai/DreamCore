@@ -1,0 +1,295 @@
+{
+  "catalog_version": "dreamcore.dataset_library.v1",
+  "recordings": [
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4002/manifest.json",
+      "recording_id": "SC4002",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4002E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4002EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC400"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4011/manifest.json",
+      "recording_id": "SC4011",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4011E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4011EH-Hypnogram.edf"
+      ],
+      "subject_id": "SC401"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4012/manifest.json",
+      "recording_id": "SC4012",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4012E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4012EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC401"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4021/manifest.json",
+      "recording_id": "SC4021",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4021E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4021EH-Hypnogram.edf"
+      ],
+      "subject_id": "SC402"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4022/manifest.json",
+      "recording_id": "SC4022",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4022E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4022EJ-Hypnogram.edf"
+      ],
+      "subject_id": "SC402"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4031/manifest.json",
+      "recording_id": "SC4031",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4031E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4031EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC403"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4032/manifest.json",
+      "recording_id": "SC4032",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4032EP-Hypnogram.edf"
+      ],
+      "subject_id": "SC403"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4041/manifest.json",
+      "recording_id": "SC4041",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4041E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4041EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC404"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4042/manifest.json",
+      "recording_id": "SC4042",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4042E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4042EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC404"
+    },
+    {
+      "dataset_id": "sleep-edf-expanded-sc",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/sleep-edf-expanded-sc/SC4051/manifest.json",
+      "recording_id": "SC4051",
+      "source_files": [
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4051E0-PSG.edf",
+        "data/datasets/raw/sleep_edfx/1.0.0/sleep-cassette/SC4051EC-Hypnogram.edf"
+      ],
+      "subject_id": "SC405"
+    },
+    {
+      "dataset_id": "hmc-sleep-staging-1.1",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/hmc-sleep-staging-1.1/SN001/manifest.json",
+      "recording_id": "SN001",
+      "source_files": [
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN001.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN001_sleepscoring.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN001_sleepscoring.txt"
+      ],
+      "subject_id": "SN001"
+    },
+    {
+      "dataset_id": "hmc-sleep-staging-1.1",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/hmc-sleep-staging-1.1/SN002/manifest.json",
+      "recording_id": "SN002",
+      "source_files": [
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN002.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN002_sleepscoring.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN002_sleepscoring.txt"
+      ],
+      "subject_id": "SN002"
+    },
+    {
+      "dataset_id": "hmc-sleep-staging-1.1",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/hmc-sleep-staging-1.1/SN003/manifest.json",
+      "recording_id": "SN003",
+      "source_files": [
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN003.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN003_sleepscoring.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN003_sleepscoring.txt"
+      ],
+      "subject_id": "SN003"
+    },
+    {
+      "dataset_id": "hmc-sleep-staging-1.1",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/hmc-sleep-staging-1.1/SN004/manifest.json",
+      "recording_id": "SN004",
+      "source_files": [
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.txt"
+      ],
+      "subject_id": "SN004"
+    },
+    {
+      "dataset_id": "hmc-sleep-staging-1.1",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/hmc-sleep-staging-1.1/SN005/manifest.json",
+      "recording_id": "SN005",
+      "source_files": [
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN005.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN005_sleepscoring.edf",
+        "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN005_sleepscoring.txt"
+      ],
+      "subject_id": "SN005"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-01/manifest.json",
+      "recording_id": "isruc-c3-01",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/1/1.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/1/1_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/1/1_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-01"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-02/manifest.json",
+      "recording_id": "isruc-c3-02",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/2/2_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-02"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-03/manifest.json",
+      "recording_id": "isruc-c3-03",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/3/3.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/3/3_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/3/3_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-03"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-04/manifest.json",
+      "recording_id": "isruc-c3-04",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/4/4.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/4/4_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/4/4_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-04"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-05/manifest.json",
+      "recording_id": "isruc-c3-05",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/5/5.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/5/5_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/5/5_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-05"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-06/manifest.json",
+      "recording_id": "isruc-c3-06",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/6/6.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/6/6_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/6/6_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-06"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-07/manifest.json",
+      "recording_id": "isruc-c3-07",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/7/7.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/7/7_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/7/7_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-07"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-08/manifest.json",
+      "recording_id": "isruc-c3-08",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/8/8.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/8/8_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/8/8_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-08"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-09/manifest.json",
+      "recording_id": "isruc-c3-09",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/9/9.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/9/9_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/9/9_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-09"
+    },
+    {
+      "dataset_id": "isruc-sleep-cohort-iii",
+      "local_status": "available_locally",
+      "manifest_path": "data/session_packages/isruc-sleep-cohort-iii/isruc-c3-10/manifest.json",
+      "recording_id": "isruc-c3-10",
+      "source_files": [
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/10/10.rec",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/10/10_1.txt",
+        "data/datasets/raw/isruc_sleep/cohort_iii/ISRUC-Sleep-III/10/10_2.txt"
+      ],
+      "subject_id": "ISRUC-C3-10"
+    }
+  ]
+}

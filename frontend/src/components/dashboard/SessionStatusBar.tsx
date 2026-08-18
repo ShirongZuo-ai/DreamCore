@@ -48,7 +48,7 @@ const statusItems = (loaded: LoadedSession): SessionStatusItem[] => {
     },
     {
       label: 'Replay State',
-      value: loaded.realPublicData ? 'Manual window' : 'Not started',
+      value: loaded.realPublicData ? 'Offline simulation' : 'Not started',
       icon: Timer,
     },
     { label: 'Metadata', value: 'Ready', icon: Database, tone: 'success' },
@@ -64,7 +64,7 @@ export function SessionStatusBar({ session }: { session: LoadedSession }) {
           <span className="eyebrow">Session Status</span>
           <span className="demo-chip">
             {session.realPublicData
-              ? 'Observed + Derived'
+              ? 'Observed + Derived + Simulated'
               : session.fixture
                 ? 'Test Fixture'
                 : 'Simulated'}

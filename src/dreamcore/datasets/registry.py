@@ -80,6 +80,17 @@ class DatasetRegistry:
 
     def __init__(self) -> None:
         self._adapters: dict[str, DatasetAdapter] = {}
+        self._runtime_derived_provider = None
+
+    def set_runtime_derived_provider(self, provider) -> None:
+        """Attach one local cache provider without changing source adapters."""
+
+        self._runtime_derived_provider = provider
+
+    def runtime_derived_descriptor(self, session_id: str, result_type: str):
+        if self._runtime_derived_provider is None:
+            return None
+        return self._runtime_derived_provider.descriptor(session_id, result_type)
 
     def register(self, adapter: DatasetAdapter) -> None:
         metadata = adapter.dataset_metadata()
@@ -91,6 +102,12 @@ class DatasetRegistry:
         return tuple(
             self._adapters[dataset_id].dataset_metadata() for dataset_id in sorted(self._adapters)
         )
+
+    def get_dataset_metadata(self, dataset_id: str) -> DatasetMetadata:
+        try:
+            return self._adapters[dataset_id].dataset_metadata()
+        except KeyError as error:
+            raise LookupError(f"dataset {dataset_id!r} is not registered") from error
 
     def list_sessions(
         self, session_filter: SessionFilter | None = None
@@ -149,6 +166,32 @@ class DatasetRegistry:
             raise LookupError(f"dataset {dataset_id!r} is not registered") from error
         return adapter.list_sessions()
 
+    def list_dataset_subjects(self, dataset_id: str) -> tuple[dict[str, object], ...]:
+        sessions = self.list_dataset_sessions(dataset_id)
+        subjects = sorted({session.session.subject_id for session in sessions})
+        return tuple(
+            {
+                "subject_id": subject_id,
+                "recording_count": sum(
+                    session.session.subject_id == subject_id for session in sessions
+                ),
+                "local_status": "available_locally",
+            }
+            for subject_id in subjects
+        )
+
+    def list_subject_recordings(
+        self, dataset_id: str, subject_id: str
+    ) -> tuple[SessionSummary, ...]:
+        recordings = tuple(
+            session
+            for session in self.list_dataset_sessions(dataset_id)
+            if session.session.subject_id == subject_id
+        )
+        if not recordings:
+            raise LookupError(f"subject {subject_id!r} not found in dataset {dataset_id!r}")
+        return recordings
+
     def get_session_by_id(self, session_id: str) -> SessionManifest:
         """Resolve a globally unique session identifier."""
 
@@ -172,6 +215,23 @@ class DatasetRegistry:
             duration_seconds,
         )
 
+    def load_signal_windows(
+        self,
+        session_id: str,
+        signal_ids: tuple[str, ...],
+        start_seconds: float,
+        duration_seconds: float,
+    ):
+        """Delegate one bounded multi-signal read to the owning adapter."""
+
+        _, adapter = self._resolve_session(session_id)
+        return adapter.load_signal_windows(
+            session_id,
+            signal_ids,
+            start_seconds,
+            duration_seconds,
+        )
+
     def load_annotations(self, session_id: str, annotation_type: str):
         """Delegate annotation loading to the owning dataset adapter."""
 
@@ -183,6 +243,29 @@ class DatasetRegistry:
 
         _, adapter = self._resolve_session(session_id)
         return adapter.load_derived_results(session_id, result_type)
+
+    def load_derived_window(
+        self,
+        session_id: str,
+        result_type: str,
+        start_seconds: float,
+        end_seconds: float,
+    ):
+        """Delegate a bounded derived-result read to the owning adapter."""
+
+        if self._runtime_derived_provider is not None:
+            runtime = self._runtime_derived_provider.load_derived_window(
+                session_id, result_type, start_seconds, end_seconds
+            )
+            if runtime is not None:
+                return runtime
+        _, adapter = self._resolve_session(session_id)
+        return adapter.load_derived_window(
+            session_id,
+            result_type,
+            start_seconds,
+            end_seconds,
+        )
 
     def _resolve_session(self, session_id: str) -> tuple[str, DatasetAdapter]:
         matches = [

@@ -88,6 +88,19 @@ export class SessionCatalogService {
             ),
           ),
         ).size,
+        subjectCount: new Set(items.map((item) => item.session.subject_id))
+          .size,
+        localRecordingCount: items.length,
+        localStatus: 'available_locally' as const,
+        signalModalities: [
+          ...new Set(
+            items.flatMap((item) =>
+              item.signals
+                .filter((signal) => signal.available)
+                .map((signal) => signal.modality),
+            ),
+          ),
+        ].sort(),
       }))
       .sort((left, right) => left.id.localeCompare(right.id));
   }
@@ -206,15 +219,29 @@ export class HttpSessionCatalogService {
         display_name: string;
         version?: string;
         session_count: number;
+        subject_count?: number;
+        local_recording_count?: number;
+        local_status?: DatasetSummary['localStatus'];
+        signal_modalities?: string[];
         available_capabilities: string[];
+        official_source?: string;
+        license_source?: string;
+        metadata?: Record<string, unknown>;
       }>
     >('/datasets', signal);
     return data.map((item) => ({
       id: item.id,
       display_name: item.display_name,
       version: item.version,
+      official_source: item.official_source,
+      license_source: item.license_source,
+      metadata: item.metadata,
       sessionCount: item.session_count,
       availableCapabilities: item.available_capabilities.length,
+      subjectCount: item.subject_count ?? item.session_count,
+      localRecordingCount: item.local_recording_count ?? item.session_count,
+      localStatus: item.local_status ?? 'available_locally',
+      signalModalities: item.signal_modalities ?? [],
     }));
   }
 

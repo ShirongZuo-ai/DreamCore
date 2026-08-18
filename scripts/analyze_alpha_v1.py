@@ -139,6 +139,7 @@ def _build_manifest(
     sampling_rate_hz: float,
     channels: Sequence[str],
     contains_stages: Sequence[str],
+    analysis_metadata: Mapping[str, Any],
     config: Mapping[str, Any],
 ) -> dict[str, Any]:
     alpha = _alpha_config(config)
@@ -230,8 +231,10 @@ def _build_manifest(
         "kind": "csv",
         "path": _relative_path(features_path, manifest_path),
     }
+    replay_config = alpha["session_package"]["viewer"]["replay"]
     viewer = {
         "default_start_s": alpha["session_package"]["viewer"]["default_start_s"],
+        "default_time_s": alpha["session_package"]["viewer"]["default_time_s"],
         "default_window_duration_s": float(
             alpha["session_package"]["viewer"]["default_window_duration_s"]
         ),
@@ -242,6 +245,24 @@ def _build_manifest(
         "display_max_points_per_signal": int(
             alpha["session_package"]["viewer"]["display_max_points_per_signal"]
         ),
+        "feature_timestamp_semantics": str(
+            alpha["session_package"]["viewer"]["feature_timestamp_semantics"]
+        ),
+        "stage_jump_time_s": alpha["session_package"]["viewer"]["stage_jump_time_s"],
+        "replay": {
+            "enabled": bool(replay_config["enabled"]),
+            "tick_interval_ms": int(replay_config["tick_interval_ms"]),
+            "default_speed": float(replay_config["default_speed"]),
+            "speed_options": [float(value) for value in replay_config["speed_options"]],
+            "cache_max_windows": int(replay_config["cache_max_windows"]),
+            "prefetch_threshold_fraction": float(replay_config["prefetch_threshold_fraction"]),
+            "seek_cursor_fraction": float(replay_config["seek_cursor_fraction"]),
+            "intervention_notice_duration_ms": int(
+                replay_config["intervention_notice_duration_ms"]
+            ),
+            "intervention_marker_color": str(replay_config["intervention_marker_color"]),
+            "provenance_notice": str(replay_config["provenance_notice"]),
+        },
     }
     derived = {
         name: {
@@ -249,7 +270,11 @@ def _build_manifest(
             "source": source,
             "derived_by": derived_by,
             "version": "alpha-v1",
-            "metadata": {"storage": feature_storage, "viewer": viewer},
+            "metadata": {
+                "storage": feature_storage,
+                "viewer": viewer,
+                "analysis": dict(analysis_metadata),
+            },
         }
         for name, source, derived_by in (
             ("alpha_power", "derived", "dreamcore-alpha-welch-v1"),
@@ -674,11 +699,16 @@ def run_alpha_analysis(
     window_s = float(alpha["windowing"]["analysis_window_s"])
     step_s = float(alpha["windowing"]["step_s"])
     records: list[dict[str, Any]] = []
+    attempted_window_count = 0
+    accepted_window_count = 0
+    rejected_window_reasons: Counter[str] = Counter()
     window_start = start_s
     while window_start + window_s <= end_s + 1e-9:
+        attempted_window_count += 1
         window_end = window_start + window_s
         interval = _stage_interval_for_window(window_start, window_end, intervals, allowed_stages)
         if interval is not None:
+            accepted_window_count += 1
             data = raw.get_data(
                 picks=list(channels),
                 start=int(round(window_start * sfreq)),
@@ -725,6 +755,23 @@ def run_alpha_analysis(
                         "window_center_s": (window_start + window_end) / 2.0,
                     }
                 )
+        else:
+            overlapping_labels = sorted(
+                {
+                    item.label
+                    for item in intervals
+                    if item.end_s > window_start and item.start_s < window_end
+                }
+            )
+            if not overlapping_labels:
+                reason = "no_annotation_coverage"
+            elif any(label not in allowed_stages for label in overlapping_labels):
+                reason = f"ineligible_stage:{'+'.join(overlapping_labels)}"
+            elif len(overlapping_labels) > 1:
+                reason = f"stage_transition:{'+'.join(overlapping_labels)}"
+            else:
+                reason = f"annotation_boundary:{overlapping_labels[0]}"
+            rejected_window_reasons[reason] += 1
         window_start += step_s
 
     trends: dict[tuple[str, float], AlphaTrendPoint] = {}
@@ -815,6 +862,30 @@ def run_alpha_analysis(
             }
         )
 
+    feature_times = [float(row["window_end_s"]) for row in rows]
+    active_profile = alpha["profiles"][alpha["active_profile"]]
+    analysis_metadata = {
+        "time_reference": "recording_relative",
+        "timestamp_field": "window_end_s",
+        "timestamp_unit": "seconds",
+        "evaluation_start_s": start_s,
+        "evaluation_end_s": end_s,
+        "analysis_window_s": window_s,
+        "step_s": step_s,
+        "attempted_windows": attempted_window_count,
+        "accepted_windows": accepted_window_count,
+        "rejected_windows": attempted_window_count - accepted_window_count,
+        "rejection_reasons": dict(rejected_window_reasons),
+        "feature_row_count": len(rows),
+        "product_display_context_s": float(alpha["history"]["trend_window_s"]),
+        "product_display_min_iaf_confidence": float(
+            active_profile["iaf"]["product_display_min_confidence"]
+        ),
+        "first_feature_time_s": min(feature_times) if feature_times else None,
+        "last_feature_time_s": max(feature_times) if feature_times else None,
+        "channels": list(channels),
+    }
+
     output = alpha["output"]
     features_path = features_csv_path or Path(str(output["features_csv"]))
     summary_path = summary_json_path or Path(str(output["summary_json"]))
@@ -855,6 +926,7 @@ def run_alpha_analysis(
             "step_s": step_s,
             "stage_pure_windows_only": True,
         },
+        "analysis_windows": analysis_metadata,
         "algorithm": {
             "fixed_profile": str(alpha["active_profile"]),
             "individualized_profile": str(alpha["comparison_profile"]),
@@ -967,6 +1039,7 @@ def run_alpha_analysis(
         sfreq,
         channels,
         sorted({interval.label for interval in intervals}),
+        analysis_metadata,
         config,
     )
     parse_session_manifest(manifest)

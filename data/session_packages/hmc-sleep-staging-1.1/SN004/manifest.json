@@ -1,0 +1,491 @@
+{
+  "annotations": {
+    "sleep_stages": {
+      "available": true,
+      "metadata": {
+        "audit_text_path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.txt",
+        "contains_stages": [
+          "N1",
+          "N2",
+          "N3",
+          "REM",
+          "W"
+        ],
+        "primary_for_viewer": true,
+        "raw_labels_preserved": true,
+        "scorer": "official",
+        "scoring_standard": "AASM",
+        "storage": {
+          "kind": "edf_annotations",
+          "label_map": {
+            "Movement time": "MOVEMENT",
+            "N1": "N1",
+            "N2": "N2",
+            "N3": "N3",
+            "R": "REM",
+            "REM": "REM",
+            "Sleep stage ?": "UNKNOWN",
+            "Sleep stage N1": "N1",
+            "Sleep stage N2": "N2",
+            "Sleep stage N3": "N3",
+            "Sleep stage R": "REM",
+            "Sleep stage REM": "REM",
+            "Sleep stage W": "W",
+            "W": "W"
+          },
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.edf",
+          "scorer": "official",
+          "scoring_standard": "AASM",
+          "skip_unmapped": true
+        }
+      },
+      "source": "imported"
+    }
+  },
+  "capabilities": {
+    "alpha_power": {
+      "reason": "Source available; Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "alpha_trend": {
+      "reason": "Source available; Alpha trend not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "arousals": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "artifacts": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "decision_simulation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "drowsiness_score": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "eeg": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eog": {
+      "reason": null,
+      "source": "raw",
+      "status": "AVAILABLE"
+    },
+    "eye_movement_activity": {
+      "reason": "Source available; Eye Movement not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "eye_movement_events": {
+      "reason": "Source available; Eye Movement candidate events not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "hardware_telemetry": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "heart_rate": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "individual_alpha_frequency": {
+      "reason": "Source available; IAF diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "movement": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "navigation_alignment": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_estimation": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "phase_precision": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ppg": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "ready_to_remove": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "relative_alpha_power": {
+      "reason": "Source available; Relative Alpha diagnostic not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "sleep_stage_labels": {
+      "reason": null,
+      "source": "imported",
+      "status": "AVAILABLE"
+    },
+    "sleep_stage_predictions": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "slow_oscillation_detection": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "snoring": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "sonification_controls": {
+      "reason": "Source available; Research Sonification controls not computed",
+      "source": "derived",
+      "status": "PLANNED"
+    },
+    "spo2": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_demand": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    },
+    "stimulation_events": {
+      "reason": "Not available or not computed for this recording",
+      "source": "unknown",
+      "status": "UNAVAILABLE"
+    }
+  },
+  "dataset": {
+    "display_name": "HMC Sleep Staging",
+    "id": "hmc-sleep-staging-1.1",
+    "license_source": "https://physionet.org/content/hmc-sleep-staging/1.1/",
+    "metadata": {
+      "local_status": "available_locally",
+      "official_title": "Haaglanden Medisch Centrum Sleep Staging Database",
+      "scoring_standard": "AASM"
+    },
+    "official_source": "https://physionet.org/content/hmc-sleep-staging/1.1/",
+    "version": "1.1"
+  },
+  "derived": {
+    "alpha_power": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed",
+        "viewer": {
+          "activity_jump_time_s": null,
+          "default_start_s": 0.0,
+          "default_time_s": 0.0,
+          "default_window_duration_s": 60.0,
+          "display_max_points_per_signal": 2000,
+          "feature_timestamp_semantics": "window_end",
+          "replay": {
+            "cache_max_windows": 3,
+            "default_speed": 1.0,
+            "enabled": true,
+            "intervention_marker_color": "#E1AA5A",
+            "intervention_notice_duration_ms": 5000,
+            "prefetch_threshold_fraction": 0.75,
+            "provenance_notice": "SIMULATED INTERVENTION \u2014 NO HARDWARE COMMAND SENT",
+            "seek_cursor_fraction": 0.25,
+            "speed_options": [
+              0.5,
+              1.0,
+              2.0,
+              5.0,
+              10.0
+            ],
+            "tick_interval_ms": 250
+          },
+          "stage_jump_time_s": null,
+          "window_duration_options_s": [
+            30.0,
+            60.0,
+            120.0
+          ]
+        }
+      },
+      "reason": "Available EEG source; Alpha diagnostic not computed",
+      "source": "derived",
+      "version": "alpha-v1"
+    },
+    "eye_movement_activity_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; Eye Movement analysis not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    },
+    "eye_movement_events_v1": {
+      "available": false,
+      "metadata": {
+        "availability_state": "not_computed"
+      },
+      "reason": "Available EOG source; candidate events not computed",
+      "source": "derived",
+      "version": "eye-movement-v1"
+    }
+  },
+  "provenance": {
+    "classification": "imported",
+    "imported_by": "scripts/index_datasets.py",
+    "metadata": {
+      "source_files": [
+        {
+          "downloaded_at": "2026-08-13T09:36:06.128751+00:00",
+          "file_name": "SN004.edf",
+          "file_size_bytes": 124881152,
+          "local_path": "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "official_source": "https://physionet.org/content/hmc-sleep-staging/1.1/",
+          "sha256": "847bba8d4bd6a894aab5904a72cf6388d2ec042734ad3c5796a74b7817acdd5b"
+        },
+        {
+          "downloaded_at": "2026-08-13T09:36:05.979076+00:00",
+          "file_name": "SN004_sleepscoring.edf",
+          "file_size_bytes": 61952,
+          "local_path": "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.edf",
+          "official_source": "https://physionet.org/content/hmc-sleep-staging/1.1/",
+          "sha256": "62d517659d84e625b40e735ab4d518b52e4e109767a0af56f6140bd7ecb66edd"
+        },
+        {
+          "downloaded_at": "2026-08-13T09:36:05.978294+00:00",
+          "file_name": "SN004_sleepscoring.txt",
+          "file_size_bytes": 48246,
+          "local_path": "data/datasets/raw/hmc_sleep_staging/1.1/recordings/SN004_sleepscoring.txt",
+          "official_source": "https://physionet.org/content/hmc-sleep-staging/1.1/",
+          "sha256": "11f0560c3a165082a927e5259c9be92c2ea3242c21899ee1a4eac28faf729154"
+        }
+      ]
+    },
+    "notes": "Official public source files; DreamCore metadata normalization only",
+    "source_dataset_uri": "https://physionet.org/content/hmc-sleep-staging/1.1/"
+  },
+  "recording": {
+    "duration_seconds": 30488.0,
+    "start_time": "2001-01-01T23:27:00"
+  },
+  "schema_version": "dreamcore.session.v1",
+  "session": {
+    "night_id": "SN004",
+    "session_id": "SN004",
+    "subject_id": "SN004",
+    "visit_id": "SN004"
+  },
+  "signals": [
+    {
+      "available": true,
+      "canonical_role": "EEG_FRONTAL",
+      "channel_name": "EEG F4-M1",
+      "id": "eeg-1",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EEG F4-M1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG F4-M1",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_CENTRAL",
+      "channel_name": "EEG C4-M1",
+      "id": "eeg-2",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EEG C4-M1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG C4-M1",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_OCCIPITAL",
+      "channel_name": "EEG O2-M1",
+      "id": "eeg-3",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EEG O2-M1",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG O2-M1",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EEG_CENTRAL",
+      "channel_name": "EEG C3-M2",
+      "id": "eeg-4",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EEG C3-M2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eeg",
+      "original_channel_name": "EEG C3-M2",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EMG",
+      "channel_name": "EMG chin",
+      "id": "emg-1",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EMG chin",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "emg",
+      "original_channel_name": "EMG chin",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EOG_LEFT",
+      "channel_name": "EOG E1-M2",
+      "id": "eog-1",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EOG E1-M2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eog",
+      "original_channel_name": "EOG E1-M2",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "EOG_RIGHT",
+      "channel_name": "EOG E2-M2",
+      "id": "eog-2",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "EOG E2-M2",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "eog",
+      "original_channel_name": "EOG E2-M2",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    },
+    {
+      "available": true,
+      "canonical_role": "ECG",
+      "channel_name": "ECG",
+      "id": "ecg-1",
+      "metadata": {
+        "native_sample_count": 7804928,
+        "source_file": "SN004.edf",
+        "storage": {
+          "channel_name": "ECG",
+          "kind": "edf",
+          "path": "../../../datasets/raw/hmc_sleep_staging/1.1/recordings/SN004.edf",
+          "reader_backend": "pyedflib_native",
+          "sampling_rate_tolerance_hz": 1e-06,
+          "scale_to_unit": 1.0
+        }
+      },
+      "modality": "ecg",
+      "original_channel_name": "ECG",
+      "sampling_rate_hz": 256.0,
+      "source": "raw",
+      "unit": "uV"
+    }
+  ]
+}

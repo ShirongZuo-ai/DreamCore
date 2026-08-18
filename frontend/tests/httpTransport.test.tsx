@@ -54,9 +54,43 @@ function realManifest(): SessionManifest {
     metadata: {
       viewer: {
         default_start_s: 10,
+        default_time_s: 10,
         default_window_duration_s: 20,
         window_duration_options_s: [10, 20],
         display_max_points_per_signal: 100,
+        feature_timestamp_semantics: 'window_end',
+        stage_jump_time_s: 20,
+        replay: {
+          enabled: true,
+          tick_interval_ms: 20,
+          default_speed: 1,
+          speed_options: [0.5, 1, 2],
+          cache_max_windows: 2,
+          prefetch_threshold_fraction: 0.75,
+          seek_cursor_fraction: 0.25,
+          intervention_notice_duration_ms: 1000,
+          intervention_marker_color: '#E1AA5A',
+          provenance_notice: 'SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED',
+        },
+      },
+      analysis: {
+        time_reference: 'recording_relative',
+        timestamp_field: 'window_end_s',
+        timestamp_unit: 'seconds',
+        evaluation_start_s: 0,
+        evaluation_end_s: 100,
+        analysis_window_s: 30,
+        step_s: 30,
+        attempted_windows: 3,
+        accepted_windows: 3,
+        rejected_windows: 0,
+        rejection_reasons: {},
+        feature_row_count: 3,
+        first_feature_time_s: 30,
+        last_feature_time_s: 90,
+        channels: ['EEG Posterior'],
+        product_display_min_iaf_confidence: 0.5,
+        product_display_context_s: 300,
       },
     },
   };
@@ -82,10 +116,10 @@ function feature(channel: string, start: number): AlphaFeatureRecord {
     stage: start < 20 ? 'W' : 'N1',
     absolute_alpha_power: channel.includes('Posterior') ? 8 : 3,
     relative_alpha_power: channel.includes('Posterior') ? 0.12 : 0.02,
-    individual_alpha_frequency_hz: null,
-    iaf_confidence: 0,
-    iaf_available: false,
-    iaf_reason: 'no_reliable_alpha_peak',
+    individual_alpha_frequency_hz: channel.includes('Posterior') ? 12.5 : null,
+    iaf_confidence: channel.includes('Posterior') ? 0.398 : 0,
+    iaf_available: channel.includes('Posterior'),
+    iaf_reason: channel.includes('Posterior') ? null : 'no_reliable_alpha_peak',
     window_iaf_hz: null,
     window_iaf_confidence: null,
     alpha_trend: 'falling',
@@ -168,8 +202,8 @@ class ViewerReplaySource implements ReplaySource {
       end_s: endSeconds,
       descriptor: this.manifest.derived.alpha_power,
       records: [
-        feature('EEG Front', startSeconds),
-        feature('EEG Posterior', startSeconds),
+        feature('EEG Front', Math.max(0, endSeconds - 30)),
+        feature('EEG Posterior', Math.max(0, endSeconds - 30)),
       ],
     };
   }
@@ -276,6 +310,47 @@ describe('HTTP catalog and replay transports', () => {
     expect(window.samples).toHaveLength(4);
     expect(window.timestamps).toEqual([10, 10.25, 10.5, 10.75]);
   });
+
+  it('uses one bounded request for an ordered multi-signal window', async () => {
+    const manifest = realManifest();
+    const requested = vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
+      jsonResponse({
+        api_version: 'v1',
+        data: {
+          session_id: 'public-alpha',
+          start_s: 10,
+          duration_s: 1,
+          windows: manifest.signals.map((signal, index) => ({
+            session_id: 'public-alpha',
+            signal_id: signal.id,
+            channel: signal.channel_name,
+            provenance: 'raw',
+            start_s: 10,
+            end_s: 11,
+            duration_s: 1,
+            sampling_rate_hz: 4,
+            unit: 'uV',
+            n_samples: 4,
+            timestamps: [10, 10.25, 10.5, 10.75],
+            samples: [index, index, index, index],
+          })),
+        },
+      }),
+    );
+    const signalIds = manifest.signals.map((signal) => signal.id);
+
+    const windows = await new HttpReplaySource(manifest).readSignalWindows(
+      signalIds,
+      10,
+      1,
+    );
+
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(String(requested.mock.calls[0][0])).toContain(
+      '/signals/window?start_s=10&duration_s=1&signal_id=front&signal_id=posterior',
+    );
+    expect(windows.map((window) => window.signal.id)).toEqual(signalIds);
+  });
 });
 
 describe('real Alpha viewer states', () => {
@@ -291,14 +366,22 @@ describe('real Alpha viewer states', () => {
       'Loading bounded signal window',
     );
     expect(await screen.findByTestId('real-eeg-window')).toBeVisible();
+    expect(
+      screen.getByRole('region', { name: 'Recording source metadata' }),
+    ).toHaveTextContent('Public EEG · public-alpha');
     expect(screen.getAllByText('EEG Front').length).toBeGreaterThan(0);
     expect(screen.getAllByText('EEG Posterior').length).toBeGreaterThan(0);
     expect(screen.getAllByText('uV').length).toBeGreaterThan(0);
     expect(screen.getByText('Imported sleep-stage annotation')).toBeVisible();
     expect(screen.getAllByText('W').length).toBeGreaterThan(0);
     expect(screen.getAllByText('N1').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Unavailable')).toHaveLength(2);
-    expect(screen.getAllByText('No reliable alpha peak')).toHaveLength(2);
+    const alpha = screen.getByLabelText('Alpha V1 derived metrics');
+    expect(alpha).toHaveTextContent('Primary signal EEG Posterior');
+    expect(alpha).not.toHaveTextContent('Primary signal EEG Front');
+    expect(screen.getByTestId('product-iaf')).toHaveTextContent(
+      'No clear Alpha peak',
+    );
+    expect(screen.getByTestId('product-iaf')).not.toHaveTextContent('12.50 Hz');
     expect(screen.getByText('SIMULATED CONTROL DEMAND')).toBeVisible();
     expect(screen.getByText('NOT ULTRASOUND DOSE')).toBeVisible();
     expect(screen.queryByText(/ultrasound applied/i)).not.toBeInTheDocument();
@@ -321,6 +404,112 @@ describe('real Alpha viewer states', () => {
     await waitFor(() =>
       expect(screen.getByTestId('real-eeg-window')).toBeInTheDocument(),
     );
+  });
+
+  it('shows raw EOG without exposing internal missing-artifact language', async () => {
+    const manifest = realManifest();
+    manifest.signals.push({
+      id: 'eog-left',
+      modality: 'eog',
+      channel_name: 'E1-M2',
+      original_channel_name: 'E1-M2',
+      canonical_role: 'EOG_LEFT',
+      unit: 'uV',
+      sampling_rate_hz: 4,
+      source: 'raw',
+      available: true,
+    });
+    manifest.capabilities.eog = { status: 'AVAILABLE', source: 'raw' };
+    manifest.capabilities.eye_movement_activity = {
+      status: 'PLANNED',
+      source: 'derived',
+      reason: 'Source available; Eye Movement not computed',
+    };
+    manifest.capabilities.alpha_power = {
+      status: 'PLANNED',
+      source: 'derived',
+      reason: 'Source available; Alpha diagnostic not computed',
+    };
+    manifest.derived.eye_movement_activity_v1 = {
+      available: false,
+      source: 'derived',
+      reason: 'Available EOG source; Eye Movement analysis not computed',
+      metadata: { availability_state: 'not_computed' },
+    };
+
+    render(
+      <AlphaSessionViewer
+        manifest={manifest}
+        replaySource={new ViewerReplaySource(manifest)}
+      />,
+    );
+
+    expect(await screen.findByTestId('raw-eog-track')).toHaveTextContent(
+      'E1-M2',
+    );
+    expect(screen.getByTestId('sleep-insights')).toBeVisible();
+    expect(
+      screen.queryByText(/analysis not computed/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/derived artifact missing/i),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('eye-movement-panel')).not.toBeInTheDocument();
+  });
+
+  it('advances an offline replay cursor and records only simulated intervention markers', async () => {
+    const user = userEvent.setup();
+    const manifest = realManifest();
+    render(
+      <AlphaSessionViewer
+        manifest={manifest}
+        replaySource={new ViewerReplaySource(manifest)}
+      />,
+    );
+    await screen.findByTestId('real-eeg-window');
+    const range = screen.getByTestId('window-range');
+    expect(range).toHaveTextContent('cursor 10.00 s · idle');
+    expect(screen.getByTestId('alpha-absolute-chart')).toHaveAttribute(
+      'data-display-mode',
+      'observed-samples',
+    );
+    expect(screen.getByTestId('alpha-absolute-chart')).toHaveAttribute(
+      'data-point-rendering',
+      'observed-glyphs',
+    );
+    expect(screen.getByTestId('alpha-absolute-chart')).toHaveAttribute(
+      'data-point-connection',
+      'discrete',
+    );
+    expect(screen.getByTestId('alpha-absolute-chart')).toHaveAttribute(
+      'data-display-end-timestamp',
+      '10',
+    );
+    expect(screen.getByTestId('real-eeg-uplot')).toHaveAttribute(
+      'data-last-visible-timestamp',
+      '10',
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Start replay' }));
+    await waitFor(() => expect(range).toHaveTextContent(/playing 1×/));
+    await waitFor(() => expect(range).not.toHaveTextContent('cursor 10.00 s'));
+    await user.click(screen.getByRole('button', { name: 'Pause replay' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Mark simulated intervention' }),
+    );
+
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('SIMULATED INTERVENTION MARKED');
+    expect(alert).toHaveTextContent(
+      'SIMULATED INTERVENTION — NO ULTRASOUND DELIVERED',
+    );
+    expect(alert).toHaveTextContent(
+      'Observed EEG and derived Alpha values remain unchanged',
+    );
+    expect(
+      screen.getAllByLabelText(/SIMULATED INTERVENTION.* at/).length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText(/ultrasound applied/i)).not.toBeInTheDocument();
   });
 
   it('shows an HTTP error without fabricating physiology', async () => {

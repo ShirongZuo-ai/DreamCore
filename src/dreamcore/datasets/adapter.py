@@ -55,6 +55,25 @@ class DatasetAdapter(ABC):
     ) -> SignalWindow:
         """Read only the requested time window for one signal."""
 
+    def load_signal_windows(
+        self,
+        session_id: str,
+        signal_ids: tuple[str, ...],
+        start_seconds: float,
+        duration_seconds: float,
+    ) -> tuple[SignalWindow, ...]:
+        """Read bounded signals, with storage-aware adapters free to batch I/O."""
+
+        return tuple(
+            self.load_signal_window(
+                session_id,
+                signal_id,
+                start_seconds,
+                duration_seconds,
+            )
+            for signal_id in signal_ids
+        )
+
     @abstractmethod
     def load_annotations(self, session_id: str, annotation_type: str) -> tuple[Any, ...]:
         """Load one annotation type without coupling to a dataset format."""
@@ -62,3 +81,22 @@ class DatasetAdapter(ABC):
     @abstractmethod
     def load_derived_results(self, session_id: str, result_type: str) -> tuple[Any, ...]:
         """Load one derived result type."""
+
+    def load_derived_window(
+        self,
+        session_id: str,
+        result_type: str,
+        start_seconds: float,
+        end_seconds: float,
+    ) -> tuple[Any, ...]:
+        """Read a bounded derived window, with a storage-specific override when available."""
+
+        output = []
+        for item in self.load_derived_results(session_id, result_type):
+            if not isinstance(item, Mapping):
+                continue
+            item_start = float(item.get("window_start_s", item.get("timestamp", 0.0)))
+            item_end = float(item.get("window_end_s", item_start))
+            if item_end >= start_seconds and item_start < end_seconds:
+                output.append(item)
+        return tuple(output)

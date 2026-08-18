@@ -1,4 +1,10 @@
-import { Activity, ClipboardList, Database, UserRound } from 'lucide-react';
+import {
+  Activity,
+  ClipboardCheck,
+  ClipboardList,
+  Database,
+  UserRound,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 import { ConnectionStatus } from './ConnectionStatus';
@@ -11,6 +17,12 @@ const links = [
     label: 'Dataset Library',
     shortLabel: 'Data',
     icon: Database,
+  },
+  {
+    to: '/validation',
+    label: 'Signal Validation',
+    shortLabel: 'Validate',
+    icon: ClipboardCheck,
   },
   {
     to: '/review',
@@ -47,7 +59,7 @@ export function TopNavigation() {
           aria-label="Primary navigation"
           className="order-last w-full sm:order-none sm:w-auto"
         >
-          <div className="fixed inset-x-0 bottom-0 z-50 grid h-16 grid-cols-4 border-t border-line bg-surface px-2 sm:static sm:flex sm:h-auto sm:border-0 sm:bg-transparent sm:p-0">
+          <div className="fixed inset-x-0 bottom-0 z-50 grid h-16 grid-cols-5 border-t border-line bg-surface px-2 sm:static sm:flex sm:h-auto sm:border-0 sm:bg-transparent sm:p-0">
             {links.map(({ to, label, shortLabel, icon: Icon }) => (
               <NavLink
                 key={to}

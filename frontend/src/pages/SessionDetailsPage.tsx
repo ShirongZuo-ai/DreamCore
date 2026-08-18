@@ -15,6 +15,10 @@ import type { CapabilityName } from '../types';
 
 const capabilityLabels: Record<CapabilityName, string> = {
   eeg: 'EEG',
+  eog: 'EOG',
+  eye_movement_activity: 'Eye Movement Activity',
+  eye_movement_events: 'Eye Movement Candidate Events',
+  sonification_controls: 'Sonification Controls',
   alpha_power: 'Alpha power',
   relative_alpha_power: 'Relative Alpha power',
   individual_alpha_frequency: 'Individual Alpha frequency',

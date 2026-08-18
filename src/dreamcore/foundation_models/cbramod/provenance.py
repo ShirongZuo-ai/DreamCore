@@ -1,0 +1,10 @@
+"""Pinned official CBraMod source and checkpoint provenance."""
+
+UPSTREAM_REPOSITORY = "https://github.com/wjq-learning/CBraMod"
+UPSTREAM_REVISION = "b9e961003214326972c567eff390e75b0287e32a"
+UPSTREAM_LICENSE = "MIT"
+CHECKPOINT_REPOSITORY = "https://huggingface.co/weighting666/CBraMod"
+CHECKPOINT_REVISION = "500543c7e30bda1b22bfd51a49301b238dee21fd"
+CHECKPOINT_FILENAME = "pretrained_weights.pth"
+CHECKPOINT_SHA256 = "0792cb808c14e6b7a2bb2ce1dff379bc47bc54c49a779825bdfeb33bf8157178"
+CHECKPOINT_LICENSE = "Apache-2.0 (Hugging Face model card metadata)"

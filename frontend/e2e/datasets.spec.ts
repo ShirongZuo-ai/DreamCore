@@ -39,7 +39,7 @@ test('selected session loads into Live Console without starting replay', async (
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/datasets');
   await page.getByTestId('session-row-fixture-b').click();
-  await page.getByRole('button', { name: 'Load Session' }).click();
+  await page.getByRole('button', { name: 'Open Viewer' }).click();
 
   await expect(page).toHaveURL(/\/live$/);
   await expect(
@@ -70,7 +70,7 @@ test('missing phase capability is rendered as unavailable', async ({
 }) => {
   await page.goto('/datasets');
   await page.getByTestId('session-row-fixture-b').click();
-  await page.getByRole('button', { name: 'Load Session' }).click();
+  await page.getByRole('button', { name: 'Open Viewer' }).click();
 
   const decisionPanel = page.getByRole('complementary', {
     name: 'AI decision panel',
@@ -102,3 +102,61 @@ test('Dataset Library has no page-level overflow at 390px', async ({
     fullPage: false,
   });
 });
+
+for (const representative of [
+  {
+    dataset: 'Sleep-EDF Expanded',
+    subject: 'SC400',
+    recording: 'SC4002',
+    channel: 'EOG horizontal',
+  },
+  {
+    dataset: 'HMC Sleep Staging',
+    subject: 'SN001',
+    recording: 'SN001',
+    channel: 'EOG E1-M2',
+  },
+  {
+    dataset: 'ISRUC-Sleep Cohort III',
+    subject: 'ISRUC-C3-01',
+    recording: 'isruc-c3-01',
+    channel: 'LOC-A2',
+  },
+]) {
+  test(`opens a real ${representative.dataset} recording in the unified Viewer`, async ({
+    page,
+  }) => {
+    await page.goto('/datasets');
+    await page
+      .getByRole('combobox', { name: 'Dataset', exact: true })
+      .selectOption({
+        label: representative.dataset,
+      });
+    await page.getByRole('combobox', { name: 'Subject' }).selectOption({
+      label: representative.subject,
+    });
+    await page.getByRole('combobox', { name: 'Recording' }).selectOption({
+      label: representative.recording,
+    });
+    await expect(
+      page.getByText(representative.channel, { exact: false }).first(),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Open Viewer' }).click();
+    await expect(page).toHaveURL(/\/live$/);
+    await expect(
+      page.getByText(representative.recording, { exact: true }).last(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(representative.channel, { exact: false }).first(),
+    ).toBeVisible();
+    const insights = page.getByRole('region', { name: 'Sleep Insights' });
+    await expect(insights).toBeVisible();
+    await expect(insights).toContainText('Ready');
+    await expect(insights).not.toContainText(/not computed/i);
+    if (representative.recording === 'SN001') {
+      await insights.screenshot({
+        path: 'artifacts/screenshots/hmc-sn001-sleep-insights.png',
+      });
+    }
+  });
+}

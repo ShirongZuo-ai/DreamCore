@@ -1,0 +1,76 @@
+schema_version: "dreamcore.eog_validation.contract.v1"
+validation_version: "eog-validation-v1"
+analysis_config: "configs/default.yaml"
+session_package_root: "data/session_packages"
+output_root: "results/eog_validation_v1"
+contract_filename: "validation_contract.json"
+contract_hash_filename: "validation_contract.sha256"
+database_filename: "validation.sqlite"
+review_database_filename: "human_reviews.sqlite"
+review_export_filename: "human_reviews.csv"
+summary_filename: "summary.json"
+csv_outputs:
+  full_night_summary: "full_night_summary.csv"
+  channel_agreement: "channel_agreement.csv"
+  stage_distribution: "stage_distribution.csv"
+  candidate_review_sample: "candidate_review_sample.csv"
+  control_review_sample: "control_review_sample.csv"
+  scorer_disagreement: "scorer_disagreement.csv"
+selected_recordings:
+  - dataset_id: "sleep-edf-expanded-sc"
+    session_id: "SC4002"
+    channels: ["EOG horizontal"]
+  - dataset_id: "hmc-sleep-staging-1.1"
+    session_id: "SN001"
+    channels: ["EOG E1-M2", "EOG E2-M2"]
+  - dataset_id: "hmc-sleep-staging-1.1"
+    session_id: "SN002"
+    channels: ["EOG E1-M2", "EOG E2-M2"]
+  - dataset_id: "isruc-sleep-cohort-iii"
+    session_id: "isruc-c3-01"
+    channels: ["LOC-A2", "ROC-A1"]
+    scorers: ["1", "2"]
+  - dataset_id: "isruc-sleep-cohort-iii"
+    session_id: "isruc-c3-02"
+    channels: ["LOC-A2", "ROC-A1"]
+    scorers: ["1", "2"]
+stage_handling:
+  canonical_labels: ["W", "N1", "N2", "N3", "REM", "UNKNOWN", "MOVEMENT"]
+  exposure_interval: "half_open"
+  event_assignment: "annotation_active_at_event_timestamp"
+  default_annotation: "sleep_stages"
+  isruc_scorer_annotations:
+    "1": "sleep_stages_scorer_1"
+    "2": "sleep_stages_scorer_2"
+event_matching:
+  primary_tolerance_s: 0.5
+  sensitivity_tolerances_s: [0.25, 0.5, 1.0]
+  strategy: "closest_unmatched_greedy"
+  agreement_denominator: "maximum_channel_event_count"
+qc_sampling:
+  random_seed: 20260814
+  candidate_target_per_dataset: 50
+  candidate_strata: ["normalized_stage", "agreement_class"]
+  control_target_per_major_stage_per_dataset: 10
+  control_major_stages: ["W", "N1", "N2", "N3", "REM"]
+  control_window_s: 10.0
+  control_event_exclusion_s: 5.0
+  control_minimum_separation_s: 10.0
+manual_qc:
+  focus_half_window_s: 5.0
+  review_schema_version: "dreamcore.eog_validation.review.v1"
+  candidate_labels:
+    - "Likely Eye Movement"
+    - "Artifact / Non-eye-movement"
+    - "Uncertain"
+  control_labels:
+    - "No obvious eye movement"
+    - "Possible missed eye movement"
+    - "Artifact / unusable"
+    - "Uncertain"
+  maximum_notes_characters: 500
+  confidence_bins: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+api:
+  prefix: "/api/eog-validation/v1"
+  maximum_request_bytes: 16384
+  maximum_focus_window_s: 30.0

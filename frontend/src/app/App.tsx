@@ -6,6 +6,7 @@ import { DatasetLibraryPage } from '../pages/DatasetLibraryPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { SessionDetailsPage } from '../pages/SessionDetailsPage';
 import { SessionReviewPage } from '../pages/SessionReviewPage';
+import { SignalValidationPage } from '../pages/SignalValidationPage';
 import { SubjectViewPage } from '../pages/SubjectViewPage';
 import { SessionWorkspaceProvider } from './SessionWorkspaceProvider';
 
@@ -23,6 +24,7 @@ export function App() {
           />
           <Route path="review" element={<SessionReviewPage />} />
           <Route path="subject" element={<SubjectViewPage />} />
+          <Route path="validation" element={<SignalValidationPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

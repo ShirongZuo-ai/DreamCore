@@ -1,10 +1,46 @@
 # Data directory
 
-Large datasets are gitignored. Only small metadata files belong here.
+Large datasets are gitignored. Only small metadata files belong here. DreamCore
+Multi-Dataset Library V1 keeps source signals in their official EDF/REC files;
+it does not expand full-night samples into CSV or SQLite.
+
+## Multi-Dataset Library V1
+
+The bounded local batch lives under the ignored `data/datasets/raw/` tree:
+
+```text
+data/datasets/raw/
+├── sleep_edfx/1.0.0/sleep-cassette/
+├── hmc_sleep_staging/1.1/recordings/
+└── isruc_sleep/cohort_iii/
+```
+
+Inspect the exact official plan without downloading:
+
+```bash
+.venv/bin/python3 scripts/download_dataset_subset.py --dataset all --dry-run
+```
+
+Resume one source and rebuild lightweight Session Package manifests with:
+
+```bash
+.venv/bin/python3 scripts/download_dataset_subset.py --dataset sleep_edfx --resume
+.venv/bin/python3 scripts/download_dataset_subset.py --dataset hmc --resume
+.venv/bin/python3 scripts/download_dataset_subset.py --dataset isruc --resume
+.venv/bin/python3 scripts/index_datasets.py --dataset all
+```
+
+The configured list is deliberately bounded: ten additional Sleep Cassette
+recordings, HMC SN001–SN005, and the ten healthy Cohort III subjects. PhysioNet
+files are checked against its official SHA-256 manifest. The ISRUC record keeps
+the official public-folder provenance and records the absence of a published
+checksum manifest; DreamCore records local SHA-256 checksums for audit instead.
+Download audit files and physiological sources stay ignored;
+small canonical manifests and the lightweight catalog are reproducible metadata.
 
 ## Adding a dataset
 
-1. Download raw data outside the repo (e.g., `~/datasets/sleep-edf/`)
+1. Download raw data into the ignored raw tree or an external directory
 2. Add a metadata file here with subject IDs, splits, and channel info
 3. Reference the external path in your experiment config
 
@@ -45,9 +81,9 @@ age.fetch_data(
 )
 ```
 
-`data/datasets/` is ignored by Git and is suitable for this local validation
-pair. For longer-lived or multi-subject datasets, pass an external dataset
-directory instead.
+The legacy SC4001 pair remains in its original ignored location. New library
+sources use `data/datasets/raw/`; indexing references both without copying raw
+samples.
 
 Run the inspection with all file paths supplied explicitly and the sampling
 rate validation supplied by the dataset config:
@@ -137,3 +173,48 @@ Additional known invalid PSG ranges can be supplied in config or through
 
 These files contain algorithm candidates, not manually confirmed physiological
 events. No signal arrays or source EDF data are copied into the outputs.
+
+## Alpha V1 pre-sleep analysis and Session Package
+
+Run the real SC4001 W→N1→N2 Alpha evaluation with:
+
+```bash
+python scripts/analyze_alpha_v1.py \
+  --config experiments/sleep_edf_sc.yaml \
+  --psg data/datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf \
+  --hypnogram data/datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf
+```
+
+Generated CSV/JSON/PNG results remain ignored. The small tracked manifest at
+`data/session_packages/sleep-edf/sc4001-alpha-v1/manifest.json` contains only
+metadata, capabilities, provenance, and relative references. It labels source
+EEG as real public/raw, Alpha features as derived, and all demand/events as
+simulated. The DatasetAdapter reads requested EDF windows on demand; no complete
+signal array is embedded in the manifest.
+
+## Eye Movement / EOG Sonification V1
+
+Run Alpha first when its comparison artifact must be regenerated, then extend
+the same Session Package with the full-night EOG pipeline:
+
+```bash
+python scripts/analyze_eye_movement_v1.py \
+  --config experiments/sleep_edf_sc.yaml \
+  --psg data/datasets/sleep-edf/physionet-sleep-data/SC4001E0-PSG.edf \
+  --hypnogram data/datasets/sleep-edf/physionet-sleep-data/SC4001EC-Hypnogram.edf
+```
+
+The script discovers the EOG label from EDF metadata/configured patterns,
+produces ignored full-night feature/event/control exports, a filtered float32
+display signal, and an indexed SQLite artifact for bounded replay reads. The
+tracked manifest contains only relative references, coverage, versions,
+configuration, source fingerprint, and provenance. Do not commit the generated
+CSV, binary, SQLite, or source EDF files.
+
+## DREAMS Signal Validation V1
+
+Official DREAMS archive provenance and published checksums are tracked in
+`data/dreams_signal_validation_v1.json`. The archives and extracted contents
+live under ignored `data/datasets/raw/dreams/`; do not commit or redistribute
+them. See `docs/signal_validation_v1.md` for the contract-first runner and the
+limits of the benchmark labels.

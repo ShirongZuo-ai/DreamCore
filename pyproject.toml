@@ -27,6 +27,7 @@ dependencies = [
     "pandas>=2.0",
     "matplotlib>=3.7",
     "pyyaml>=6.0",
+    "pyedflib>=0.1.39",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +36,10 @@ dev = [
     "pytest-cov>=4.1",
     "ruff>=0.1",
     "mypy>=1.5",
+]
+foundation = [
+    "torch>=2.7",
+    "scikit-learn>=1.6",
 ]
 
 [tool.setuptools.packages.find]

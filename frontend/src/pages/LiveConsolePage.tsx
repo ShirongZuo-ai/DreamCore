@@ -46,13 +46,14 @@ export function LiveConsolePage() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="eyebrow">Offline public-data workspace</p>
-            <span className="demo-chip">REAL PUBLIC EEG DATA</span>
+            <span className="demo-chip">REAL PUBLIC EEG / EOG DATA</span>
           </div>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-primary">
             Live Console
           </h1>
           <p className="mt-1 text-sm text-secondary">
-            Manual window viewer · no replay clock · no hardware connection
+            Offline replay sonification · real public EEG/EOG · no hardware
+            connection
           </p>
         </div>
         <SessionLoaderPanel />

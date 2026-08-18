@@ -97,7 +97,7 @@ describe('Dataset Library and session loading', () => {
     renderAt('/datasets');
 
     await user.click(screen.getByTestId('session-row-fixture-b'));
-    await user.click(screen.getByRole('button', { name: 'Load Session' }));
+    await user.click(screen.getByRole('button', { name: 'Open Viewer' }));
 
     expect(
       await screen.findByRole('heading', { name: 'Live Console' }),
@@ -118,7 +118,7 @@ describe('Dataset Library and session loading', () => {
     renderAt('/datasets');
 
     await user.click(screen.getByTestId('session-row-fixture-a'));
-    await user.click(screen.getByRole('button', { name: 'Load Session' }));
+    await user.click(screen.getByRole('button', { name: 'Open Viewer' }));
 
     expect(
       await screen.findByRole('heading', { name: 'Live Console' }),
@@ -138,6 +138,30 @@ describe('Dataset Library and session loading', () => {
       name: 'Live Device · Unavailable',
     });
     expect(liveOption).toBeDisabled();
+  });
+
+  it('navigates Dataset to Subject to Recording before opening the viewer', async () => {
+    const user = userEvent.setup();
+    renderAt('/datasets');
+
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Dataset' }),
+      'fixture-neuro',
+    );
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Subject' }),
+      'TEST-SUBJECT-A',
+    );
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Recording' }),
+      'fixture-a',
+    );
+
+    expect(
+      screen.getByRole('region', { name: 'Selected session' }),
+    ).toHaveTextContent('fixture-a');
+    expect(await screen.findByText(/Duration 8\.00 h/)).toBeVisible();
+    expect(screen.getAllByText(/Not available/).length).toBeGreaterThan(0);
   });
 
   it('persists selected session during in-app navigation', async () => {
